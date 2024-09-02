@@ -28,17 +28,17 @@ public class TransaccionesController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Transacciones> getTransaccionById(@PathVariable Integer id) {
+    public Optional<Transacciones> getTransaccionById(@PathVariable Long id) {
         return transaccionesService.getTransaccionById(id);
     }
 
     /*@PutMapping("/{id}")
-    public Transacciones updateTransaccion(@PathVariable Integer id, @RequestBody Transacciones transaccionActualizada) {
+    public Transacciones updateTransaccion(@PathVariable Long id, @RequestBody Transacciones transaccionActualizada) {
         return transaccionesService.updateTransaccion(id, transaccionActualizada);
     }*/
 
     @DeleteMapping("/{id}")
-    public void deleteTransaccion(@PathVariable Integer id) {
+    public void deleteTransaccion(@PathVariable Long id) {
         transaccionesService.deleteTransaccion(id);
     }
 }

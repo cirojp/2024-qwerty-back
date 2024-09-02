@@ -2,6 +2,7 @@ package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,15 +24,15 @@ public class TransaccionesService {
         return transaccionesRepository.save(transaccion);
     }
 
-    public Optional<Transacciones> getTransaccionById(Integer id) {
+    public Optional<Transacciones> getTransaccionById(Long id) {
         return transaccionesRepository.findById(id);
     }
 
-    public void deleteTransaccion(Integer id) {
+    public void deleteTransaccion(Long id) {
         transaccionesRepository.deleteById(id);
     }
 
-    public Transacciones updateTransaccion(Integer id, Transacciones transaccionActualizada) {
+    public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada) {
         return transaccionesRepository.findById(id)
                 .map(transaccion -> {
                     transaccion.setValor(transaccionActualizada.getValor());

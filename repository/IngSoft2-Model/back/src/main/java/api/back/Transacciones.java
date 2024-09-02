@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "Transacciones")  // Nombre de la tabla en la base de datos
+@Table(name = "transacciones")  // Nombre de la tabla en la base de datos
 public class Transacciones {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

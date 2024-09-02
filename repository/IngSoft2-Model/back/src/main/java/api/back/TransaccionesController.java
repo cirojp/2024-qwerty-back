@@ -1,30 +1,44 @@
 package api.back;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/transacciones")
 public class TransaccionesController {
 
-    private final TransaccionesRepository transaccionesRepository;
+    private final TransaccionesService transaccionesService;
 
-    public TransaccionesController(TransaccionesRepository transaccionesRepository) {
-        this.transaccionesRepository = transaccionesRepository;
+    @Autowired
+    public TransaccionesController(TransaccionesService transaccionesService) {
+        this.transaccionesService = transaccionesService;
     }
 
     @GetMapping
     public List<Transacciones> getAllTransacciones() {
-        return transaccionesRepository.findAll();
+        return transaccionesService.getAllTransacciones();
     }
 
     @PostMapping
-    public Transacciones createTransacciones(@RequestBody Transacciones transacciones) {
-        return transaccionesRepository.save(transacciones);
+    public Transacciones createTransaccion(@RequestBody Transacciones transaccion) {
+        return transaccionesService.createTransaccion(transaccion);
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Transacciones> getTransaccionById(@PathVariable Integer id) {
+        return transaccionesService.getTransaccionById(id);
+    }
+
+    /*@PutMapping("/{id}")
+    public Transacciones updateTransaccion(@PathVariable Integer id, @RequestBody Transacciones transaccionActualizada) {
+        return transaccionesService.updateTransaccion(id, transaccionActualizada);
+    }*/
+
+    @DeleteMapping("/{id}")
+    public void deleteTransaccion(@PathVariable Integer id) {
+        transaccionesService.deleteTransaccion(id);
     }
 }

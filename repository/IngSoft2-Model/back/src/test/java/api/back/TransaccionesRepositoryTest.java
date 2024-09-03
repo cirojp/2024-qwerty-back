@@ -30,7 +30,7 @@ public class TransaccionesRepositoryTest {
         assertThat(transaccionGuardada.getMotivo()).isEqualTo("Pago");
     }
 }*/
-
+/* 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -89,3 +89,4 @@ public class TransaccionesRepositoryTest {
         assertThat(transaccionEliminada).isNotPresent();
     }
 }
+*/

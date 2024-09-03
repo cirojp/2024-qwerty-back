@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transacciones")
+@CrossOrigin(origins = "http://127.0.0.1:5173/")
 public class TransaccionesController {
 
     private final TransaccionesService transaccionesService;

@@ -8,7 +8,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transacciones")
-@CrossOrigin(origins = "http://127.0.0.1:5173/")
+// @CrossOrigin(origins = "http://127.0.0.1:5173/")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class TransaccionesController {
 
     private final TransaccionesService transaccionesService;
@@ -33,10 +34,13 @@ public class TransaccionesController {
         return transaccionesService.getTransaccionById(id);
     }
 
-    /*@PutMapping("/{id}")
-    public Transacciones updateTransaccion(@PathVariable Long id, @RequestBody Transacciones transaccionActualizada) {
-        return transaccionesService.updateTransaccion(id, transaccionActualizada);
-    }*/
+    /*
+     * @PutMapping("/{id}")
+     * public Transacciones updateTransaccion(@PathVariable Long id, @RequestBody
+     * Transacciones transaccionActualizada) {
+     * return transaccionesService.updateTransaccion(id, transaccionActualizada);
+     * }
+     */
 
     @DeleteMapping("/{id}")
     public void deleteTransaccion(@PathVariable Long id) {

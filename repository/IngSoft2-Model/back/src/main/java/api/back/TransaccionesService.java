@@ -10,17 +10,22 @@ import java.util.Optional;
 public class TransaccionesService {
 
     private final TransaccionesRepository transaccionesRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TransaccionesService(TransaccionesRepository transaccionesRepository) {
+    public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository) {
         this.transaccionesRepository = transaccionesRepository;
+        this.userRepository = userRepository;
     }
 
-    public List<Transacciones> getAllTransacciones() {
-        return transaccionesRepository.findAll();
+    public List<Transacciones> getTransaccionesByUserId(Long userId) {
+        return transaccionesRepository.findByUserId(userId);  // Utiliza el método del repositorio para filtrar las transacciones por userId
     }
 
-    public Transacciones createTransaccion(Transacciones transaccion) {
+    public Transacciones createTransaccion(Transacciones transaccion, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        transaccion.setUser(user);
         return transaccionesRepository.save(transaccion);
     }
 

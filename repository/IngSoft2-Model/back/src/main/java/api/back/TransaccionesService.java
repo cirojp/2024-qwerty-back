@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TransaccionesService {
@@ -19,13 +20,16 @@ public class TransaccionesService {
     }
 
     public List<Transacciones> getTransaccionesByUserId(Long userId) {
-        return transaccionesRepository.findByUserId(userId);  // Utiliza el método del repositorio para filtrar las transacciones por userId
+        return transaccionesRepository.findByUserId(userId); // Utiliza el método del repositorio para filtrar las
+                                                             // transacciones por userId
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         transaccion.setUser(user);
+        Calendar now = Calendar.getInstance();
+        transaccion.setFecha(now);
         return transaccionesRepository.save(transaccion);
     }
 

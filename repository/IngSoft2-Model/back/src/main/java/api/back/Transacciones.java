@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -23,8 +25,9 @@ public class Transacciones {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // Relación con la entidad User
-    private Calendar fecha;
+    //private Calendar fecha;
 
+    private LocalDateTime fecha;
     // Constructor por defecto
     public Transacciones() {
     }
@@ -33,6 +36,7 @@ public class Transacciones {
     public Transacciones(Integer valor, String motivo) {
         this.valor = valor;
         this.motivo = motivo;
+        this.fecha = fecha;
     }
 
     // Getters y Setters
@@ -68,11 +72,18 @@ public class Transacciones {
         this.user = user;
     }
 
-    public Calendar getFecha() {
+    /*public Calendar getFecha() {
         return fecha;
     }
 
     public void setFecha(Calendar fecha) {
+        this.fecha = fecha;
+    }*/
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 }

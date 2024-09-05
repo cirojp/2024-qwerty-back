@@ -11,15 +11,17 @@ public class TransaccionesService {
 
     private final TransaccionesRepository transaccionesRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository) {
+    public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository, UserService userService) {
         this.transaccionesRepository = transaccionesRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public List<Transacciones> getTransaccionesByUserId(Long userId) {
-        return transaccionesRepository.findByUserId(userId);
+        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {
@@ -43,14 +45,21 @@ public class TransaccionesService {
         transaccionesRepository.deleteById(id);
     }
 
-    public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada) {
-        return transaccionesRepository.findById(id)
-                .map(transaccion -> {
-                    transaccion.setValor(transaccionActualizada.getValor());
-                    transaccion.setMotivo(transaccionActualizada.getMotivo());
-                    transaccion.setFecha(transaccionActualizada.getFecha());  // Asegúrate de actualizar la fecha también
-                    return transaccionesRepository.save(transaccion);
-                })
-                .orElseThrow(() -> new RuntimeException("Transacción no encontrada"));
+    public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada, String email) {
+        // Obtener el usuario autenticado por email
+        User user = userService.findByEmail(email);
+        
+        // Buscar la transacción por id y asegurarse de que pertenezca al usuario
+        Transacciones transaccion = transaccionesRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new RuntimeException("Transacción no encontrada o no pertenece al usuario"));
+
+        // Actualizar los campos de la transacción
+        transaccion.setMotivo(transaccionActualizada.getMotivo());
+        transaccion.setValor(transaccionActualizada.getValor());
+        transaccion.setFecha(transaccionActualizada.getFecha());
+
+        // Guardar los cambios en la base de datos
+        return transaccionesRepository.save(transaccion);
     }
+    
 }

@@ -45,5 +45,11 @@ public class TransaccionesController {
     public void deleteTransaccion(@PathVariable Long id) {
         transaccionesService.deleteTransaccion(id);
     }
+    
+    @PutMapping("/{id}")
+    public Transacciones updateTransaccion(@PathVariable Long id, @RequestBody Transacciones transaccionActualizada, Authentication authentication) {
+        String email = authentication.getName(); // Obtenemos el email del usuario autenticado
+        return transaccionesService.updateTransaccion(id, transaccionActualizada, email);
+    }
 
 }

@@ -41,9 +41,21 @@ public class TransaccionesService {
         return transaccionesRepository.findById(id);
     }
 
-    public void deleteTransaccion(Long id) {
-        transaccionesRepository.deleteById(id);
+    public void deleteTransaccion(Long id, String email) {
+        System.out.println("Intentando eliminar transacción con ID: " + id + " para el usuario: " + email);
+    
+        Optional<Transacciones> optionalTransaccion = transaccionesRepository.findByIdAndUserEmail(id, email);
+        if (optionalTransaccion.isEmpty()) {
+            throw new TransaccionNotFoundException("Transacción no encontrada o no pertenece al usuario");
+        }
+    
+        Transacciones transaccion = optionalTransaccion.get();
+        System.out.println("Transacción encontrada: " + transaccion);
+    
+        transaccionesRepository.delete(transaccion);
+        System.out.println("Transacción eliminada");
     }
+    
 
     public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada, String email) {
         // Obtener el usuario autenticado por email

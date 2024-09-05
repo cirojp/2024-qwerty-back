@@ -11,4 +11,5 @@ public interface TransaccionesRepository extends JpaRepository<Transacciones, Lo
     List<Transacciones> findByUserId(Long userId);  // Encuentra transacciones por el ID del usuario
     Optional<Transacciones> findByIdAndUserId(Long id, Long userId);
     List<Transacciones> findByUserIdOrderByFechaDesc(Long userId);
+    Optional<Transacciones> findByIdAndUserEmail(Long id, String email);
 }

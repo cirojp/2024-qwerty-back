@@ -1,6 +1,8 @@
 package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,11 +43,21 @@ public class TransaccionesController {
         return transaccionesService.getTransaccionById(id);
     }
 
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     public void deleteTransaccion(@PathVariable Long id) {
         transaccionesService.deleteTransaccion(id);
+    }*/
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaccion(@PathVariable Long id, Authentication authentication) {
+        try {
+            String email = authentication.getName(); // Obtener el email del usuario autenticado
+            transaccionesService.deleteTransaccion(id, email);
+            return ResponseEntity.noContent().build();
+        } catch (TransaccionNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
-    
+
     @PutMapping("/{id}")
     public Transacciones updateTransaccion(@PathVariable Long id, @RequestBody Transacciones transaccionActualizada, Authentication authentication) {
         String email = authentication.getName(); // Obtenemos el email del usuario autenticado

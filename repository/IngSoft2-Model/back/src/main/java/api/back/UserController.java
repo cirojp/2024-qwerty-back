@@ -4,10 +4,7 @@ import java.security.Principal;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,4 +27,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
         }
     }
+
 }

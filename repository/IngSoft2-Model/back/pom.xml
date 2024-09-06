@@ -63,8 +63,9 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>42.7.4</scope>
-		</dependency>
+			<version>42.7.4</version>
+			<scope>runtime</scope>
+		</dependency>		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -94,14 +95,17 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
 			<version>0.11.5</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson depending on your preferred JSON processor -->
+			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
-			<scope>runtime</scope>
 		</dependency>		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+				
 	</dependencies>
 
 	<build>

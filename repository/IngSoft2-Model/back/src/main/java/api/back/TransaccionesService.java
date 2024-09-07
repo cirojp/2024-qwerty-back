@@ -14,7 +14,8 @@ public class TransaccionesService {
     private final UserService userService;
 
     @Autowired
-    public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository, UserService userService) {
+    public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository,
+            UserService userService) {
         this.transaccionesRepository = transaccionesRepository;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -43,24 +44,23 @@ public class TransaccionesService {
 
     public void deleteTransaccion(Long id, String email) {
         System.out.println("Intentando eliminar transacción con ID: " + id + " para el usuario: " + email);
-    
+
         Optional<Transacciones> optionalTransaccion = transaccionesRepository.findByIdAndUserEmail(id, email);
         if (optionalTransaccion.isEmpty()) {
             throw new TransaccionNotFoundException("Transacción no encontrada o no pertenece al usuario");
         }
-    
+
         Transacciones transaccion = optionalTransaccion.get();
         System.out.println("Transacción encontrada: " + transaccion);
-    
+
         transaccionesRepository.delete(transaccion);
         System.out.println("Transacción eliminada");
     }
-    
 
     public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada, String email) {
         // Obtener el usuario autenticado por email
         User user = userService.findByEmail(email);
-        
+
         // Buscar la transacción por id y asegurarse de que pertenezca al usuario
         Transacciones transaccion = transaccionesRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new RuntimeException("Transacción no encontrada o no pertenece al usuario"));
@@ -73,5 +73,5 @@ public class TransaccionesService {
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }
-    
+
 }

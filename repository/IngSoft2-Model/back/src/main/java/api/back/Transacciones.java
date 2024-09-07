@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 @Entity
 @Table(name = "transacciones") // Nombre de la tabla en la base de datos
@@ -18,28 +17,48 @@ public class Transacciones {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Integer valor;
     private String motivo;
+    private String descripcion;
+    private String tipoGasto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // Relación con la entidad User
-    //private Calendar fecha;
+    // private Calendar fecha;
 
     private LocalDateTime fecha;
+
     // Constructor por defecto
     public Transacciones() {
     }
 
     // Constructor con parámetros (opcional)
-    public Transacciones(Integer valor, String motivo) {
+    public Transacciones(Integer valor, String motivo, LocalDateTime fecha, String descripcion, String tipoGasto) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
+        this.descripcion = descripcion;
+        this.tipoGasto = tipoGasto;
     }
 
     // Getters y Setters
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto;
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto = tipoGasto;
+    }
+
     public Long getId() {
         return id;
     }
@@ -72,13 +91,15 @@ public class Transacciones {
         this.user = user;
     }
 
-    /*public Calendar getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Calendar fecha) {
-        this.fecha = fecha;
-    }*/
+    /*
+     * public Calendar getFecha() {
+     * return fecha;
+     * }
+     * 
+     * public void setFecha(Calendar fecha) {
+     * this.fecha = fecha;
+     * }
+     */
     public LocalDateTime getFecha() {
         return fecha;
     }

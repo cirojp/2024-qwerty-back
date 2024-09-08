@@ -1,6 +1,7 @@
 package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -50,9 +52,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody User user) {
+    public ResponseEntity<String> register(@RequestBody User user) {
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        if (optionalUser.isPresent()) {
+            return new ResponseEntity<String>("El e-mail ya fue utilizado. Intente iniciar sesion",
+                    HttpStatus.CONFLICT);
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     @PostMapping("/login")

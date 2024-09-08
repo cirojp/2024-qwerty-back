@@ -24,8 +24,8 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       PasswordResetTokenRepository passwordResetTokenRepository,
-                       JavaMailSender mailSender) {
+            PasswordResetTokenRepository passwordResetTokenRepository,
+            JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
@@ -38,7 +38,8 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                new ArrayList<>());
     }
 
     public User findByEmail(String email) {
@@ -101,6 +102,11 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         passwordResetTokenRepository.delete(resetToken); // Eliminar el token una vez usado
 
+        return true;
+    }
+
+    public boolean deleteUser(User user) {
+        userRepository.delete(user);
         return true;
     }
 }

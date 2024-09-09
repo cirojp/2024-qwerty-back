@@ -42,12 +42,6 @@ public class TransaccionesController {
         return transaccionesService.getTransaccionById(id);
     }
 
-    /*
-     * @DeleteMapping("/{id}")
-     * public void deleteTransaccion(@PathVariable Long id) {
-     * transaccionesService.deleteTransaccion(id);
-     * }
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaccion(@PathVariable Long id, Authentication authentication) {
         try {

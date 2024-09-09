@@ -1,43 +1,13 @@
 package api.back;
 
-
-/*import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest
-public class TransaccionesRepositoryTest {
-
-    @Autowired
-    private TransaccionesRepository transaccionesRepository;
-
-    @Test
-    @Rollback(false)
-    public void testGuardarTransaccion() {
-        // Crear una nueva entidad Transacciones
-        Transacciones transaccion = new Transacciones(500, "Pago");
-
-        // Guardar la entidad en la base de datos
-        Transacciones transaccionGuardada = transaccionesRepository.save(transaccion);
-
-        // Verificar que se ha guardado correctamente y tiene un ID asignado
-        assertThat(transaccionGuardada.getId()).isNotNull();
-        assertThat(transaccionGuardada.getValor()).isEqualTo(500);
-        assertThat(transaccionGuardada.getMotivo()).isEqualTo("Pago");
-    }
-}*/
-/* 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Optional;
 
 @SpringBootTest
 @ActiveProfiles("test") // Asegura que se use el perfil 'test'
@@ -49,7 +19,7 @@ public class TransaccionesRepositoryTest {
     @Test
     public void testGuardarTransaccion() {
         // Crear una nueva entidad Transacciones
-        Transacciones transaccion = new Transacciones(500, "Pago");
+        Transacciones transaccion = new Transacciones(500, "Compras", LocalDateTime.now(), "Hice compras", "Efectivo");
 
         // Guardar la entidad en la base de datos
         Transacciones transaccionGuardada = transaccionesRepository.save(transaccion);
@@ -57,13 +27,13 @@ public class TransaccionesRepositoryTest {
         // Verificar que se ha guardado correctamente y tiene un ID asignado
         assertThat(transaccionGuardada.getId()).isNotNull();
         assertThat(transaccionGuardada.getValor()).isEqualTo(500);
-        assertThat(transaccionGuardada.getMotivo()).isEqualTo("Pago");
+        assertThat(transaccionGuardada.getMotivo()).isEqualTo("Compras");
     }
 
     @Test
     public void testEncontrarTransaccionPorId() {
         // Crear y guardar una entidad Transacciones
-        Transacciones transaccion = new Transacciones(300, "Compra");
+        Transacciones transaccion = new Transacciones(500, "Compras", LocalDateTime.now(), "Hice compras", "Efectivo");
         Transacciones transaccionGuardada = transaccionesRepository.save(transaccion);
 
         // Buscar la entidad por ID
@@ -71,14 +41,14 @@ public class TransaccionesRepositoryTest {
 
         // Verificar que la entidad encontrada coincide con la guardada
         assertThat(transaccionEncontrada).isPresent();
-        assertThat(transaccionEncontrada.get().getValor()).isEqualTo(300);
-        assertThat(transaccionEncontrada.get().getMotivo()).isEqualTo("Compra");
+        assertThat(transaccionEncontrada.get().getValor()).isEqualTo(500);
+        assertThat(transaccionEncontrada.get().getMotivo()).isEqualTo("Compras");
     }
 
     @Test
     public void testEliminarTransaccion() {
         // Crear y guardar una entidad Transacciones
-        Transacciones transaccion = new Transacciones(400, "Venta");
+        Transacciones transaccion = new Transacciones(500, "Compras", LocalDateTime.now(), "Hice compras", "Efectivo");
         Transacciones transaccionGuardada = transaccionesRepository.save(transaccion);
 
         // Eliminar la entidad
@@ -89,4 +59,3 @@ public class TransaccionesRepositoryTest {
         assertThat(transaccionEliminada).isNotPresent();
     }
 }
-*/

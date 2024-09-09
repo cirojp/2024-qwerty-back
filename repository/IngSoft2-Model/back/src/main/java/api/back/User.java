@@ -19,6 +19,8 @@ public class User {
     private String password;
     private String role; // Puedes usar "ROLE_USER" o "ROLE_ADMIN"
 
+    public User() {
+    }
     // Getters y Setters
     public Long getId() {
         return id;

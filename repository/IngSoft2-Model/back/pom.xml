@@ -8022,15 +8022,15 @@
         </pluginRepository>
     </pluginRepositories>
     <build>
-        <sourceDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\src\main\java</sourceDirectory>
-        <scriptSourceDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\src\main\scripts</scriptSourceDirectory>
-        <testSourceDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\src\test\java</testSourceDirectory>
-        <outputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\classes</outputDirectory>
-        <testOutputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}\src\main\java</sourceDirectory>
+        <scriptSourceDirectory>${project.basedir}\src\main\scripts</scriptSourceDirectory>
+        <testSourceDirectory>${project.basedir}\src\test\java</testSourceDirectory>
+        <outputDirectory>${project.basedir}\target\classes</outputDirectory>
+        <testOutputDirectory>${project.basedir}\target\test-classes</testOutputDirectory>
         <resources>
             <resource>
                 <filtering>true</filtering>
-                <directory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\src\main\resources</directory>
+                <directory>${project.basedir}\src\main\resources</directory>
                 <includes>
                     <include>**/application*.yml</include>
                     <include>**/application*.yaml</include>
@@ -8038,7 +8038,7 @@
                 </includes>
             </resource>
             <resource>
-                <directory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\src\main\resources</directory>
+                <directory>${project.basedir}\src\main\resources</directory>
                 <excludes>
                     <exclude>**/application*.yml</exclude>
                     <exclude>**/application*.yaml</exclude>
@@ -8048,10 +8048,10 @@
         </resources>
         <testResources>
             <testResource>
-                <directory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\src\test\resources</directory>
+                <directory>${project.basedir}\src\test\resources</directory>
             </testResource>
         </testResources>
-        <directory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target</directory>
+        <directory>${project.basedir}\target</directory>
         <finalName>back-0.0.1-SNAPSHOT</finalName>
         <pluginManagement>
             <plugins>
@@ -8077,7 +8077,7 @@
                             </goals>
                             <configuration>
                                 <projectType>application</projectType>
-                                <outputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\classes/META-INF/sbom</outputDirectory>
+                                <outputDirectory>${project.basedir}\target\classes/META-INF/sbom</outputDirectory>
                                 <outputFormat>json</outputFormat>
                                 <outputName>application.cdx</outputName>
                             </configuration>
@@ -8101,14 +8101,14 @@
                             <configuration>
                                 <verbose>true</verbose>
                                 <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                                <generateGitPropertiesFilename>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\classes/git.properties</generateGitPropertiesFilename>
+                                <generateGitPropertiesFilename>${project.basedir}\target\classes/git.properties</generateGitPropertiesFilename>
                             </configuration>
                         </execution>
                     </executions>
                     <configuration>
                         <verbose>true</verbose>
                         <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\classes/git.properties</generateGitPropertiesFilename>
+                        <generateGitPropertiesFilename>${project.basedir}\target\classes/git.properties</generateGitPropertiesFilename>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -8199,12 +8199,12 @@
                                 <goal>verify</goal>
                             </goals>
                             <configuration>
-                                <classesDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\classes</classesDirectory>
+                                <classesDirectory>${project.basedir}\target\classes</classesDirectory>
                             </configuration>
                         </execution>
                     </executions>
                     <configuration>
-                        <classesDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\classes</classesDirectory>
+                        <classesDirectory>${project.basedir}\target\classes</classesDirectory>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -8583,7 +8583,7 @@
                             <goal>site</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\site</outputDirectory>
+                            <outputDirectory>${project.basedir}\target\site</outputDirectory>
                             <reportPlugins>
                                 <reportPlugin>
                                     <groupId>org.apache.maven.plugins</groupId>
@@ -8599,7 +8599,7 @@
                             <goal>deploy</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\site</outputDirectory>
+                            <outputDirectory>${project.basedir}\target\site</outputDirectory>
                             <reportPlugins>
                                 <reportPlugin>
                                     <groupId>org.apache.maven.plugins</groupId>
@@ -8610,7 +8610,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\site</outputDirectory>
+                    <outputDirectory>${project.basedir}\target\site</outputDirectory>
                     <reportPlugins>
                         <reportPlugin>
                             <groupId>org.apache.maven.plugins</groupId>
@@ -8622,6 +8622,6 @@
         </plugins>
     </build>
     <reporting>
-        <outputDirectory>c:\Users\marco\Documents\Proyectos\PID\2024-qwerty-back\repository\IngSoft2-Model\back\target\site</outputDirectory>
+        <outputDirectory>${project.basedir}\target\site</outputDirectory>
     </reporting>
 </project>

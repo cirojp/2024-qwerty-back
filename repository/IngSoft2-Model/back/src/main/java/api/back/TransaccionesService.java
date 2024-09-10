@@ -69,6 +69,8 @@ public class TransaccionesService {
         transaccion.setMotivo(transaccionActualizada.getMotivo());
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
+        transaccion.setDescripcion(transaccionActualizada.getDescripcion());
+        transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
 
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);

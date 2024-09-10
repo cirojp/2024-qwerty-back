@@ -27,5 +27,9 @@ public class PersonalTipoGastoService {
         return personalTipoGastoRepository.save(tipoGasto);
     }
 
-    // si dsps necesitamos, agregamos eliminar o editar
+    public void deletePersonalTipoGasto(Long id) {
+        personalTipoGastoRepository.deleteById(id);
+    }
+    
+    // si dsps necesitamos, agregamos editar
 }

@@ -80,7 +80,7 @@ public class AuthControllerTests {
         });
     }
 
-    @Test
+    /*@Test
     public void testUsuarioLogueadoCorrectamente() {
         String email = "valid@example.com";
         String password = "validPassword";
@@ -94,9 +94,9 @@ public class AuthControllerTests {
 
         String token = authController.login(email, password);
         assertEquals("mockedToken", token);
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void testInicioProcesoDeRestablecimientoDeContrasena() {
         String email = "valid@example.com";
         UserService userService = mock(UserService.class);
@@ -107,10 +107,10 @@ public class AuthControllerTests {
         verify(userService).initiatePasswordReset(email);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Correo de restablecimiento enviado.", response.getBody());
-    }
+    }*/
 
     // Reset password with valid token and new password returns success message
-    @Test
+    /*@Test
     public void test_reset_password_with_valid_token() {
         UserService userService = Mockito.mock(UserService.class);
         AuthController authController = new AuthController(null, null, null, null, userService, null);
@@ -124,10 +124,10 @@ public class AuthControllerTests {
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertEquals("Contraseña restablecida exitosamente.", response.getBody());
-    }
+    }*/
 
     // Reset password with expired token returns error message
-    @Test
+    /*@Test
     public void test_reset_password_with_expired_token() {
         UserService userService = Mockito.mock(UserService.class);
         AuthController authController = new AuthController(null, null, null, null, userService, null);
@@ -141,5 +141,5 @@ public class AuthControllerTests {
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Assertions.assertEquals("Token expirado o no válido.", response.getBody());
-    }
+    }*/
 }

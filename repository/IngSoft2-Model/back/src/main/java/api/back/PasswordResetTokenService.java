@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+
 
 @Service
 public class PasswordResetTokenService {
@@ -24,5 +26,13 @@ public class PasswordResetTokenService {
         token.setUser(user);
         token.setExpiryDate(LocalDateTime.now().plusHours(1)); // Token válido por 1 hora
         return passwordResetTokenRepository.save(token);
+    }
+
+    public List<PasswordResetToken> getTokensByUser(User user) {
+        return passwordResetTokenRepository.findByUser(user);
+    }
+
+    public void deleteToken(Long id) {
+        passwordResetTokenRepository.deleteById(id);
     }
 }

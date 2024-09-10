@@ -91,15 +91,6 @@ public class Transacciones {
         this.user = user;
     }
 
-    /*
-     * public Calendar getFecha() {
-     * return fecha;
-     * }
-     * 
-     * public void setFecha(Calendar fecha) {
-     * this.fecha = fecha;
-     * }
-     */
     public LocalDateTime getFecha() {
         return fecha;
     }

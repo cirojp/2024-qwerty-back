@@ -17,7 +17,7 @@ public class Transacciones {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer valor;
+    private Double valor;
     private String motivo;
     private String descripcion;
     private String tipoGasto;
@@ -34,7 +34,7 @@ public class Transacciones {
     }
 
     // Constructor con parámetros (opcional)
-    public Transacciones(Integer valor, String motivo, LocalDateTime fecha, String descripcion, String tipoGasto) {
+    public Transacciones(Double valor, String motivo, LocalDateTime fecha, String descripcion, String tipoGasto) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
@@ -67,11 +67,11 @@ public class Transacciones {
         this.id = id;
     }
 
-    public Integer getValor() {
+    public Double getValor() {
         return valor;
     }
 
-    public void setValor(Integer valor) {
+    public void setValor(Double valor) {
         this.valor = valor;
     }
 

@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
-
 
 @Service
 public class PasswordResetTokenService {
@@ -17,7 +15,8 @@ public class PasswordResetTokenService {
 
     public PasswordResetToken getToken(String token) {
         return passwordResetTokenRepository.findByToken(token)
-            .orElseThrow(() -> new RuntimeException("Token no encontrado")); // Maneja el caso en que el token no está presente
+                .orElseThrow(() -> new RuntimeException("Token no encontrado")); // Maneja el caso en que el token no
+                                                                                 // está presente
     }
 
     public PasswordResetToken createToken(User user) {

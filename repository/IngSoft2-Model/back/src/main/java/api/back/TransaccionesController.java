@@ -1,6 +1,5 @@
 package api.back;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -10,14 +9,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transacciones")
-// @CrossOrigin(origins = "http://127.0.0.1:5173/")
 @CrossOrigin(origins = { "http://localhost:5173/", "http://127.0.0.1:5173/" })
 public class TransaccionesController {
 
     private final TransaccionesService transaccionesService;
     private final UserService userService;
 
-    @Autowired
     public TransaccionesController(TransaccionesService transaccionesService, UserService userService) {
         this.transaccionesService = transaccionesService;
         this.userService = userService;

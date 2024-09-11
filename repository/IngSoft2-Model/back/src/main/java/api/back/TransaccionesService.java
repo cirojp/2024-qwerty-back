@@ -1,6 +1,5 @@
 package api.back;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +12,6 @@ public class TransaccionesService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    @Autowired
     public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository,
             UserService userService) {
         this.transaccionesRepository = transaccionesRepository;

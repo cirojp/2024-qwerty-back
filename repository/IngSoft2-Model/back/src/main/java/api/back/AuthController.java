@@ -3,7 +3,6 @@ package api.back;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,10 +30,10 @@ public class AuthController {
     private final PersonalTipoGastoService personalTipoGastoService;
     private final PasswordResetTokenService passwordResetTokenService;
 
-    @Autowired
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtil jwtUtil,
-            UserService userService, TransaccionesService transaccionesService, PersonalTipoGastoService personalTipoGastoService, PasswordResetTokenService passwordResetTokenService) {
+            UserService userService, TransaccionesService transaccionesService,
+            PersonalTipoGastoService personalTipoGastoService, PasswordResetTokenService passwordResetTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -55,7 +54,8 @@ public class AuthController {
                 transaccionesService.deleteTransaccion(transaction.getId(), user.getEmail());
             }
             // Eliminar los tipos de gasto personal
-            List<PersonalTipoGasto> personalTipoGastos = personalTipoGastoService.getPersonalTipoGastos(user.getEmail());
+            List<PersonalTipoGasto> personalTipoGastos = personalTipoGastoService
+                    .getPersonalTipoGastos(user.getEmail());
             for (PersonalTipoGasto tipoGasto : personalTipoGastos) {
                 personalTipoGastoService.deletePersonalTipoGasto(tipoGasto.getId());
             }
@@ -72,7 +72,6 @@ public class AuthController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {

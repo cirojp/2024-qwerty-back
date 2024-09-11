@@ -1,6 +1,5 @@
 package api.back;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +21,6 @@ public class UserService implements UserDetailsService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final JavaMailSender mailSender;
 
-    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             PasswordResetTokenRepository passwordResetTokenRepository,
             JavaMailSender mailSender) {

@@ -82,7 +82,7 @@ public class UserService implements UserDetailsService {
         message.setTo(user.getEmail());
         message.setSubject("Restablecimiento de Contraseña");
         message.setText("Para restablecer su contraseña, haga clic en el siguiente enlace: " +
-                "http://localhost:5173/reset-password?token=" + token.getToken() + " \nEl enlace expira en 1 hora");
+                "https://2024-qwerty-front-2.vercel.app/reset-password?token=" + token.getToken() + " \nEl enlace expira en 1 hora");
 
         mailSender.send(message);
     }

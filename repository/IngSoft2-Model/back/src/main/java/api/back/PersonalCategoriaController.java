@@ -23,10 +23,10 @@ public class PersonalCategoriaController {
     }
 
     @PostMapping
-    public PersonalCategoria addPersonalCategoria(@RequestBody String nombre,@RequestBody String iconPath, Authentication authentication) {
+    public PersonalCategoria addPersonalCategoria(@RequestBody CategoriaRequest categoria, Authentication authentication) {
         String email = authentication.getName();
         // Quitar las comillas dobles y las llaves del texto si es necesario
-        nombre = nombre.trim().replaceAll("\"", "");
-        return personalCategoriaService.addPersonalCategoria(email, nombre, "iconPath");
+        categoria.setNombre(categoria.getNombre().trim().replaceAll("\"", ""));
+        return personalCategoriaService.addPersonalCategoria(email, categoria.getNombre(), categoria.getIconPath());
     }
 }

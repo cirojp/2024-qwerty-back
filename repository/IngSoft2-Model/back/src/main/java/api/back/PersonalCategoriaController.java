@@ -27,6 +27,6 @@ public class PersonalCategoriaController {
         String email = authentication.getName();
         // Quitar las comillas dobles y las llaves del texto si es necesario
         nombre = nombre.trim().replaceAll("\"", "");
-        return personalCategoriaService.addPersonalCategoria(email, nombre, iconPath);
+        return personalCategoriaService.addPersonalCategoria(email, nombre, "iconPath");
     }
 }

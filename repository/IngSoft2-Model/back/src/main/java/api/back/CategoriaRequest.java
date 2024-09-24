@@ -4,6 +4,10 @@ public class CategoriaRequest {
     private String nombre;
     private String iconPath;
 
+    public CategoriaRequest(String nombre, String iconPath) {
+        this.nombre = nombre;
+        this.iconPath = iconPath;
+    }
     // Getters y setters
     public String getNombre() {
         return nombre;

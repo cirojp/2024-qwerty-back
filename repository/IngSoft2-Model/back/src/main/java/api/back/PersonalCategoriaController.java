@@ -26,6 +26,7 @@ public class PersonalCategoriaController {
     public PersonalCategoria addPersonalCategoria(@RequestBody CategoriaRequest categoria, Authentication authentication) {
         String email = authentication.getName();
         // Quitar las comillas dobles y las llaves del texto si es necesario
+        System.out.println(categoria.getIconPath());
         categoria.setNombre(categoria.getNombre().trim().replaceAll("\"", ""));
         return personalCategoriaService.addPersonalCategoria(email, categoria.getNombre(), categoria.getIconPath());
     }

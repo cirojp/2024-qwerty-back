@@ -27,6 +27,7 @@ public class PersonalCategoriaController {
         return categorias.stream()
             .map(cat -> new CategoriaRequest(cat.getNombre(), cat.getIconPath()))
             .collect(Collectors.toList());
+            
     }
 
 

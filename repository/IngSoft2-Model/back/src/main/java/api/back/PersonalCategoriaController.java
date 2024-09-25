@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/personal-categoria")
@@ -49,6 +50,25 @@ public class PersonalCategoriaController {
             personalCategoriaService.findAndDeleteCategoria(email, categoria.getNombre(), categoria.getIconPath());
             return ResponseEntity.ok().build();
         } catch (TransaccionNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> editPersonalCategoria(@RequestBody CategoriaRequest categoria,
+            @RequestBody CategoriaRequest newCategoria, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
+            for (PersonalCategoria item : categorias) {
+                if (item.getNombre().equals(categoria.getNombre())) {
+                    System.out.println("Found: " + item);
+                    item.setNombre(newCategoria.getNombre());
+                    item.setIconPath(newCategoria.getIconPath());
+                }
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }

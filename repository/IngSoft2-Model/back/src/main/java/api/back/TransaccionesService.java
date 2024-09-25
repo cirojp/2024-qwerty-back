@@ -75,4 +75,9 @@ public class TransaccionesService {
         return transaccionesRepository.save(transaccion);
     }
 
+    public List<Transacciones> getTransaccionesByUserIdAndCategory(Long userId, String categoria) {
+        return transaccionesRepository.findByUserIdAndCategoria(userId, categoria);
+    }
+    
+
 }

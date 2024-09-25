@@ -57,4 +57,20 @@ public class TransaccionesController {
         return transaccionesService.updateTransaccion(id, transaccionActualizada, email);
     }
 
+    @GetMapping("/user/filter")
+    public List<Transacciones> getTransaccionesByCategory(
+            @RequestParam(required = false) String categoria, 
+            Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.findByEmail(email);
+
+        if (categoria == null || categoria.equals("todas")) {
+            // Return all transactions for the user
+            return transaccionesService.getTransaccionesByUserId(user.getId());
+        } else {
+            // Filter transactions by category
+            return transaccionesService.getTransaccionesByUserIdAndCategory(user.getId(), categoria);
+        }
+    }
+
 }

@@ -12,4 +12,7 @@ public interface TransaccionesRepository extends JpaRepository<Transacciones, Lo
     List<Transacciones> findByUserIdOrderByFechaDesc(Long userId);
 
     Optional<Transacciones> findByIdAndUserEmail(Long id, String email);
+
+    List<Transacciones> findByUserIdAndCategoria(Long userId, String categoria);
+
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 public class PersonalCategoriaService {
-    
+
     @Autowired
     private PersonalCategoriaRepository personalCategoriaRepository;
 
@@ -15,12 +15,14 @@ public class PersonalCategoriaService {
     private UserRepository userRepository;
 
     public List<PersonalCategoria> getPersonalCategoria(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return personalCategoriaRepository.findByUser(user);
     }
 
     public PersonalCategoria addPersonalCategoria(String email, String nombre, String iconPath) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         PersonalCategoria categoria = new PersonalCategoria();
         categoria.setNombre(nombre);
         categoria.setIconPath(iconPath);
@@ -31,6 +33,20 @@ public class PersonalCategoriaService {
     public void deletePersonalCategoria(Long id) {
         personalCategoriaRepository.deleteById(id);
     }
-    
+
+    public void findAndDeleteCategoria(String email, String nombre, String iconPath) {
+        List<PersonalCategoria> categorias = getPersonalCategoria(email);
+        for (PersonalCategoria item : categorias) {
+            if (item.getNombre().equals(nombre)) {
+                System.out.println("Found: " + item);
+                deletePersonalCategoria(item.getId());
+            }
+        }
+    }
+
+    public void save(PersonalCategoria personalCategoria) {
+        personalCategoriaRepository.save(personalCategoria);
+    }
+
     // dsps necesitamos agregar editar
 }

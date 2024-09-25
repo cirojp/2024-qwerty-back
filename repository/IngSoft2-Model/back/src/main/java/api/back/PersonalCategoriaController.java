@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +48,7 @@ public class PersonalCategoriaController {
             String email = authentication.getName();
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
             for (PersonalCategoria item : categorias) {
-                if (item.getNombre() == categoria.getNombre() && item.getIconPath() == categoria.getIconPath()) {
+                if (item.getNombre().equals(categoria.getNombre())) {
                     System.out.println("Found: " + item);
                     personalCategoriaService.deletePersonalCategoria(item.getId());
                 }

@@ -1,6 +1,7 @@
 package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +21,9 @@ public class PersonalCategoriaController {
 
     @Autowired
     private PersonalCategoriaService personalCategoriaService;
+
+    @Autowired
+    private PersonalCategoriaRepository personalCategoriaRepository;
 
     @GetMapping
     public List<CategoriaRequest> getPersonalCategoria(Authentication authentication) {
@@ -61,16 +65,28 @@ public class PersonalCategoriaController {
         try {
             String email = authentication.getName();
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
+
+            boolean found = false;
             for (PersonalCategoria item : categorias) {
                 if (item.getNombre().equals(nombre)) {
                     System.out.println("Found: " + item);
                     item.setNombre(newCategoria.getNombre());
                     item.setIconPath(newCategoria.getIconPath());
+                    // Persistimos los cambios
+                    personalCategoriaRepository.save(item);
+                    found = true;
+                    break; // Si ya lo encontramos, podemos salir del loop
                 }
             }
-            return ResponseEntity.ok().build();
+            if (found) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            e.printStackTrace(); // Para saber exactamente qué ocurre
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }

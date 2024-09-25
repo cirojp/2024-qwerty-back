@@ -22,9 +22,6 @@ public class PersonalCategoriaController {
     @Autowired
     private PersonalCategoriaService personalCategoriaService;
 
-    @Autowired
-    private PersonalCategoriaRepository personalCategoriaRepository;
-
     @GetMapping
     public List<CategoriaRequest> getPersonalCategoria(Authentication authentication) {
         String email = authentication.getName();
@@ -73,7 +70,7 @@ public class PersonalCategoriaController {
                     item.setNombre(newCategoria.getNombre());
                     item.setIconPath(newCategoria.getIconPath());
                     // Persistimos los cambios
-                    personalCategoriaRepository.save(item);
+                    personalCategoriaService.save(item);
                     found = true;
                     break; // Si ya lo encontramos, podemos salir del loop
                 }

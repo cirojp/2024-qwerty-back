@@ -76,7 +76,7 @@ public class TransaccionesService {
     }
 
     public List<Transacciones> getTransaccionesByUserIdAndCategory(Long userId, String categoria) {
-        return transaccionesRepository.findByUserIdAndCategoria(userId, categoria);
+        return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
     
 

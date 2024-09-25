@@ -46,13 +46,7 @@ public class PersonalCategoriaController {
             Authentication authentication) {
         try {
             String email = authentication.getName();
-            List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
-            for (PersonalCategoria item : categorias) {
-                if (item.getNombre().equals(categoria.getNombre())) {
-                    System.out.println("Found: " + item);
-                    personalCategoriaService.deletePersonalCategoria(item.getId());
-                }
-            }
+            personalCategoriaService.findAndDeleteCategoria(email, categoria.getNombre(), categoria.getIconPath());
             return ResponseEntity.ok().build();
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();

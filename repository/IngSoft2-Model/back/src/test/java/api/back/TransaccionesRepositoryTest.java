@@ -19,7 +19,7 @@ public class TransaccionesRepositoryTest {
     @Test
     public void testGuardarTransaccion() {
         // Crear una nueva entidad Transacciones
-        Transacciones transaccion = new Transacciones(500.00, "Compras", LocalDate.now(), "Hice compras",
+        Transacciones transaccion = new Transacciones(500.00, "Compras", LocalDate.now(),
                 "Efectivo", "Impuestos");
 
         // Guardar la entidad en la base de datos
@@ -34,7 +34,7 @@ public class TransaccionesRepositoryTest {
     @Test
     public void testEncontrarTransaccionPorId() {
         // Crear y guardar una entidad Transacciones
-        Transacciones transaccion = new Transacciones(500.00, "Compras", LocalDate.now(), "Hice compras",
+        Transacciones transaccion = new Transacciones(500.00, "Compras", LocalDate.now(),
                 "Efectivo", "Impuestos");
         Transacciones transaccionGuardada = transaccionesRepository.save(transaccion);
 
@@ -50,7 +50,7 @@ public class TransaccionesRepositoryTest {
     @Test
     public void testEliminarTransaccion() {
         // Crear y guardar una entidad Transacciones
-        Transacciones transaccion = new Transacciones(500.00, "Compras", LocalDate.now(), "Hice compras",
+        Transacciones transaccion = new Transacciones(500.00, "Compras", LocalDate.now(),
                 "Efectivo", "Impuestos");
         Transacciones transaccionGuardada = transaccionesRepository.save(transaccion);
 

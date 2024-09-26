@@ -19,7 +19,6 @@ public class Transacciones {
     private Long id;
     private Double valor;
     private String motivo;
-    private String descripcion;
     private String tipoGasto;
     private String categoria;
 
@@ -51,25 +50,16 @@ public class Transacciones {
     }
 
     // Constructor con parámetros (opcional)
-    public Transacciones(Double valor, String motivo, LocalDate fecha, String descripcion, String tipoGasto,
+    public Transacciones(Double valor, String motivo, LocalDate fecha, String tipoGasto,
             String categoria) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
-        this.descripcion = descripcion;
         this.tipoGasto = tipoGasto;
         this.categoria = categoria;
     }
 
     // Getters y Setters
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
     public String getTipoGasto() {
         return tipoGasto;
     }

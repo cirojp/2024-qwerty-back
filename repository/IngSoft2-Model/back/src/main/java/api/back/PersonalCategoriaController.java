@@ -22,6 +22,9 @@ public class PersonalCategoriaController {
     @Autowired
     private PersonalCategoriaService personalCategoriaService;
 
+    @Autowired
+    private TransaccionesController transaccionesController;
+
     @GetMapping
     public List<CategoriaRequest> getPersonalCategoria(Authentication authentication) {
         String email = authentication.getName();
@@ -49,6 +52,13 @@ public class PersonalCategoriaController {
             Authentication authentication) {
         try {
             String email = authentication.getName();
+            List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+            for (Transacciones transaccion : transaccionesUser) {
+                if (transaccion.getCategoria() == categoria.getNombre()) {
+                    transaccion.setCategoria("Otros");
+                    transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+                }
+            }
             personalCategoriaService.findAndDeleteCategoria(email, categoria.getNombre(), categoria.getIconPath());
             return ResponseEntity.ok().build();
         } catch (TransaccionNotFoundException e) {

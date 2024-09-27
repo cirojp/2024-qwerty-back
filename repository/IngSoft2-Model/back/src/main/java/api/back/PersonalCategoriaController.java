@@ -53,13 +53,19 @@ public class PersonalCategoriaController {
         try {
             String email = authentication.getName();
             List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+
             for (Transacciones transaccion : transaccionesUser) {
-                if (transaccion.getCategoria() == categoria.getNombre()) {
+                // Comparar las categorías usando equals()
+                if (transaccion.getCategoria().equals(categoria.getNombre())) {
                     transaccion.setCategoria("Otros");
+                    // Actualizar la transacción con la nueva categoría
                     transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
                 }
             }
+
+            // Llamar al servicio para eliminar la categoría
             personalCategoriaService.findAndDeleteCategoria(email, categoria.getNombre(), categoria.getIconPath());
+
             return ResponseEntity.ok().build();
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();

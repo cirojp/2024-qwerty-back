@@ -21,6 +21,7 @@ public class Transacciones {
     private String motivo;
     private String tipoGasto;
     private String categoria;
+    
 
     public String getCategoria() {
         return categoria;

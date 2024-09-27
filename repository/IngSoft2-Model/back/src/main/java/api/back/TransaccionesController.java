@@ -64,6 +64,7 @@ public class TransaccionesController {
         String email = authentication.getName();
         User user = userService.findByEmail(email);
 
+
         if (categoria == null || categoria.equals("Todas")) {
             // Return all transactions for the user
             return transaccionesService.getTransaccionesByUserId(user.getId());

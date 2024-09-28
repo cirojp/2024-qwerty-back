@@ -38,13 +38,23 @@ public class PersonalCategoriaController {
     }
 
     @PostMapping
-    public PersonalCategoria addPersonalCategoria(@RequestBody CategoriaRequest categoria,
+    public ResponseEntity<Void> addPersonalCategoria(@RequestBody CategoriaRequest categoria,
             Authentication authentication) {
         String email = authentication.getName();
-        // Quitar las comillas dobles y las llaves del texto si es necesario
-        System.out.println(categoria.getIconPath());
-        categoria.setNombre(categoria.getNombre().trim().replaceAll("\"", ""));
-        return personalCategoriaService.addPersonalCategoria(email, categoria.getNombre(), categoria.getIconPath());
+        List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
+        System.out.println(categorias);
+        String nombreCategoria = categoria.getNombre().trim().replaceAll("\"", "");
+        for (PersonalCategoria catPersonal : categorias) {
+            System.out.println("Categoria transacción: '" + catPersonal.getNombre() + "'");
+            if (catPersonal.getNombre() != null
+                    && nombreCategoria.equalsIgnoreCase(catPersonal.getNombre().trim())) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        // Si no hay coincidencias, añadir la categoría
+        personalCategoriaService.addPersonalCategoria(email, nombreCategoria, categoria.getIconPath());
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping

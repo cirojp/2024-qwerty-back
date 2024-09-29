@@ -68,7 +68,6 @@ public class TransaccionesService {
         transaccion.setMotivo(transaccionActualizada.getMotivo());
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
-        transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         transaccion.setCategoria(transaccionActualizada.getCategoria());
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
@@ -77,6 +76,5 @@ public class TransaccionesService {
     public List<Transacciones> getTransaccionesByUserIdAndCategory(Long userId, String categoria) {
         return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
-    
 
-} 
+}

@@ -29,8 +29,6 @@ public class PersonalCategoriaController {
     public List<CategoriaRequest> getPersonalCategoria(Authentication authentication) {
         String email = authentication.getName();
         List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
-
-        // Mapear las categorías a CategoriaRequest
         return categorias.stream()
                 .map(cat -> new CategoriaRequest(cat.getNombre(), cat.getIconPath()))
                 .collect(Collectors.toList());
@@ -41,26 +39,13 @@ public class PersonalCategoriaController {
     public ResponseEntity<CategoriaRequest> addPersonalCategoria(@RequestBody CategoriaRequest categoria,
             Authentication authentication) {
         String email = authentication.getName();
-        List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
-        System.out.println(categorias);
-        String nombreCategoria = categoria.getNombre().trim().replaceAll("\"", "");
-
-        for (PersonalCategoria catPersonal : categorias) {
-            System.out.println("Categoria transacción: '" + catPersonal.getNombre() + "'");
-            if (catPersonal.getNombre() != null
-                    && nombreCategoria.equalsIgnoreCase(catPersonal.getNombre().trim())) {
-                return ResponseEntity.badRequest().build();
-            }
+        if (personalCategoriaService.checkIfNotExist(email, categoria)) {
+            personalCategoriaService.addPersonalCategoria(email, categoria.getNombre(), categoria.getIconPath());
+            CategoriaRequest categoriaResponse = new CategoriaRequest(categoria.getNombre(), categoria.getIconPath());
+            return ResponseEntity.ok(categoriaResponse);
+        } else {
+            return ResponseEntity.badRequest().build();
         }
-
-        // Si no hay coincidencias, añadir la categoría
-        personalCategoriaService.addPersonalCategoria(email, nombreCategoria, categoria.getIconPath());
-
-        // Crear el objeto de respuesta con la información de la categoría
-        CategoriaRequest categoriaResponse = new CategoriaRequest(nombreCategoria, categoria.getIconPath());
-
-        // Devolver la categoría en el cuerpo de la respuesta
-        return ResponseEntity.ok(categoriaResponse);
     }
 
     @DeleteMapping
@@ -69,19 +54,13 @@ public class PersonalCategoriaController {
         try {
             String email = authentication.getName();
             List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
-
             for (Transacciones transaccion : transaccionesUser) {
-                // Comparar las categorías usando equals()
                 if (transaccion.getCategoria().equals(categoria.getNombre())) {
                     transaccion.setCategoria("Otros");
-                    // Actualizar la transacción con la nueva categoría
                     transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
                 }
             }
-
-            // Llamar al servicio para eliminar la categoría
             personalCategoriaService.findAndDeleteCategoria(email, categoria.getNombre(), categoria.getIconPath());
-
             return ResponseEntity.ok().build();
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -96,21 +75,23 @@ public class PersonalCategoriaController {
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
 
             boolean found = false;
-            for (PersonalCategoria item : categorias) {
-                if (item.getNombre().equals(nombre)) {
-                    System.out.println("Found: " + item);
-                    item.setNombre(newCategoria.getNombre());
-                    item.setIconPath(newCategoria.getIconPath());
-                    // Persistimos los cambios
-                    personalCategoriaService.save(item);
-                    found = true;
-                    break; // Si ya lo encontramos, podemos salir del loop
+            if (personalCategoriaService.checkIfNotExist(email, newCategoria)) {
+                for (PersonalCategoria item : categorias) {
+                    if (item.getNombre().equals(nombre)) {
+                        item.setNombre(newCategoria.getNombre());
+                        item.setIconPath(newCategoria.getIconPath());
+                        personalCategoriaService.save(item);
+                        found = true;
+                        break;
+                    }
                 }
-            }
-            if (found) {
-                return ResponseEntity.ok().build();
+                if (found) {
+                    return ResponseEntity.ok().build();
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.badRequest().build();
             }
         } catch (Exception e) {
             e.printStackTrace(); // Para saber exactamente qué ocurre

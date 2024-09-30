@@ -107,4 +107,12 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
         return true;
     }
+
+    public void pendingTransactionNotification(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Notificacion de Transaccion Pendiente");
+        message.setText("Se le ha solicitado el pago de una clase de (nombre de app). \nAl iniciar sesion en CashFlowPro podra optar por aceptar o rechazar dicha solicitud. \n \"https://2024-qwerty-front-2.vercel.app/\"");
+        mailSender.send(message);
+    }
 }

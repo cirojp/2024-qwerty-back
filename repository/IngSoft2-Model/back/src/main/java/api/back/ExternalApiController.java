@@ -36,6 +36,7 @@ public class ExternalApiController {
             );
             // Guardar la transacción
             transaccionesPendientesService.save(transaccionPendiente);
+            userService.pendingTransactionNotification(usuario.getEmail());
             return ResponseEntity.ok().body("Transacción pendiente registrada correctamente.");
         } else {
             return ResponseEntity.badRequest().body("Usuario no registrado.");

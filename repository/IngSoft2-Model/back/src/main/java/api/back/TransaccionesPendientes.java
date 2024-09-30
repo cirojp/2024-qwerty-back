@@ -24,16 +24,16 @@ public class TransaccionesPendientes {
     private User user;
 
     private String motivo;
-    private String categoria;
+    private String id_reserva;
     private LocalDate fecha;
     public TransaccionesPendientes() {
     }
 
-    public TransaccionesPendientes(Double valor, User user, String motivo, String categoria, LocalDate fecha) {
+    public TransaccionesPendientes(Double valor, User user, String motivo, String id_reserva, LocalDate fecha) {
         this.valor = valor;
         this.user = user;
         this.motivo = motivo;
-        this.categoria = categoria;
+        this.id_reserva = id_reserva;
         this.fecha = fecha;
     }
 
@@ -69,12 +69,12 @@ public class TransaccionesPendientes {
         this.motivo = motivo;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public String getId_reserva() {
+        return id_reserva;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setId_reserva(String id_reserva) {
+        this.id_reserva = id_reserva;
     }
 
     public LocalDate getFecha() {

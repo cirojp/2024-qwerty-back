@@ -31,7 +31,7 @@ public class ExternalApiController {
                     request.getValor(),
                     usuario,
                     request.getMotivo(),
-                    request.getCategoria(),
+                    request.getId_reserva(),
                     request.getFecha() != null ? request.getFecha() : LocalDate.now()
             );
             // Guardar la transacción

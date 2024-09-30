@@ -6,8 +6,13 @@ public class TransaccionRequest {
     private Double valor;
     private String email;
     private String motivo;
-    private String categoria;
-    private LocalDate fecha;
+    private String id_reserva;  // Nuevo campo id_reserva
+    private LocalDate fecha;    // Fecha por defecto al crear
+
+    // Constructor
+    public TransaccionRequest() {
+        this.fecha = LocalDate.now(); // Establecer fecha actual por defecto
+    }
 
     // Getters y Setters
     public Double getValor() {
@@ -34,12 +39,12 @@ public class TransaccionRequest {
         this.motivo = motivo;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public String getId_reserva() {
+        return id_reserva;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setId_reserva(String id_reserva) {
+        this.id_reserva = id_reserva;
     }
 
     public LocalDate getFecha() {

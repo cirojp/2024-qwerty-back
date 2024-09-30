@@ -26,6 +26,8 @@ public class TransaccionesPendientes {
     private String motivo;
     private String categoria;
     private LocalDate fecha;
+    public TransaccionesPendientes() {
+    }
 
     public TransaccionesPendientes(Double valor, User user, String motivo, String categoria, LocalDate fecha) {
         this.valor = valor;

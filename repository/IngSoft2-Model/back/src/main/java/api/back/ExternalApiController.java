@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,5 +41,12 @@ public class ExternalApiController {
             return ResponseEntity.badRequest().body("Usuario no registrado.");
         }
     }
+
+        @GetMapping("/exists/{email}")
+        public ResponseEntity<Boolean> checkUserExists(@PathVariable String email) {
+            boolean exists = (userService.findByEmail(email) != null);
+            return ResponseEntity.ok(exists);
+        }
+    
 }
 

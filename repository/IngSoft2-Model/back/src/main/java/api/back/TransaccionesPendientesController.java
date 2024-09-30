@@ -18,12 +18,16 @@ public class TransaccionesPendientesController {
 
     private final TransaccionesPendientesService transaccionesPendientesService;
     private final UserService userService;
-    private final RestTemplate restTemplate;
+    /*private final RestTemplate restTemplate;
 
     public TransaccionesPendientesController(TransaccionesPendientesService transaccionesPendientesService, UserService userService, RestTemplate restTemplate) {
         this.transaccionesPendientesService = transaccionesPendientesService;
         this.userService = userService;
         this.restTemplate = restTemplate;
+    }*/
+    public TransaccionesPendientesController(TransaccionesPendientesService transaccionesPendientesService, UserService userService) {
+        this.transaccionesPendientesService = transaccionesPendientesService;
+        this.userService = userService;
     }
 
     // Endpoint para obtener todas las transacciones pendientes del usuario autenticado

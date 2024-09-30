@@ -1,32 +1,43 @@
 package api.back;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import java.time.LocalDate;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/public")
 public class ExternalApiController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
+    @Autowired
+    private TransaccionesPendientesService transaccionesPendientesService;
+
+    // Endpoint para recibir la transacción pendiente en formato JSON
     @PostMapping("/sendTransaccion")
-    public ResponseEntity<String> postPendingTransaccion(@RequestParam String valor, @RequestParam String email) {
-        User usuario = userService.findByEmail(email);
+    public ResponseEntity<String> postPendingTransaccion(@RequestBody TransaccionRequest request) {
+        User usuario = userService.findByEmail(request.getEmail());
         if (usuario != null) {
-            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(Double.parseDouble(valor),
-                    usuario, "Clase",
-                    "Clases",
-                    LocalDate.now());
-            return ResponseEntity.ok().body(valor);
+            // Crear una transacción pendiente
+            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
+                    request.getValor(),
+                    usuario,
+                    request.getMotivo(),
+                    request.getCategoria(),
+                    request.getFecha() != null ? request.getFecha() : LocalDate.now()
+            );
+            // Guardar la transacción
+            transaccionesPendientesService.save(transaccionPendiente);
+            return ResponseEntity.ok().body("Transacción pendiente registrada correctamente.");
         } else {
-            return ResponseEntity.badRequest().body("Usuario no Registrado");
+            return ResponseEntity.badRequest().body("Usuario no registrado.");
         }
     }
-
 }
+

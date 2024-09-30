@@ -77,4 +77,5 @@ public class TransaccionesService {
         return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
 
+
 }

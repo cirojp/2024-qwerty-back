@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/transacciones")
@@ -20,15 +18,6 @@ public class TransaccionesController {
     public TransaccionesController(TransaccionesService transaccionesService, UserService userService) {
         this.transaccionesService = transaccionesService;
         this.userService = userService;
-    }
-
-    @GetMapping("/userTest")
-    public ResponseEntity<Void> checkIfValidToken(Authentication authentication) {
-        if (authentication.getName() == null) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @GetMapping("/user")

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/transacciones")
@@ -18,6 +20,15 @@ public class TransaccionesController {
     public TransaccionesController(TransaccionesService transaccionesService, UserService userService) {
         this.transaccionesService = transaccionesService;
         this.userService = userService;
+    }
+
+    @GetMapping("/userTest")
+    public ResponseEntity<Void> checkIfValidToken(Authentication authentication) {
+        if (authentication.getName() == null) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/user")
@@ -59,11 +70,10 @@ public class TransaccionesController {
 
     @GetMapping("/user/filter")
     public List<Transacciones> getTransaccionesByCategory(
-            @RequestParam(required = false) String categoria, 
+            @RequestParam(required = false) String categoria,
             Authentication authentication) {
         String email = authentication.getName();
         User user = userService.findByEmail(email);
-
 
         if (categoria == null || categoria.equals("Todas")) {
             // Return all transactions for the user
@@ -73,6 +83,5 @@ public class TransaccionesController {
             return transaccionesService.getTransaccionesByUserIdAndCategory(user.getId(), categoria);
         }
     }
-
 
 }

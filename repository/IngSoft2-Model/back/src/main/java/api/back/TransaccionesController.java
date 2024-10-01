@@ -1,5 +1,6 @@
 package api.back;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ public class TransaccionesController {
     private final TransaccionesService transaccionesService;
     private final UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     public TransaccionesController(TransaccionesService transaccionesService, UserService userService) {
         this.transaccionesService = transaccionesService;
         this.userService = userService;
@@ -26,6 +30,12 @@ public class TransaccionesController {
         User user = userService.findByEmail(email); // Obtenemos el usuario por email
         return transaccionesService.getTransaccionesByUserId(user.getId()); // Llamamos al servicio con el ID del
                                                                             // usuario
+    }
+    @GetMapping("/userTest")
+    public boolean checkUserValidToken(Authentication authentication, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        boolean valid = !jwtUtil.isTokenExpired(token); // validamos si el token no esta vencido
+        return valid; 
     }
 
     @PostMapping

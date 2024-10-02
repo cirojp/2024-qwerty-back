@@ -18,17 +18,17 @@ public class TransaccionesPendientesController {
 
     private final TransaccionesPendientesService transaccionesPendientesService;
     private final UserService userService;
-    /*private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public TransaccionesPendientesController(TransaccionesPendientesService transaccionesPendientesService, UserService userService, RestTemplate restTemplate) {
         this.transaccionesPendientesService = transaccionesPendientesService;
         this.userService = userService;
         this.restTemplate = restTemplate;
-    }*/
-    public TransaccionesPendientesController(TransaccionesPendientesService transaccionesPendientesService, UserService userService) {
+    }
+    /*public TransaccionesPendientesController(TransaccionesPendientesService transaccionesPendientesService, UserService userService) {
         this.transaccionesPendientesService = transaccionesPendientesService;
         this.userService = userService;
-    }
+    }*/
 
     // Endpoint para obtener todas las transacciones pendientes del usuario autenticado
     @GetMapping("/user")
@@ -55,7 +55,7 @@ public class TransaccionesPendientesController {
         }
     }
 
-    /*@PostMapping("/aceptada")
+    @PostMapping("/aceptada")
     public ResponseEntity<String> transaccionAceptada(@RequestParam String id_reserva, Authentication authentication) {
         return enviarNotificacionReserva(id_reserva, authentication, "aceptada");
     }
@@ -84,12 +84,12 @@ public class TransaccionesPendientesController {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         // URL de la aplicación del otro grupo
-        String url = "https://aplicacionDelOtroGrupo.com";
+        String url = "https://backendapi.fpenonori.com/reservation/confirm";
 
         // Hacer la petición POST
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
         // Devolver la respuesta del servidor
         return ResponseEntity.ok(response.getBody());
-    }*/
+    }
 }

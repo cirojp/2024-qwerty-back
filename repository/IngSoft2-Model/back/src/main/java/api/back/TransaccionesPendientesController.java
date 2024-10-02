@@ -57,13 +57,14 @@ public class TransaccionesPendientesController {
         }
     }
 
-    @PostMapping("/aceptada")
+    // Endpoint para transacción aceptada
+    @PutMapping("/aceptada")
     public ResponseEntity<String> transaccionAceptada(@RequestParam String id_reserva, Authentication authentication) {
         return enviarNotificacionReserva(id_reserva, authentication, "aceptada");
     }
 
     // Endpoint para transacción rechazada
-    @PostMapping("/rechazada")
+    @PutMapping("/rechazada")
     public ResponseEntity<String> transaccionRechazada(@RequestParam String id_reserva, Authentication authentication) {
         return enviarNotificacionReserva(id_reserva, authentication, "rechazada");
     }
@@ -88,10 +89,11 @@ public class TransaccionesPendientesController {
         // URL de la aplicación del otro grupo
         String url = "https://backendapi.fpenonori.com/reservation/confirm";
 
-        // Hacer la petición POST
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+        // Hacer la petición PUT
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
         // Devolver la respuesta del servidor
         return ResponseEntity.ok(response.getBody());
     }
+
 }

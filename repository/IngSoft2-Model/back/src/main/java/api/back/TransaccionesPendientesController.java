@@ -58,42 +58,44 @@ public class TransaccionesPendientesController {
     }
 
     // Endpoint para transacción aceptada
-    @PutMapping("/aceptada")
-    public ResponseEntity<String> transaccionAceptada(@RequestParam String id_reserva, Authentication authentication) {
-        return enviarNotificacionReserva(id_reserva, authentication, "aceptada");
-    }
+    // Endpoint para transacción aceptada
+@PostMapping("/aceptada")
+public ResponseEntity<String> transaccionAceptada(@RequestParam String id_reserva, Authentication authentication) {
+    return enviarNotificacionReserva(id_reserva, authentication, "aceptada");
+}
 
-    // Endpoint para transacción rechazada
-    @PutMapping("/rechazada")
-    public ResponseEntity<String> transaccionRechazada(@RequestParam String id_reserva, Authentication authentication) {
-        return enviarNotificacionReserva(id_reserva, authentication, "rechazada");
-    }
+// Endpoint para transacción rechazada
+@PostMapping("/rechazada")
+public ResponseEntity<String> transaccionRechazada(@RequestParam String id_reserva, Authentication authentication) {
+    return enviarNotificacionReserva(id_reserva, authentication, "rechazada");
+}
 
-    // Método para enviar la notificación de reserva a la URL externa
-    private ResponseEntity<String> enviarNotificacionReserva(String id_reserva, Authentication authentication, String status) {
-        String email = authentication.getName();  // Obtener el email del usuario autenticado
+// Método para enviar la notificación de reserva a la URL externa
+private ResponseEntity<String> enviarNotificacionReserva(String id_reserva, Authentication authentication, String status) {
+    String email = authentication.getName();  // Obtener el email del usuario autenticado
 
-        // Crear el cuerpo del JSON
-        Map<String, Object> body = new HashMap<>();
-        body.put("email", email);
-        body.put("id_reserva", id_reserva);
-        body.put("reservationStatus", status);
+    // Crear el cuerpo del JSON
+    Map<String, Object> body = new HashMap<>();
+    body.put("email", email);
+    body.put("id_reserva", id_reserva);
+    body.put("reservationStatus", status);
 
-        // Establecer headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
+    // Establecer headers
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Content-Type", "application/json");
 
-        // Crear la request con el cuerpo y los headers
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+    // Crear la request con el cuerpo y los headers
+    HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        // URL de la aplicación del otro grupo
-        String url = "https://backendapi.fpenonori.com/reservation/confirm";
+    // URL de la aplicación del otro grupo
+    String url = "https://backendapi.fpenonori.com/reservation/confirm";
 
-        // Hacer la petición PUT
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+    // Hacer la petición PUT
+    ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-        // Devolver la respuesta del servidor
-        return ResponseEntity.ok(response.getBody());
-    }
+    // Devolver la respuesta del servidor
+    return ResponseEntity.ok(response.getBody());
+}
+
 
 }

@@ -26,28 +26,30 @@ public class ExternalApiController {
     public ResponseEntity<String> postPendingTransaccion(@RequestBody TransaccionRequest request) {
         User usuario = userService.findByEmail(request.getEmail());
         if (usuario != null) {
+            if (request.getValor() >= 0) {
+                TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
+                        request.getValor(),
+                        usuario,
+                        request.getMotivo(),
+                        request.getId_reserva(),
+                        request.getFecha() != null ? request.getFecha() : LocalDate.now());
+                // Guardar la transacción
+                transaccionesPendientesService.save(transaccionPendiente);
+                userService.pendingTransactionNotification(usuario.getEmail());
+                return ResponseEntity.ok().body("Transacción pendiente registrada correctamente.");
+            } else {
+                return ResponseEntity.badRequest().body("Error: Valor negativo");
+            }
             // Crear una transacción pendiente
-            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
-                    request.getValor(),
-                    usuario,
-                    request.getMotivo(),
-                    request.getId_reserva(),
-                    request.getFecha() != null ? request.getFecha() : LocalDate.now()
-            );
-            // Guardar la transacción
-            transaccionesPendientesService.save(transaccionPendiente);
-            userService.pendingTransactionNotification(usuario.getEmail());
-            return ResponseEntity.ok().body("Transacción pendiente registrada correctamente.");
         } else {
             return ResponseEntity.badRequest().body("Usuario no registrado.");
         }
     }
 
-        @GetMapping("/exists/{email}")
-        public ResponseEntity<Boolean> checkUserExists(@PathVariable String email) {
-            boolean exists = (userService.findByEmail(email) != null);
-            return ResponseEntity.ok(exists);
-        }
-    
-}
+    @GetMapping("/exists/{email}")
+    public ResponseEntity<Boolean> checkUserExists(@PathVariable String email) {
+        boolean exists = (userService.findByEmail(email) != null);
+        return ResponseEntity.ok(exists);
+    }
 
+}

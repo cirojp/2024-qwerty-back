@@ -27,20 +27,18 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final TransaccionesService transaccionesService;
     private final UserService userService;
-    private final PersonalTipoGastoService personalTipoGastoService;
     private final PasswordResetTokenService passwordResetTokenService;
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtil jwtUtil,
             UserService userService, TransaccionesService transaccionesService,
-            PersonalTipoGastoService personalTipoGastoService, PasswordResetTokenService passwordResetTokenService) {
+            PasswordResetTokenService passwordResetTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.transaccionesService = transaccionesService;
-        this.personalTipoGastoService = personalTipoGastoService;
         this.passwordResetTokenService = passwordResetTokenService;
     }
 
@@ -48,27 +46,18 @@ public class AuthController {
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
         try {
             User user = userService.findByEmail(authentication.getName());
-            // Eliminar las transacciones
             List<Transacciones> transacciones = transaccionesService.getTransaccionesByUserId(user.getId());
             for (Transacciones transaction : transacciones) {
                 transaccionesService.deleteTransaccion(transaction.getId(), user.getEmail());
             }
-            // Eliminar los tipos de gasto personal
-            List<PersonalTipoGasto> personalTipoGastos = personalTipoGastoService
-                    .getPersonalTipoGastos(user.getEmail());
-            for (PersonalTipoGasto tipoGasto : personalTipoGastos) {
-                personalTipoGastoService.deletePersonalTipoGasto(tipoGasto.getId());
-            }
-            // Eliminar los tokens de restablecimiento de contraseña
             List<PasswordResetToken> tokens = passwordResetTokenService.getTokensByUser(user);
             for (PasswordResetToken token : tokens) {
                 passwordResetTokenService.deleteToken(token.getId());
             }
-            // Eliminar el usuario
             userService.deleteUser(user);
 
             return ResponseEntity.noContent().build();
-        } catch (TransaccionNotFoundException | PersonalTipoGastoNotFoundException e) {
+        } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -111,4 +100,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token expirado o no válido.");
         }
     }
+
+    
 }

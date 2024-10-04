@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PersonalTipoGastoRepository extends JpaRepository<PersonalTipoGasto, Long> {
-    List<PersonalTipoGasto> findByUser(User user);
+public interface PersonalCategoriaRepository extends JpaRepository<PersonalCategoria, Long> {
+    List<PersonalCategoria> findByUser(User user);
 }

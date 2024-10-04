@@ -12,49 +12,29 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "transacciones") // Nombre de la tabla en la base de datos
-public class Transacciones {
+@Table(name = "transaccionesPendientes")
+public class TransaccionesPendientes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Double valor;
-    private String motivo;
-    private String categoria;
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user; // Relación con la entidad User
-    // private Calendar fecha;
+    private User user;
 
+    private String motivo;
+    private String id_reserva;
     private LocalDate fecha;
-
-    public LocalDate getFecha() {
-        return fecha;
+    public TransaccionesPendientes() {
     }
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
-    // Constructor por defecto
-    public Transacciones() {
-    }
-
-    // Constructor con parámetros (opcional)
-    public Transacciones(Double valor, String motivo, LocalDate fecha,
-            String categoria) {
+    public TransaccionesPendientes(Double valor, User user, String motivo, String id_reserva, LocalDate fecha) {
         this.valor = valor;
+        this.user = user;
         this.motivo = motivo;
+        this.id_reserva = id_reserva;
         this.fecha = fecha;
-        this.categoria = categoria;
     }
 
     public Long getId() {
@@ -73,6 +53,14 @@ public class Transacciones {
         this.valor = valor;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getMotivo() {
         return motivo;
     }
@@ -81,11 +69,20 @@ public class Transacciones {
         this.motivo = motivo;
     }
 
-    public User getUser() {
-        return user;
+    public String getId_reserva() {
+        return id_reserva;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setId_reserva(String id_reserva) {
+        this.id_reserva = id_reserva;
     }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
 }

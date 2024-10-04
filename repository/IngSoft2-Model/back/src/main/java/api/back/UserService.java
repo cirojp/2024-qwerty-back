@@ -82,7 +82,7 @@ public class UserService implements UserDetailsService {
         message.setTo(user.getEmail());
         message.setSubject("Restablecimiento de Contraseña");
         message.setText("Para restablecer su contraseña, haga clic en el siguiente enlace: " +
-                "http://localhost:5173/reset-password?token=" + token.getToken() + " \nEl enlace expira en 1 hora");
+                "https://2024-qwerty-front-2.vercel.app/reset-password?token=" + token.getToken() + " \nEl enlace expira en 1 hora");
 
         mailSender.send(message);
     }
@@ -106,5 +106,13 @@ public class UserService implements UserDetailsService {
     public boolean deleteUser(User user) {
         userRepository.delete(user);
         return true;
+    }
+
+    public void pendingTransactionNotification(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Notificacion de Transaccion Pendiente");
+        message.setText("Se le ha solicitado el pago de una clase de (nombre de app). \nAl iniciar sesion en CashFlowPro podra optar por aceptar o rechazar dicha solicitud. \n \"https://2024-qwerty-front-2.vercel.app/\"");
+        mailSender.send(message);
     }
 }

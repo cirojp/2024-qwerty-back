@@ -1,5 +1,6 @@
 package api.back;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class PersonalTipoGasto {
+public class PersonalCategoria {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,17 @@ public class PersonalTipoGasto {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    @Column(nullable = false)
+    private String iconPath;
+
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

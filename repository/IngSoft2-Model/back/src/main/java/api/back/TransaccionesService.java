@@ -1,7 +1,8 @@
 package api.back;
 
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class TransaccionesService {
 
         // Si no se proporciona una fecha, usamos la fecha actual
         if (transaccion.getFecha() == null) {
-            transaccion.setFecha(LocalDateTime.now());
+            transaccion.setFecha(LocalDate.now());
         }
 
         return transaccionesRepository.save(transaccion);
@@ -67,11 +68,14 @@ public class TransaccionesService {
         transaccion.setMotivo(transaccionActualizada.getMotivo());
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
-        transaccion.setDescripcion(transaccionActualizada.getDescripcion());
-        transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
-
+        transaccion.setCategoria(transaccionActualizada.getCategoria());
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }
+
+    public List<Transacciones> getTransaccionesByUserIdAndCategory(Long userId, String categoria) {
+        return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
+    }
+
 
 }

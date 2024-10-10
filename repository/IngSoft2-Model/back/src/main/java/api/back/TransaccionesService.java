@@ -80,7 +80,9 @@ public class TransaccionesService {
     public List<Transacciones> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
         LocalDate startDate = null;
         LocalDate endDate = null;
-    
+        if (anio == null && mes != null) {
+            anio = 2024;
+        }
         // Si la categoría no es null o "Todas" y anio y mes son null
         if (categoria != null && !categoria.equals("Todas") && anio == null && mes == null) {
             return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
@@ -118,7 +120,7 @@ public class TransaccionesService {
                 // Si solo el mes es proporcionado, puedes decidir no realizar ninguna consulta o lanzar una excepción
             }
         }
-        return null;
+        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
     
         // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
         }

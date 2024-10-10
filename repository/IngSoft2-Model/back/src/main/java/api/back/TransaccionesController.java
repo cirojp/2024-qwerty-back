@@ -90,13 +90,13 @@ public class TransaccionesController {
             @RequestParam(required = false) Integer anio,
             @RequestParam(required = false) Integer mes,
             Authentication authentication) {
-
+                System.out.println(categoria + "///" + anio + "/////" + mes +"??????????");
         String email = authentication.getName();
         User user = userService.findByEmail(email);
 
         // Realiza el filtrado en el nivel del servicio
         List<Transacciones> transacciones = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
-
+        System.out.println(transacciones);
         return transacciones;
     }
 

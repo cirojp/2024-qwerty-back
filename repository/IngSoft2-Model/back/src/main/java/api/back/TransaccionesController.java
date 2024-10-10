@@ -96,7 +96,7 @@ public class TransaccionesController {
 
         // Realiza el filtrado en el nivel del servicio
         List<Transacciones> transacciones = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
-        System.out.println(transacciones);
+        System.out.println(user.getId() + "       este es el id");
         return transacciones;
     }
 

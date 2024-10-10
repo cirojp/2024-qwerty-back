@@ -77,5 +77,9 @@ public class TransaccionesService {
         return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
 
+    public List<Transacciones> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
+        // Realiza la consulta en el repositorio aplicando los filtros
+        return transaccionesRepository.findTransaccionesByFilters(userId, categoria, anio, mes);
+    }
 
 }

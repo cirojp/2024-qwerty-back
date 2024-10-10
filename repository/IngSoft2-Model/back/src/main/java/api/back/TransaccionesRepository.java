@@ -1,6 +1,9 @@
 package api.back;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +18,15 @@ public interface TransaccionesRepository extends JpaRepository<Transacciones, Lo
 
     List<Transacciones> findByUserIdAndCategoriaOrderByFechaDesc(Long userId, String categoria);
 
+    @Query("SELECT t FROM Transacciones t WHERE t.user.id = :userId " +
+       "AND (:categoria IS NULL OR t.categoria = :categoria) " +
+       "AND (:anio IS NULL OR YEAR(t.fecha) = :anio) " +
+       "AND (:mes IS NULL OR MONTH(t.fecha) = :mes)")
+    List<Transacciones> findTransaccionesByFilters(
+        @Param("userId") Long userId, 
+        @Param("categoria") String categoria, 
+        @Param("anio") Integer anio, 
+        @Param("mes") Integer mes);
 
 
 }

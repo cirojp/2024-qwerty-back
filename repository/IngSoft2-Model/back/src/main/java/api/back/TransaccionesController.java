@@ -90,34 +90,16 @@ public class TransaccionesController {
             @RequestParam(required = false) Integer anio,
             @RequestParam(required = false) Integer mes,
             Authentication authentication) {
-        
+
         String email = authentication.getName();
         User user = userService.findByEmail(email);
-        
-        // Obtiene todas las transacciones del usuario
-        List<Transacciones> transacciones = transaccionesService.getTransaccionesByUserId(user.getId());
-        
-        // Filtra por categoría si se proporciona
-        if (categoria != null && !categoria.equals("Todas")) {
-            transacciones = transaccionesService.getTransaccionesByUserIdAndCategory(user.getId(), categoria);
-        }
-        
-        // Filtra por año si se proporciona
-        if (anio != null) {
-            transacciones = transacciones.stream()
-                    .filter(t -> t.getFecha().getYear() == anio)
-                    .collect(Collectors.toList());
-        }
-        
-        // Filtra por mes si se proporciona
-        if (mes != null) {
-            transacciones = transacciones.stream()
-                    .filter(t -> t.getFecha().getMonthValue() == mes)
-                    .collect(Collectors.toList());
-        }
-        
+
+        // Realiza el filtrado en el nivel del servicio
+        List<Transacciones> transacciones = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
+
         return transacciones;
     }
+
 
 
 }

@@ -28,11 +28,12 @@ public class AuthController {
     private final TransaccionesService transaccionesService;
     private final UserService userService;
     private final PasswordResetTokenService passwordResetTokenService;
+    private final PersonalTipoGastoService personalTipoGastoService;
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtil jwtUtil,
             UserService userService, TransaccionesService transaccionesService,
-            PasswordResetTokenService passwordResetTokenService) {
+            PasswordResetTokenService passwordResetTokenService, PersonalTipoGastoService personalTipoGastoService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -40,6 +41,7 @@ public class AuthController {
         this.userService = userService;
         this.transaccionesService = transaccionesService;
         this.passwordResetTokenService = passwordResetTokenService;
+        this.personalTipoGastoService = personalTipoGastoService;
     }
 
     @DeleteMapping
@@ -49,6 +51,12 @@ public class AuthController {
             List<Transacciones> transacciones = transaccionesService.getTransaccionesByUserId(user.getId());
             for (Transacciones transaction : transacciones) {
                 transaccionesService.deleteTransaccion(transaction.getId(), user.getEmail());
+            }
+            // Eliminar los tipos de gasto personal
+            List<PersonalTipoGasto> personalTipoGastos = personalTipoGastoService
+                    .getPersonalTipoGastos(user.getEmail());
+            for (PersonalTipoGasto tipoGasto : personalTipoGastos) {
+                personalTipoGastoService.deletePersonalTipoGasto(tipoGasto.getId());
             }
             List<PasswordResetToken> tokens = passwordResetTokenService.getTokensByUser(user);
             for (PasswordResetToken token : tokens) {

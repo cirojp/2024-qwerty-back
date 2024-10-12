@@ -46,21 +46,16 @@ public class PersonalTipoGastoController {
     // Endpoint para eliminar un PersonalTipoGasto por nombre
     @PostMapping("/eliminar")
     public ResponseEntity<Void> deletePersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
-        try {
-            String email = authentication.getName();
-            nombre = nombre.trim().replaceAll("\"", "");
-            List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
-            for (Transacciones transaccion : transaccionesUser) {
-                if (transaccion.getTipoGasto().equals(nombre)) {
-                    transaccion.setTipoGasto("Otros");
-                    transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
-                }
+        String email = authentication.getName();
+        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        for (Transacciones transaccion : transaccionesUser) {
+            if (transaccion.getTipoGasto().equals(nombre)) {
+                transaccion.setTipoGasto("Otros");
+                transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
             }
-            personalTipoGastoService.deletePersonalTipoGastoByName(email, nombre);
-            return ResponseEntity.ok().build();
-        } catch (TransaccionNotFoundException e) {
-            return ResponseEntity.notFound().build();
         }
+        personalTipoGastoService.deletePersonalTipoGastoByName(email, nombre);
+        return ResponseEntity.ok().build();
     }
 
     // Clase interna para manejar los datos de edición (nombre actual y nuevo)

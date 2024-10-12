@@ -31,5 +31,19 @@ public class PersonalTipoGastoService {
         personalTipoGastoRepository.deleteById(id);
     }
     
-    // si dsps necesitamos, agregamos editar
+    public PersonalTipoGasto updatePersonalTipoGasto(String email, String nombreActual, String nombreNuevo) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        PersonalTipoGasto tipoGasto = personalTipoGastoRepository.findByUserAndNombre(user, nombreActual)
+                .orElseThrow(() -> new RuntimeException("Tipo de gasto no encontrado"));
+        tipoGasto.setNombre(nombreNuevo);
+        return personalTipoGastoRepository.save(tipoGasto);
+    }
+
+    // Método para eliminar un PersonalTipoGasto basado en el nombre
+    public void deletePersonalTipoGastoByName(String email, String nombre) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        PersonalTipoGasto tipoGasto = personalTipoGastoRepository.findByUserAndNombre(user, nombre)
+                .orElseThrow(() -> new RuntimeException("Tipo de gasto no encontrado"));
+        personalTipoGastoRepository.delete(tipoGasto);
+    }
 }

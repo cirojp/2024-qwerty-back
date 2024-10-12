@@ -48,8 +48,10 @@ public class PersonalTipoGastoController {
     public ResponseEntity<Void> deletePersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
         String email = authentication.getName();
         List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        nombre = nombre.trim().replaceAll("\"", "");
         for (Transacciones transaccion : transaccionesUser) {
-            if (transaccion.getTipoGasto().equals(nombre)) {
+            String tipoGasto = transaccion.getTipoGasto();
+            if (tipoGasto != null && tipoGasto.equals(nombre)) {
                 transaccion.setTipoGasto("Otros");
                 transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
             }

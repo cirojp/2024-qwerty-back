@@ -1,6 +1,7 @@
 package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,8 @@ public class PersonalTipoGastoController {
 
     @Autowired
     private PersonalTipoGastoService personalTipoGastoService;
+    @Autowired
+    private TransaccionesController transaccionesController;
 
     @GetMapping
     public List<PersonalTipoGasto> getPersonalTipoGastos(Authentication authentication) {
@@ -32,20 +35,32 @@ public class PersonalTipoGastoController {
     }
 
     @PostMapping("/editar")
-    public PersonalTipoGasto updatePersonalTipoGasto(@RequestBody Map<String, String> requestBody, Authentication authentication) {
+    public PersonalTipoGasto updatePersonalTipoGasto(@RequestBody Map<String, String> requestBody,
+            Authentication authentication) {
         String email = authentication.getName();
         String nombreActual = requestBody.get("nombreActual").trim().replaceAll("\"", "");
         String nombreNuevo = requestBody.get("nombreNuevo").trim().replaceAll("\"", "");
         return personalTipoGastoService.updatePersonalTipoGasto(email, nombreActual, nombreNuevo);
     }
 
-
     // Endpoint para eliminar un PersonalTipoGasto por nombre
     @PostMapping("/eliminar")
-    public void deletePersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
-        String email = authentication.getName();
-        nombre = nombre.trim().replaceAll("\"", "");
-        personalTipoGastoService.deletePersonalTipoGastoByName(email, nombre);
+    public ResponseEntity<Void> deletePersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            nombre = nombre.trim().replaceAll("\"", "");
+            List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+            for (Transacciones transaccion : transaccionesUser) {
+                if (transaccion.getTipoGasto().equals(nombre)) {
+                    transaccion.setTipoGasto("Otros");
+                    transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+                }
+            }
+            personalTipoGastoService.deletePersonalTipoGastoByName(email, nombre);
+            return ResponseEntity.ok().build();
+        } catch (TransaccionNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Clase interna para manejar los datos de edición (nombre actual y nuevo)

@@ -6,12 +6,20 @@ public class TransaccionRequest {
     private Double valor;
     private String email;
     private String motivo;
-    private String id_reserva;  // Nuevo campo id_reserva
-    private LocalDate fecha;    // Fecha por defecto al crear
+    private String id_reserva; // Nuevo campo id_reserva
+    private LocalDate fecha; // Fecha por defecto al crear
 
     // Constructor
     public TransaccionRequest() {
         this.fecha = LocalDate.now(); // Establecer fecha actual por defecto
+    }
+
+    public TransaccionRequest(Double valor, String email, String motivo, LocalDate fecha) {
+        this.valor = valor;
+        this.email = email;
+        this.motivo = motivo;
+        this.fecha = fecha;
+        this.id_reserva = "0";
     }
 
     // Getters y Setters

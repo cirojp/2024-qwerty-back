@@ -48,6 +48,22 @@ public class TransaccionesController {
         return transaccionesService.createTransaccion(transaccion, email);
     }
 
+    @PostMapping("/crearPago/{mail}")
+    public Transacciones createPago(@PathVariable String mail, @RequestBody Transacciones transaccion, Authentication authentication) {
+        String email = authentication.getName();
+        transaccionesService.createTransaccion(transaccion, email);
+        Transacciones transaccion2 = new Transacciones();
+        transaccion2.setCategoria("Ingreso de Dinero");
+        transaccion2.setFecha(transaccion.getFecha());
+        transaccion2.setMotivo(transaccion.getMotivo());
+        transaccion2.setTipoGasto("Tarjeta de Debito");
+        transaccion2.setUser(userService.findByEmail(mail));
+        transaccion2.setValor(transaccion.getValor());
+        return transaccionesService.createTransaccion(transaccion, email);
+    }
+
+
+
     @GetMapping("/{id}")
     public Optional<Transacciones> getTransaccionById(@PathVariable Long id) {
         return transaccionesService.getTransaccionById(id);

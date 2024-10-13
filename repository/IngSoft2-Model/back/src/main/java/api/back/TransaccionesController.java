@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,13 +19,15 @@ public class TransaccionesController {
 
     private final TransaccionesService transaccionesService;
     private final UserService userService;
+    private final TransaccionesPendientesService transaccionesPendientesService;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    public TransaccionesController(TransaccionesService transaccionesService, UserService userService) {
+    public TransaccionesController(TransaccionesService transaccionesService, UserService userService, TransaccionesPendientesService transaccionesPendientesService) {
         this.transaccionesService = transaccionesService;
         this.userService = userService;
+        this.transaccionesPendientesService = transaccionesPendientesService;
     }
 
     @GetMapping("/user")
@@ -98,6 +102,38 @@ public class TransaccionesController {
         List<Transacciones> transacciones = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
         System.out.println(user.getId() + "       este es el id");
         return transacciones;
+    }
+
+    @PostMapping("/cobro")
+    public ResponseEntity<TransaccionesPendientes> generarCobro(
+            @RequestBody Map<String, Object> payload,
+            Authentication authentication) {
+
+        String emailCobrador = authentication.getName(); // Email del usuario autenticado
+        String emailDestinatario = (String) payload.get("emailDestinatario");
+        Double valor = Double.valueOf(payload.get("valor").toString());
+        String motivo = (String) payload.get("motivo");
+
+        // Buscar el usuario destinatario por email
+        User destinatario = userService.findByEmail(emailDestinatario);
+        if (destinatario == null) {
+            return ResponseEntity.badRequest().body(null); // Si no existe el destinatario, devuelve un error.
+        }
+
+        // Crear la transacción pendiente
+        TransaccionesPendientes nuevaTransaccion = new TransaccionesPendientes(
+                valor,
+                destinatario,
+                motivo,
+                null,
+                emailCobrador, // Email del cobrador (quien está autenticado)
+                LocalDate.now() // Fecha actual
+        );
+
+        // Guardar la transacción pendiente
+        TransaccionesPendientes transaccionGuardada = transaccionesPendientesService.createTransaccionPendiente(nuevaTransaccion);
+
+        return ResponseEntity.ok(transaccionGuardada); // Devuelve la transacción creada
     }
 
 

@@ -30,4 +30,7 @@ public class TransaccionesPendientesService {
             throw new TransaccionNotFoundException("Transacción pendiente no encontrada para el usuario");
         }
     }
+    public TransaccionesPendientes createTransaccionPendiente(TransaccionesPendientes transaccion) {
+        return transaccionesPendientesRepository.save(transaccion);
+    }
 }

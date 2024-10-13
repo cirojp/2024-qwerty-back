@@ -26,27 +26,25 @@ public class TransaccionesPendientes {
     private String motivo;
     private String id_reserva;
     private LocalDate fecha;
-    private String mailDeCobrador; // El usuario que envía el cobro
+    private String sentByEmail;
 
-    
 
-    public String getMailDeCobrador() {
-        return mailDeCobrador;
+    public String getSentByEmail() {
+        return sentByEmail;
     }
 
-    public void setMailDeCobrador(String mailDeCobrador) {
-        this.mailDeCobrador = mailDeCobrador;
+    public void setSentByEmail(String sentByEmail) {
+        this.sentByEmail = sentByEmail;
     }
 
     public TransaccionesPendientes() {
     }
 
-    public TransaccionesPendientes(Double valor, User user, String motivo, String id_reserva, String mailDeCobrador, LocalDate fecha) {
+    public TransaccionesPendientes(Double valor, User user, String motivo, String id_reserva, LocalDate fecha) {
         this.valor = valor;
         this.user = user;
         this.motivo = motivo;
         this.id_reserva = id_reserva;
-        this.mailDeCobrador = mailDeCobrador;
         this.fecha = fecha;
     }
 

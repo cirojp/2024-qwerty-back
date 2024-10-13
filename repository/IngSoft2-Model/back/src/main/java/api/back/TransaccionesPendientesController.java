@@ -103,7 +103,7 @@ public class TransaccionesPendientesController {
         return ResponseEntity.ok(response.getBody());
     }
 
-    /*@PostMapping("/askPayUser")
+    @PostMapping("/askPayUser")
     public ResponseEntity<Void> postPaymentToUser(@RequestBody TransaccionRequest transaccion,
             Authentication authentication) {
         String email = authentication.getName();
@@ -122,6 +122,6 @@ public class TransaccionesPendientesController {
         } else {
             return ResponseEntity.badRequest().build();
         }
-    }*/
+    }
 
 }

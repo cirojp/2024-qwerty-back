@@ -22,7 +22,7 @@ public class ExternalApiController {
     private TransaccionesPendientesService transaccionesPendientesService;
 
     // Endpoint para recibir la transacción pendiente en formato JSON
-    /*@PostMapping("/sendTransaccion")
+    @PostMapping("/sendTransaccion")
     public ResponseEntity<String> postPendingTransaccion(@RequestBody TransaccionRequest request) {
         User usuario = userService.findByEmail(request.getEmail());
         if (usuario != null) {
@@ -44,7 +44,7 @@ public class ExternalApiController {
         } else {
             return ResponseEntity.badRequest().body("Usuario no registrado.");
         }
-    }*/
+    }
 
     @GetMapping("/exists/{email}")
     public ResponseEntity<Boolean> checkUserExists(@PathVariable String email) {

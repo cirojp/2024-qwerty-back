@@ -28,7 +28,6 @@ public class TransaccionesPendientes {
     private LocalDate fecha;
     private String sentByEmail;
 
-
     public String getSentByEmail() {
         return sentByEmail;
     }
@@ -52,7 +51,7 @@ public class TransaccionesPendientes {
         this.valor = valor;
         this.user = user;
         this.motivo = motivo;
-        this.id_reserva = "0";
+        this.id_reserva = null;
         this.fecha = fecha;
     }
 

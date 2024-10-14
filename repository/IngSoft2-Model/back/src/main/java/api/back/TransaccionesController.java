@@ -18,13 +18,16 @@ public class TransaccionesController {
 
     private final TransaccionesService transaccionesService;
     private final UserService userService;
+    private final TransaccionesPendientesService transaccionesPendientesService;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    public TransaccionesController(TransaccionesService transaccionesService, UserService userService) {
+    public TransaccionesController(TransaccionesService transaccionesService, UserService userService,
+            TransaccionesPendientesService transaccionesPendientesService) {
         this.transaccionesService = transaccionesService;
         this.userService = userService;
+        this.transaccionesPendientesService = transaccionesPendientesService;
     }
 
     @GetMapping("/user")
@@ -61,8 +64,33 @@ public class TransaccionesController {
         transaccion2.setUser(userService.findByEmail(mail));
         transaccion2.setValor(transaccion.getValor());
         transaccionesService.createTransaccion(transaccion2, mail);
+        TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
+                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha());
+        transaccionesPendientesService.save(cobroPendiente);
         // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
         return transaccionesService.createTransaccion(transaccion, email); // Transaccion de quien acepta el cobro
+    }
+
+    @PostMapping("/enviarPago/{mail}")
+    public Transacciones sendPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
+            Authentication authentication) {
+        // mail es el email de quien recibe el cobro
+        String email = authentication.getName(); // Email de quien recibe el gasto
+        transaccion.setUser(userService.findByEmail(email));
+        Transacciones transaccion2 = new Transacciones();
+        transaccion2.setCategoria("Ingreso de Dinero");
+        transaccion2.setFecha(transaccion.getFecha());
+        transaccion2.setMotivo(transaccion.getMotivo());
+        transaccion2.setTipoGasto("Tarjeta de Debito");
+        transaccion2.setUser(userService.findByEmail(mail));
+        transaccion2.setValor(transaccion.getValor());
+        transaccionesService.createTransaccion(transaccion2, mail);
+        TransaccionesPendientes pendienteCobro = new TransaccionesPendientes(transaccion.getValor(),
+                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha());
+        pendienteCobro.setSentByEmail(email);
+        transaccionesPendientesService.save(pendienteCobro);
+        // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
+        return transaccionesService.createTransaccion(transaccion, email); // Transaccion de quien realiza el pago
     }
 
     @GetMapping("/{id}")

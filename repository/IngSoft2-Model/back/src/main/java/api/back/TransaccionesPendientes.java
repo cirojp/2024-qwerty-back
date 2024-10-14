@@ -28,14 +28,6 @@ public class TransaccionesPendientes {
     private LocalDate fecha;
     private String sentByEmail;
 
-    public String getSentByEmail() {
-        return sentByEmail;
-    }
-
-    public void setSentByEmail(String sentByEmail) {
-        this.sentByEmail = sentByEmail;
-    }
-
     public TransaccionesPendientes() {
     }
 
@@ -53,6 +45,14 @@ public class TransaccionesPendientes {
         this.motivo = motivo;
         this.id_reserva = null;
         this.fecha = fecha;
+    }
+
+    public String getSentByEmail() {
+        return sentByEmail;
+    }
+
+    public void setSentByEmail(String sentByEmail) {
+        this.sentByEmail = sentByEmail;
     }
 
     public Long getId() {

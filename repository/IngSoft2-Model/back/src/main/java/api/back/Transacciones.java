@@ -22,28 +22,12 @@ public class Transacciones {
     private String categoria;
     private String tipoGasto;
 
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // Relación con la entidad User
     // private Calendar fecha;
 
     private LocalDate fecha;
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
 
     // Constructor por defecto
     public Transacciones() {
@@ -57,6 +41,22 @@ public class Transacciones {
         this.fecha = fecha;
         this.categoria = categoria;
         this.tipoGasto = tipoGasto;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public Long getId() {
@@ -90,9 +90,11 @@ public class Transacciones {
     public void setUser(User user) {
         this.user = user;
     }
+
     public String getTipoGasto() {
         return tipoGasto;
     }
+
     public void setTipoGasto(String tipoGasto) {
         this.tipoGasto = tipoGasto;
     }

@@ -14,12 +14,12 @@ public class TransaccionRequest {
         this.fecha = LocalDate.now(); // Establecer fecha actual por defecto
     }
 
-    public TransaccionRequest(Double valor, String email, String motivo, LocalDate fecha) {
+    public TransaccionRequest(Double valor, String email, String motivo, String id_reserva, LocalDate fecha) {
         this.valor = valor;
         this.email = email;
         this.motivo = motivo;
         this.fecha = fecha;
-        this.id_reserva = "0";
+        this.id_reserva = id_reserva;
     }
 
     // Getters y Setters

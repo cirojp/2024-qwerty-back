@@ -40,6 +40,14 @@ public class PersonalTipoGastoController {
         String email = authentication.getName();
         String nombreActual = requestBody.get("nombreActual").trim().replaceAll("\"", "");
         String nombreNuevo = requestBody.get("nombreNuevo").trim().replaceAll("\"", "");
+        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        for (Transacciones transaccion : transaccionesUser) {
+            String tipoGasto = transaccion.getTipoGasto();
+            if (tipoGasto != null && tipoGasto.equals(nombreActual)) {
+                transaccion.setTipoGasto(nombreNuevo);
+                transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+            }
+        }
         return personalTipoGastoService.updatePersonalTipoGasto(email, nombreActual, nombreNuevo);
     }
 

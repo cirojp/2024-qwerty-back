@@ -86,6 +86,13 @@ public class PersonalCategoriaController {
                     }
                 }
                 if (found) {
+                    List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+                    for (Transacciones transaccion : transaccionesUser) {
+                        if (transaccion.getCategoria().equals(nombre)) {
+                            transaccion.setCategoria(newCategoria.getNombre());
+                            transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+                        }
+                    }
                     return ResponseEntity.ok().build();
                 } else {
                     return ResponseEntity.notFound().build();

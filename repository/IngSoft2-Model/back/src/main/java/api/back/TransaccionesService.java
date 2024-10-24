@@ -69,6 +69,7 @@ public class TransaccionesService {
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
         transaccion.setCategoria(transaccionActualizada.getCategoria());
+        transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }
@@ -77,5 +78,53 @@ public class TransaccionesService {
         return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
 
+    public List<Transacciones> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        if (anio == null && mes != null) {
+            anio = 2024;
+        }
+        // Si la categoría no es null o "Todas" y anio y mes son null
+        if (categoria != null && !categoria.equals("Todas") && anio == null && mes == null) {
+            return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
+        }
+        // Si la categoría no es null ni "Todas" y además mes o anio no son null
+        else if (categoria != null && !categoria.equals("Todas") && (anio != null || mes != null)) {
+            if (anio != null && mes != null) {
+                // Si ambos son proporcionados, calcula el rango de fechas
+                startDate = LocalDate.of(anio, mes, 1);
+                endDate = startDate.plusMonths(1).minusDays(1);
+                return transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
+            } else if (anio != null) {
+                // Si solo el año es proporcionado, establece el rango de fechas para todo el año
+                startDate = LocalDate.of(anio, 1, 1);
+                endDate = LocalDate.of(anio, 12, 31);
+                return transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
+            } else if (mes != null) {
+                // Si solo el mes es proporcionado, debes decidir cómo manejarlo
+                // Aquí puedes decidir no realizar ninguna consulta o lanzar una excepción
+            }
+        }
+        // Si la categoría es null o "Todas" pero anio o mes no son null
+        else if ((categoria == null || categoria.equals("Todas")) && (anio != null || mes != null)) {
+            if (anio != null && mes != null) {
+                // Si ambos son proporcionados, calcula el rango de fechas
+                startDate = LocalDate.of(anio, mes, 1);
+                endDate = startDate.plusMonths(1).minusDays(1);
+                return transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
+            } else if (anio != null) {
+                // Si solo el año es proporcionado, establece el rango de fechas para todo el año
+                startDate = LocalDate.of(anio, 1, 1);
+                endDate = LocalDate.of(anio, 12, 31);
+                return transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
+            } else if (mes != null) {
+                // Si solo el mes es proporcionado, puedes decidir no realizar ninguna consulta o lanzar una excepción
+            }
+        }
+        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
+    
+        // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
+        }
+    
 
 }

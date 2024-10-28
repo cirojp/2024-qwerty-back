@@ -1,6 +1,7 @@
 package api.back;
 
 import jakarta.persistence.*;
+import java.util.Map;
 
 @Entity
 @Table(name = "budgets")
@@ -10,18 +11,30 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String totalBudget;
+    private Integer totalBudget;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_budgets_id", referencedColumnName = "id")
-    private CategoryBudgets categoryBudgets;
+    @ElementCollection
+    @CollectionTable(name = "category_budgets", joinColumns = @JoinColumn(name = "budget_id"))
+    @MapKeyColumn(name = "category")
+    @Column(name = "budget")
+    private Map<String, Integer> categoryBudgets;
 
-    public Budget() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user; // Relación con la entidad User
 
-    public Budget(String totalBudget, CategoryBudgets categoryBudgets) {
+    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, User user) {
         this.totalBudget = totalBudget;
         this.categoryBudgets = categoryBudgets;
+        this.user = user;
+    }
+
+    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets) {
+        this.totalBudget = totalBudget;
+        this.categoryBudgets = categoryBudgets;
+    }
+
+    public Budget() {
     }
 
     public Long getId() {
@@ -32,19 +45,19 @@ public class Budget {
         this.id = id;
     }
 
-    public String getTotalBudget() {
+    public Integer getTotalBudget() {
         return totalBudget;
     }
 
-    public void setTotalBudget(String totalBudget) {
+    public void setTotalBudget(Integer totalBudget) {
         this.totalBudget = totalBudget;
     }
 
-    public CategoryBudgets getCategoryBudgets() {
+    public Map<String, Integer> getCategoryBudgets() {
         return categoryBudgets;
     }
 
-    public void setCategoryBudgets(CategoryBudgets categoryBudgets) {
+    public void setCategoryBudgets(Map<String, Integer> categoryBudgets) {
         this.categoryBudgets = categoryBudgets;
     }
 
@@ -52,8 +65,16 @@ public class Budget {
     public String toString() {
         return "Budget{" +
                 "id=" + id +
-                ", totalBudget='" + totalBudget + '\'' +
+                ", totalBudget=" + totalBudget +
                 ", categoryBudgets=" + categoryBudgets +
                 '}';
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

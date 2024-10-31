@@ -46,6 +46,7 @@ public class GrupoController {
             // Establecer el correo del creador como sentByEmail
             transaccionPendiente.setSentByEmail(creadorEmail);
             transaccionPendiente.setGrupo_id(grupo.getId());
+            transaccionesPendientesService.save(transaccionPendiente);
         }
         return grupo;
     }

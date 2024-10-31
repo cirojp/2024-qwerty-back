@@ -1,6 +1,5 @@
 package api.back;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class GrupoService {
     }
 
     public List<Grupo> obtenerGruposPorUsuario(String usuarioEmail) {
-        // Implementa la lógica para obtener grupos por el email del usuario
-        return grupoRepository.findByMiembrosEmail(usuarioEmail); // Asegúrate de tener este método en tu repositorio
+        return grupoRepository.findByUsuariosEmail(usuarioEmail); 
     }
 }

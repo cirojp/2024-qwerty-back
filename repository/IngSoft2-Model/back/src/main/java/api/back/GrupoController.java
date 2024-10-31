@@ -1,6 +1,7 @@
 package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,9 +42,10 @@ public class GrupoController {
         for (String email : miembrosEmails) {
             User usuario = userService.findByEmail(email);
             LocalDate fechaHoy = LocalDate.now();
-            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, "", "Grupo", fechaHoy);
+            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy);
             // Establecer el correo del creador como sentByEmail
             transaccionPendiente.setSentByEmail(creadorEmail);
+            transaccionPendiente.setGrupo_id(grupo.getId());
         }
         return grupo;
     }
@@ -53,4 +55,30 @@ public class GrupoController {
         String usuarioEmail = authentication.getName(); // Email del usuario autenticado
         return grupoService.obtenerGruposPorUsuario(usuarioEmail);
     }
+
+
+    @PostMapping("/agregar-usuario")
+    public ResponseEntity<String> agregarUsuarioAGrupo(@RequestBody Map<String, Object> payload, Authentication authentication) {
+        Long grupoId = ((Number) payload.get("grupo_id")).longValue(); // Obtener el ID del grupo desde el JSON
+        String usuarioEmail = authentication.getName(); // Obtener el email del usuario autenticado
+        
+        // Buscar el usuario autenticado y el grupo por ID
+        User usuario = userService.findByEmail(usuarioEmail);
+        Grupo grupo = grupoService.findById(grupoId);
+        
+        // Validar si el grupo existe y si el usuario ya está en el grupo
+        if (grupo == null) {
+            return ResponseEntity.badRequest().body("Grupo no encontrado.");
+        }
+        if (grupo.getUsuarios().contains(usuario)) {
+            return ResponseEntity.badRequest().body("El usuario ya es miembro del grupo.");
+        }
+        
+        // Agregar el usuario al grupo y guardar los cambios
+        grupo.getUsuarios().add(usuario);
+        grupoService.save(grupo);
+        
+        return ResponseEntity.ok("Usuario agregado al grupo exitosamente.");
+    }
+
 }

@@ -29,4 +29,10 @@ public class GrupoController {
 
         return grupoService.crearGrupo(nombre, miembrosEmails, creadorEmail);
     }
+
+    @GetMapping("/mis-grupos") // Nuevo endpoint para obtener grupos del usuario
+    public List<Grupo> obtenerGruposDelUsuario(Authentication authentication) {
+        String usuarioEmail = authentication.getName(); // Email del usuario autenticado
+        return grupoService.obtenerGruposPorUsuario(usuarioEmail); // Llama al servicio para obtener grupos
+    }
 }

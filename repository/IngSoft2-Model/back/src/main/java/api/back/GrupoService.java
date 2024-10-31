@@ -31,4 +31,9 @@ public class GrupoService {
 
         return grupoRepository.save(grupo);
     }
+
+    public List<Grupo> obtenerGruposPorUsuario(String usuarioEmail) {
+        // Implementa la lógica para obtener grupos por el email del usuario
+        return grupoRepository.findByMiembrosEmail(usuarioEmail); // Asegúrate de tener este método en tu repositorio
+    }
 }

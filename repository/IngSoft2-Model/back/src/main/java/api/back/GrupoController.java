@@ -20,6 +20,9 @@ public class GrupoController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private GrupoTransaccionesService grupoTransaccionesService;
 
     @Autowired
     private TransaccionesPendientesService transaccionesPendientesService; // Asegúrate de tener este servicio inyectado
@@ -82,4 +85,32 @@ public class GrupoController {
         return ResponseEntity.ok("Usuario agregado al grupo exitosamente.");
     }
 
+    @PostMapping("/transaccion")
+    public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
+        // Extrae los datos del JSON
+        Double valor = (Double) payload.get("valor");
+        String motivo = (String) payload.get("motivo");
+        LocalDate fecha = LocalDate.parse((String) payload.get("fecha")); // Asegúrate de que la fecha esté en formato ISO
+        String categoria = (String) payload.get("categoria");
+        String tipoGasto = (String) payload.get("tipoGasto");
+        Long grupoId = ((Number) payload.get("grupo")).longValue(); // Obtén el ID del grupo desde el JSON
+
+        // Busca el grupo por ID
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.badRequest().body(null); // Grupo no encontrado
+        }
+
+        // Crea una nueva transacción grupal
+        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
+        grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
+
+        // Agrega la transacción a la lista de transacciones del grupo
+        grupo.getTransacciones().add(grupoTransaccion);
+
+        // Guarda la transacción
+        GrupoTransacciones nuevaTransaccion = grupoTransaccionesService.save(grupoTransaccion);
+        
+        return ResponseEntity.ok(nuevaTransaccion); // Devuelve la nueva transacción
+    }
 }

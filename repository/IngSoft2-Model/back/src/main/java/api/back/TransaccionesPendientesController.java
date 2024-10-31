@@ -108,7 +108,6 @@ public class TransaccionesPendientesController {
             Authentication authentication) {
         String email = authentication.getName();
         User usuario = userService.findByEmail(transaccion.getEmail());
-        System.out.println("USER: " + usuario);
         if (usuario != null) {
             TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
                     transaccion.getValor(),

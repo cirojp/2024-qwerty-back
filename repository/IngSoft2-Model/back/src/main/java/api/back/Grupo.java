@@ -2,6 +2,7 @@ package api.back;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Entity
@@ -28,6 +29,13 @@ public class Grupo {
     // Relación de uno a muchos con GrupoTransacciones
     @OneToMany(mappedBy = "grupo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrupoTransacciones> transacciones;
+
+    public Grupo(String nombre, User creadorGrupo) {
+        this.nombre = nombre;
+        this.usuarios = new ArrayList<>();
+        this.transacciones = new ArrayList<>();
+        this.usuarios.add(creadorGrupo);
+    }
 
     public Grupo() {
         this.usuarios = new ArrayList<>();

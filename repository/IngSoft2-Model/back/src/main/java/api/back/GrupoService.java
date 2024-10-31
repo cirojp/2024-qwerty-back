@@ -14,19 +14,9 @@ public class GrupoService {
     @Autowired
     private UserService userService;
 
-    public Grupo crearGrupo(String nombre, List<String> miembrosEmails, String creadorEmail) {
-        Grupo grupo = new Grupo();
-        grupo.setNombre(nombre);
-        grupo.setEstado(true); // Puedes definir el estado inicial como abierto
-
-        // Agregar creador y miembros
-        User creador = userService.findByEmail(creadorEmail);
-        grupo.getUsuarios().add(creador); // Agregar al creador al grupo
-
-        for (String email : miembrosEmails) {
-            User usuario = userService.findByEmail(email);
-            grupo.getUsuarios().add(usuario);
-        }
+    public Grupo crearGrupo(String nombre, User creadorGrupo) {
+        Grupo grupo = new Grupo(nombre, creadorGrupo);
+        grupo.setEstado(true); // defino el estado inicial como abierto
 
         return grupoRepository.save(grupo);
     }

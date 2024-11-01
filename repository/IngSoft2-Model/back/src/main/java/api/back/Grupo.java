@@ -2,6 +2,9 @@ package api.back;
 
 import jakarta.persistence.*;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -24,10 +27,12 @@ public class Grupo {
         joinColumns = @JoinColumn(name = "grupo_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonIgnore
     private List<User> usuarios;
 
     // Relación de uno a muchos con GrupoTransacciones
     @OneToMany(mappedBy = "grupo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<GrupoTransacciones> transacciones;
 
     public Grupo(String nombre, User creadorGrupo) {

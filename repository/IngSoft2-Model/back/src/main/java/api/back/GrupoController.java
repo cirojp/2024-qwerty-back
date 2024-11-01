@@ -128,5 +128,17 @@ public class GrupoController {
         return ResponseEntity.ok(nuevaTransaccion); // Devuelve la nueva transacción
     }
 
+    @GetMapping("/{grupoId}/transacciones")
+    public ResponseEntity<List<GrupoTransacciones>> obtenerTransaccionesPorGrupo(@PathVariable Long grupoId) {
+        // Busca el grupo por su ID
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList()); // Retorna 404 si el grupo no existe
+        }
+        // Obtiene las transacciones asociadas al grupo
+        List<GrupoTransacciones> transacciones = grupo.getTransacciones();
+        return ResponseEntity.ok(transacciones); // Retorna la lista de transacciones
+    }
+
 
 }

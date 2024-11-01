@@ -88,52 +88,45 @@ public class GrupoController {
     }
 
     @PostMapping("/transaccion")
-public ResponseEntity<?> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
-    Double valor;
-    try {
+    public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
+        // Intenta convertir el valor a Double (si es String, convierte)
+        Double valor;
         Object valorObj = payload.get("valor");
         if (valorObj instanceof String) {
             valor = Double.parseDouble((String) valorObj);
         } else if (valorObj instanceof Number) {
             valor = ((Number) valorObj).doubleValue();
         } else {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Valor no válido"));
+            return ResponseEntity.badRequest().body(null); // Valor no válido
         }
-    } catch (NumberFormatException e) {
-        return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Valor no es un número válido"));
-    }
-
-    try {
+    
         // Extrae los demás datos del JSON
         String motivo = (String) payload.get("motivo");
-        LocalDate fecha = LocalDate.parse((String) payload.get("fecha"));
+        LocalDate fecha = LocalDate.parse((String) payload.get("fecha")); // Asegúrate de que la fecha esté en formato ISO
         String categoria = (String) payload.get("categoria");
         String tipoGasto = (String) payload.get("tipoGasto");
-
-        // Convierte el valor de grupo a Long
-        Long grupoId = ((Number) payload.get("grupo")).longValue();
-
+    
+        // Convierte el valor de grupo a Long, similar a como hiciste antes
+        Long grupoId = ((Number) payload.get("grupo")).longValue(); // Obtén el ID del grupo desde el JSON
+    
         // Busca el grupo por ID
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Grupo no encontrado"));
+            return ResponseEntity.badRequest().body(null); // Grupo no encontrado
         }
-
-        // Crea y guarda la transacción
+    
+        // Crea una nueva transacción grupal
         GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
-        grupoTransaccion.setGrupo(grupo);
+        grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
+    
+        // Agrega la transacción a la lista de transacciones del grupo
         grupo.getTransacciones().add(grupoTransaccion);
-
+    
+        // Guarda la transacción
         GrupoTransacciones nuevaTransaccion = grupoTransaccionesService.save(grupoTransaccion);
-        
-        return ResponseEntity.ok(nuevaTransaccion); // Devuelve la transacción creada
-
-    } catch (Exception e) {
-        // Captura cualquier otro error y devuelve un mensaje genérico
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(Collections.singletonMap("error", "Error procesando la solicitud"));
+    
+        return ResponseEntity.ok(nuevaTransaccion); // Devuelve la nueva transacción
     }
-}
 
 
 }

@@ -1,12 +1,14 @@
 package api.back;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate; // Importa LocalDate
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -86,44 +88,52 @@ public class GrupoController {
     }
 
     @PostMapping("/transaccion")
-public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
-    // Intenta convertir el valor a Double (si es String, convierte)
+public ResponseEntity<?> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
     Double valor;
-    Object valorObj = payload.get("valor");
-    if (valorObj instanceof String) {
-        valor = Double.parseDouble((String) valorObj);
-    } else if (valorObj instanceof Number) {
-        valor = ((Number) valorObj).doubleValue();
-    } else {
-        return ResponseEntity.badRequest().body(null); // Valor no válido
+    try {
+        Object valorObj = payload.get("valor");
+        if (valorObj instanceof String) {
+            valor = Double.parseDouble((String) valorObj);
+        } else if (valorObj instanceof Number) {
+            valor = ((Number) valorObj).doubleValue();
+        } else {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Valor no válido"));
+        }
+    } catch (NumberFormatException e) {
+        return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Valor no es un número válido"));
     }
 
-    // Extrae los demás datos del JSON
-    String motivo = (String) payload.get("motivo");
-    LocalDate fecha = LocalDate.parse((String) payload.get("fecha")); // Asegúrate de que la fecha esté en formato ISO
-    String categoria = (String) payload.get("categoria");
-    String tipoGasto = (String) payload.get("tipoGasto");
+    try {
+        // Extrae los demás datos del JSON
+        String motivo = (String) payload.get("motivo");
+        LocalDate fecha = LocalDate.parse((String) payload.get("fecha"));
+        String categoria = (String) payload.get("categoria");
+        String tipoGasto = (String) payload.get("tipoGasto");
 
-    // Convierte el valor de grupo a Long, similar a como hiciste antes
-    Long grupoId = ((Number) payload.get("grupo")).longValue(); // Obtén el ID del grupo desde el JSON
+        // Convierte el valor de grupo a Long
+        Long grupoId = ((Number) payload.get("grupo")).longValue();
 
-    // Busca el grupo por ID
-    Grupo grupo = grupoService.findById(grupoId);
-    if (grupo == null) {
-        return ResponseEntity.badRequest().body(null); // Grupo no encontrado
+        // Busca el grupo por ID
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Grupo no encontrado"));
+        }
+
+        // Crea y guarda la transacción
+        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
+        grupoTransaccion.setGrupo(grupo);
+        grupo.getTransacciones().add(grupoTransaccion);
+
+        GrupoTransacciones nuevaTransaccion = grupoTransaccionesService.save(grupoTransaccion);
+        
+        return ResponseEntity.ok(nuevaTransaccion); // Devuelve la transacción creada
+
+    } catch (Exception e) {
+        // Captura cualquier otro error y devuelve un mensaje genérico
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body(Collections.singletonMap("error", "Error procesando la solicitud"));
     }
-
-    // Crea una nueva transacción grupal
-    GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
-    grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
-
-    // Agrega la transacción a la lista de transacciones del grupo
-    grupo.getTransacciones().add(grupoTransaccion);
-
-    // Guarda la transacción
-    GrupoTransacciones nuevaTransaccion = grupoTransaccionesService.save(grupoTransaccion);
-
-    return ResponseEntity.ok(nuevaTransaccion); // Devuelve la nueva transacción
 }
+
 
 }

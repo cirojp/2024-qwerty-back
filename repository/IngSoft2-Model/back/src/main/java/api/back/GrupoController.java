@@ -86,31 +86,44 @@ public class GrupoController {
     }
 
     @PostMapping("/transaccion")
-    public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
-        // Extrae los datos del JSON
-        Double valor = (Double) payload.get("valor");
-        String motivo = (String) payload.get("motivo");
-        LocalDate fecha = LocalDate.parse((String) payload.get("fecha")); // Asegúrate de que la fecha esté en formato ISO
-        String categoria = (String) payload.get("categoria");
-        String tipoGasto = (String) payload.get("tipoGasto");
-        Long grupoId = ((Number) payload.get("grupo")).longValue(); // Obtén el ID del grupo desde el JSON
-
-        // Busca el grupo por ID
-        Grupo grupo = grupoService.findById(grupoId);
-        if (grupo == null) {
-            return ResponseEntity.badRequest().body(null); // Grupo no encontrado
-        }
-
-        // Crea una nueva transacción grupal
-        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
-        grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
-
-        // Agrega la transacción a la lista de transacciones del grupo
-        grupo.getTransacciones().add(grupoTransaccion);
-
-        // Guarda la transacción
-        GrupoTransacciones nuevaTransaccion = grupoTransaccionesService.save(grupoTransaccion);
-        
-        return ResponseEntity.ok(nuevaTransaccion); // Devuelve la nueva transacción
+public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
+    // Intenta convertir el valor a Double (si es String, convierte)
+    Double valor;
+    Object valorObj = payload.get("valor");
+    if (valorObj instanceof String) {
+        valor = Double.parseDouble((String) valorObj);
+    } else if (valorObj instanceof Number) {
+        valor = ((Number) valorObj).doubleValue();
+    } else {
+        return ResponseEntity.badRequest().body(null); // Valor no válido
     }
+
+    // Extrae los demás datos del JSON
+    String motivo = (String) payload.get("motivo");
+    LocalDate fecha = LocalDate.parse((String) payload.get("fecha")); // Asegúrate de que la fecha esté en formato ISO
+    String categoria = (String) payload.get("categoria");
+    String tipoGasto = (String) payload.get("tipoGasto");
+
+    // Convierte el valor de grupo a Long, similar a como hiciste antes
+    Long grupoId = ((Number) payload.get("grupo")).longValue(); // Obtén el ID del grupo desde el JSON
+
+    // Busca el grupo por ID
+    Grupo grupo = grupoService.findById(grupoId);
+    if (grupo == null) {
+        return ResponseEntity.badRequest().body(null); // Grupo no encontrado
+    }
+
+    // Crea una nueva transacción grupal
+    GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
+    grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
+
+    // Agrega la transacción a la lista de transacciones del grupo
+    grupo.getTransacciones().add(grupoTransaccion);
+
+    // Guarda la transacción
+    GrupoTransacciones nuevaTransaccion = grupoTransaccionesService.save(grupoTransaccion);
+
+    return ResponseEntity.ok(nuevaTransaccion); // Devuelve la nueva transacción
+}
+
 }

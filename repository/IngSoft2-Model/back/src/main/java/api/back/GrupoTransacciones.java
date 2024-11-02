@@ -18,16 +18,13 @@ public class GrupoTransacciones {
     private String tipoGasto;
     private LocalDate fecha;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users")
-    @JsonIgnore
-    private User user;
+    private String user;
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
@@ -39,7 +36,7 @@ public class GrupoTransacciones {
     public GrupoTransacciones() {}
 
     // Constructor con parámetros
-    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, User user) {
+    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, String user) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;

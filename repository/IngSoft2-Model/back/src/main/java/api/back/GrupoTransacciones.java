@@ -3,6 +3,8 @@ package api.back;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "grupo_transacciones")
 public class GrupoTransacciones {
@@ -15,6 +17,10 @@ public class GrupoTransacciones {
     private String categoria;
     private String tipoGasto;
     private LocalDate fecha;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users")
+    @JsonIgnore
     private User user;
 
     public User getUser() {

@@ -141,5 +141,18 @@ public class GrupoController {
         return ResponseEntity.ok(transacciones); // Retorna la lista de transacciones
     }
 
+    @PostMapping("/{grupoId}/cerrar")
+    public ResponseEntity<String> cerrarGrupo(@PathVariable Long grupoId) {
+        // Buscar el grupo por su ID
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+        // Cambiar el estado del grupo a cerrado (false)
+        grupo.setEstado(false);
+        grupoService.save(grupo); 
+        
+        return ResponseEntity.ok("El grupo ha sido cerrado exitosamente.");
+    }
 
 }

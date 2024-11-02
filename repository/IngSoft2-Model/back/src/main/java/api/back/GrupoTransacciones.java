@@ -15,6 +15,15 @@ public class GrupoTransacciones {
     private String categoria;
     private String tipoGasto;
     private LocalDate fecha;
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     // Relación con Grupo
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,12 +33,13 @@ public class GrupoTransacciones {
     public GrupoTransacciones() {}
 
     // Constructor con parámetros
-    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto) {
+    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, User user) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
         this.categoria = categoria;
         this.tipoGasto = tipoGasto;
+        this.user = user;
     }
 
     // Getters y Setters

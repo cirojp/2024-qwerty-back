@@ -99,6 +99,10 @@ public class GrupoController {
         } else {
             return ResponseEntity.badRequest().body(null); // Valor no válido
         }
+        String usuarioEmail = authentication.getName(); // Obtener el email del usuario autenticado
+        
+        // Buscar el usuario autenticado y el grupo por ID
+        User usuario = userService.findByEmail(usuarioEmail);
     
         // Extrae los demás datos del JSON
         String motivo = (String) payload.get("motivo");
@@ -116,7 +120,7 @@ public class GrupoController {
         }
     
         // Crea una nueva transacción grupal
-        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto);
+        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto, usuario);
         grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
     
         // Agrega la transacción a la lista de transacciones del grupo

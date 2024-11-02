@@ -27,6 +27,9 @@ public class GrupoController {
     private GrupoTransaccionesService grupoTransaccionesService;
 
     @Autowired
+    private TransaccionesService transaccionesService;
+
+    @Autowired
     private TransaccionesPendientesService transaccionesPendientesService; // Asegúrate de tener este servicio inyectado
 
     @PostMapping("/crear")
@@ -147,6 +150,34 @@ public class GrupoController {
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+
+        // Sumar todas las transacciones del grupo
+        double totalTransacciones = grupo.getTransacciones().stream()
+        .mapToDouble(GrupoTransacciones::getValor)
+        .sum();
+
+        // Calcular el monto a pagar por cada usuario
+        int cantidadUsuarios = grupo.getUsuarios().size();
+        double montoPorUsuario = totalTransacciones / cantidadUsuarios;
+
+        // Crear una transacción para cada usuario del grupo
+        LocalDate fechaHoy = LocalDate.now();
+        String categoria = "Gasto Grupal";
+        String motivo = grupo.getNombre();
+        String medioDePago = "Efectivo";
+
+        for (User usuario : grupo.getUsuarios()) {
+            Transacciones nuevaTransaccion = new Transacciones();
+            nuevaTransaccion.setValor(montoPorUsuario);
+            nuevaTransaccion.setFecha(fechaHoy);
+            nuevaTransaccion.setCategoria(categoria);
+            nuevaTransaccion.setMotivo(motivo);
+            nuevaTransaccion.setTipoGasto(medioDePago);
+            nuevaTransaccion.setUser(usuario);
+            
+            // Guardar la transacción
+            transaccionesService.createTransaccion(nuevaTransaccion, usuario.getEmail());
         }
         // Cambiar el estado del grupo a cerrado (false)
         grupo.setEstado(false);

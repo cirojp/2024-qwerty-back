@@ -18,14 +18,14 @@ public class GrupoTransacciones {
     private String tipoGasto;
     private LocalDate fecha;
 
-    private String user;
+    private String users;
 
-    public String getUser() {
-        return user;
+    public String getUsers() {
+        return users;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUsers(String users) {
+        this.users = users;
     }
 
     // Relación con Grupo
@@ -36,13 +36,13 @@ public class GrupoTransacciones {
     public GrupoTransacciones() {}
 
     // Constructor con parámetros
-    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, String user) {
+    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, String users) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
         this.categoria = categoria;
         this.tipoGasto = tipoGasto;
-        this.user = user;
+        this.users = users;
     }
 
     // Getters y Setters

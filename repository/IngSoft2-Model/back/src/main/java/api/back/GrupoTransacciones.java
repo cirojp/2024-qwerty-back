@@ -31,6 +31,7 @@ public class GrupoTransacciones {
     // Relación con Grupo
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "grupo_id")
+    @JsonIgnore
     private Grupo grupo;
 
     public GrupoTransacciones() {}

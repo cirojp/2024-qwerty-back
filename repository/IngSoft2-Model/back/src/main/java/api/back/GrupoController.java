@@ -186,4 +186,53 @@ public class GrupoController {
         return ResponseEntity.ok("El grupo ha sido cerrado exitosamente.");
     }
 
+    @DeleteMapping("/transaccion/{transaccionId}")
+    public ResponseEntity<String> eliminarGrupoTransaccion(@PathVariable Long transaccionId) {
+        // Busca la transacción por su ID
+        GrupoTransacciones transaccion = grupoTransaccionesService.findById(transaccionId);
+        if (transaccion == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transacción no encontrada.");
+        }
+
+        // Elimina la transacción
+        grupoTransaccionesService.delete(transaccionId);
+        return ResponseEntity.ok("Transacción eliminada exitosamente.");
+    }
+
+    // Endpoint para editar una transacción grupal
+    @PutMapping("/transaccion/{transaccionId}")
+    public ResponseEntity<GrupoTransacciones> editarGrupoTransaccion(
+        @PathVariable Long transaccionId,
+        @RequestBody Map<String, Object> payload
+    ) {
+        // Busca la transacción por su ID
+        GrupoTransacciones transaccionExistente = grupoTransaccionesService.findById(transaccionId);
+        if (transaccionExistente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Retorna 404 si la transacción no existe
+        }
+
+        // Actualiza los valores de la transacción
+        if (payload.containsKey("valor")) {
+            Double valor = ((Number) payload.get("valor")).doubleValue();
+            transaccionExistente.setValor(valor);
+        }
+        if (payload.containsKey("motivo")) {
+            transaccionExistente.setMotivo((String) payload.get("motivo"));
+        }
+        if (payload.containsKey("fecha")) {
+            LocalDate fecha = LocalDate.parse((String) payload.get("fecha"));
+            transaccionExistente.setFecha(fecha);
+        }
+        if (payload.containsKey("categoria")) {
+            transaccionExistente.setCategoria((String) payload.get("categoria"));
+        }
+        if (payload.containsKey("tipoGasto")) {
+            transaccionExistente.setTipoGasto((String) payload.get("tipoGasto"));
+        }
+
+        // Guarda los cambios
+        GrupoTransacciones transaccionActualizada = grupoTransaccionesService.save(transaccionExistente);
+        return ResponseEntity.ok(transaccionActualizada);
+    }
+
 }

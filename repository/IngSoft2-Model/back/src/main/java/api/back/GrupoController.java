@@ -213,7 +213,15 @@ public class GrupoController {
 
         // Actualiza los valores de la transacción
         if (payload.containsKey("valor")) {
-            Double valor = ((Number) payload.get("valor")).doubleValue();
+            Object valorObj = payload.get("valor");
+            Double valor;
+            if (valorObj instanceof Number) {
+                valor = ((Number) valorObj).doubleValue();
+            } else if (valorObj instanceof String) {
+                valor = Double.parseDouble((String) valorObj);
+            } else {
+                throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
+            }
             transaccionExistente.setValor(valor);
         }
         if (payload.containsKey("motivo")) {

@@ -11,6 +11,8 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String nameBudget;
+
     private Integer totalBudget;
 
     @ElementCollection
@@ -23,15 +25,17 @@ public class Budget {
     @JoinColumn(name = "user_id")
     private User user; // Relación con la entidad User
 
-    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, User user) {
+    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, User user, String nameBudget) {
         this.totalBudget = totalBudget;
         this.categoryBudgets = categoryBudgets;
         this.user = user;
+        this.nameBudget = nameBudget;
     }
 
-    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets) {
+    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, String nameBudget) {
         this.totalBudget = totalBudget;
         this.categoryBudgets = categoryBudgets;
+        this.nameBudget = nameBudget;
     }
 
     public Budget() {
@@ -76,5 +80,13 @@ public class Budget {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getNameBudget() {
+        return nameBudget;
+    }
+
+    public void setNameBudget(String nameBudget) {
+        this.nameBudget = nameBudget;
     }
 }

@@ -14,6 +14,10 @@ public class BudgetService {
         return budgetRepository.findByUser(user);
     }
 
+    public void deleteBudget(Long id) {
+        budgetRepository.deleteById(id);
+    }
+
     public void save(Budget presupuesto) {
         budgetRepository.save(presupuesto);
     }

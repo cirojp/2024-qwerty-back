@@ -282,38 +282,25 @@ public class GrupoController {
 
     // Endpoint para agregar un usuario a un grupo
     @PostMapping("/{grupoId}/agregar-usuario")
-    public ResponseEntity<String> agregarUsuariosAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, Object> payload) {
-        // Obtener la lista de correos electrónicos
-        List<String> usuariosEmails = (List<String>) payload.get("usuarios");
+    public ResponseEntity<String> agregarUsuariosAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, Object> payload, Authentication authentication) {
+        List<String> miembrosEmails = (List<String>) payload.get("usuarios");
+        String creadorEmail = authentication.getName(); // Email del usuario autenticado
+        if (miembrosEmails == null) {
+            miembrosEmails = new ArrayList<>(); // Asegúrate de que la lista no sea nula
+        }
         Grupo grupo = grupoService.findById(grupoId);
-
-        if (grupo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
-        }
-
-        List<String> errores = new ArrayList<>();
-        for (String email : usuariosEmails) {
+        // Crea una transacción pendiente para cada miembro del grupo
+        for (String email : miembrosEmails) {
             User usuario = userService.findByEmail(email);
-            if (usuario == null) {
-                errores.add("Usuario con email " + email + " no encontrado.");
-                continue;
-            }
-            if (grupo.getUsuarios().contains(usuario)) {
-                errores.add("El usuario con email " + email + " ya es miembro del grupo.");
-                continue;
-            }
-            grupo.getUsuarios().add(usuario);
+            LocalDate fechaHoy = LocalDate.now();
+            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy);
+            // Establecer el correo del creador como sentByEmail
+            transaccionPendiente.setSentByEmail(creadorEmail);
+            transaccionPendiente.setGrupoId(grupo.getId());
+            transaccionesPendientesService.save(transaccionPendiente);
         }
+        return null;
         
-        grupoService.save(grupo);
-
-        // Comprobar si hubo errores para enviar una respuesta adecuada
-        if (errores.isEmpty()) {
-            return ResponseEntity.ok("Usuarios agregados al grupo exitosamente.");
-        } else {
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                                .body("Algunos usuarios no fueron agregados: " + String.join(", ", errores));
-        }
     }
 
 }

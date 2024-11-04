@@ -68,7 +68,16 @@ public class GrupoController {
 
     @PostMapping("/agregar-usuario")
     public ResponseEntity<String> agregarUsuarioAGrupo(@RequestBody Map<String, Object> payload, Authentication authentication) {
-        Long grupoId = ((Number) payload.get("grupo_id")).longValue(); // Obtener el ID del grupo desde el JSON
+        Object grupoIdObj = payload.get("grupo_id");
+        Long grupoId = null;
+
+        if (grupoIdObj instanceof Integer) {
+            grupoId = ((Integer) grupoIdObj).longValue();
+        } else if (grupoIdObj instanceof Long) {
+            grupoId = (Long) grupoIdObj;
+        } else {
+            return ResponseEntity.badRequest().body("ID de grupo no válido.");
+        }
         String usuarioEmail = authentication.getName(); // Obtener el email del usuario autenticado
         
         // Buscar el usuario autenticado y el grupo por ID
@@ -150,6 +159,11 @@ public class GrupoController {
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+
+        List<TransaccionesPendientes> transaccionesPendientes = transaccionesPendientesService.findByGrupoId(grupoId);
+        for (TransaccionesPendientes transaccionPendiente : transaccionesPendientes) {
+            transaccionesPendientesService.delete(transaccionPendiente.getId());
         }
 
         // Sumar todas las transacciones del grupo

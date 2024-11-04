@@ -243,4 +243,31 @@ public class GrupoController {
         return ResponseEntity.ok(transaccionActualizada);
     }
 
+    @DeleteMapping("/{grupoId}")
+    public ResponseEntity<String> eliminarGrupo(@PathVariable Long grupoId) {
+        // Busca el grupo por su ID
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+
+        // Elimina las transacciones del grupo
+        List<GrupoTransacciones> transacciones = grupo.getTransacciones();
+        for (GrupoTransacciones transaccion : transacciones) {
+            grupoTransaccionesService.delete(transaccion.getId());
+        }
+
+        // Elimina las transacciones pendientes del grupo
+        List<TransaccionesPendientes> transaccionesPendientes = transaccionesPendientesService.findByGrupoId(grupoId);
+        for (TransaccionesPendientes transaccionPendiente : transaccionesPendientes) {
+            transaccionesPendientesService.delete(transaccionPendiente.getId());
+        }
+
+        // Finalmente, elimina el grupo
+        grupoService.delete(grupoId);
+
+        return ResponseEntity.ok("Grupo y todas sus transacciones eliminadas exitosamente.");
+    }
+
+
 }

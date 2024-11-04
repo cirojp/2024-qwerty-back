@@ -34,4 +34,9 @@ public class GrupoService {
     public Grupo save(Grupo grupo) {
         return grupoRepository.save(grupo);
     }
+
+    public void delete(Long id) {
+        grupoRepository.deleteById(id);
+    }
+    
 }

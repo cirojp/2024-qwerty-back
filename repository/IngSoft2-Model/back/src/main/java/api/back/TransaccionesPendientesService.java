@@ -30,4 +30,15 @@ public class TransaccionesPendientesService {
             throw new TransaccionNotFoundException("Transacción pendiente no encontrada para el usuario");
         }
     }
+
+    public List<TransaccionesPendientes> findByGrupoId(Long grupoId) {
+        return transaccionesPendientesRepository.findByGrupoId(grupoId);
+    }
+
+    // Elimina una transacción pendiente por su ID
+    public void delete(Long id) {
+        transaccionesPendientesRepository.deleteById(id);
+    }
+
+
 }

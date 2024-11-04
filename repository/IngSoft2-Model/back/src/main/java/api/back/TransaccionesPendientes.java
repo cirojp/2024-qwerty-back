@@ -27,14 +27,14 @@ public class TransaccionesPendientes {
     private String id_reserva;
     private LocalDate fecha;
     private String sentByEmail;
-    private Long grupo_id;
+    private Long grupoId;
 
-    public Long getGrupo_id() {
-        return grupo_id;
+    public Long getGrupoId() {
+        return grupoId;
     }
 
-    public void setGrupo_id(Long grupo_id) {
-        this.grupo_id = grupo_id;
+    public void setGrupoId(Long grupoId) {
+        this.grupoId = grupoId;
     }
 
     public TransaccionesPendientes() {

@@ -317,4 +317,36 @@ public class GrupoController {
         
     }
 
+    @GetMapping("/{grupoId}/verificar-usuario")
+    public ResponseEntity<String> verificarUsuarioEnGrupoOInvitado(
+            @PathVariable Long grupoId,
+            @RequestParam String email) {
+        // Busca el grupo por su ID
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+
+        // Busca el usuario por su email
+        User usuario = userService.findByEmail(email);
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+
+        // Verifica si el usuario ya es miembro del grupo
+        if (grupo.getUsuarios().contains(usuario)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya es miembro del grupo.");
+        }
+
+        // Verifica si el usuario tiene una transacción pendiente asociada al grupo
+        List<TransaccionesPendientes> transaccionesPendientes = transaccionesPendientesService.findByGrupoId(grupoId);
+        for (TransaccionesPendientes transaccionPendiente : transaccionesPendientes) {
+            if((transaccionPendiente.getUser()).getEmail().equals(email)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya tiene una invitación pendiente para el grupo.");
+            }
+        }
+
+        return ResponseEntity.ok("El usuario no está en el grupo ni tiene una invitación pendiente.");
+    }
+
 }

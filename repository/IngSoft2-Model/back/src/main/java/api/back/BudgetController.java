@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
@@ -43,6 +43,15 @@ public class BudgetController {
     public ResponseEntity<Void> deleteBudget(@PathVariable Long id) {
         budgetService.deleteBudget(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/editPresupuesto")
+    public ResponseEntity<Void> editBudget(@RequestBody Budget budget, Authentication authentication) {
+        Long budgetId = budget.getId();
+        budgetService.updateBudget(budgetId, budget);
+
+        // Devolver un 200 OK con el presupuesto actualizado
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -272,6 +272,7 @@ public class GrupoController {
     @GetMapping("/{grupoId}/usuarios")
     public ResponseEntity<List<User>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId) {
         Grupo grupo = grupoService.findById(grupoId);
+        System.out.println("\n\n " + grupo + "\n\n " + grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         }

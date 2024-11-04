@@ -12,5 +12,5 @@ public interface TransaccionesPendientesRepository extends JpaRepository<Transac
     // Método para encontrar una transacción pendiente por ID y usuario
     Optional<TransaccionesPendientes> findByIdAndUserId(Long id, Long userId);
 
-    List<TransaccionesPendientes> findByGrupoId(Long grupo_id);
+    List<TransaccionesPendientes> findByGrupo_id(Long grupo_id);
 }

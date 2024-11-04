@@ -32,7 +32,7 @@ public class TransaccionesPendientesService {
     }
 
     public List<TransaccionesPendientes> findByGrupoId(Long grupoId) {
-        return transaccionesPendientesRepository.findByGrupoId(grupoId);
+        return transaccionesPendientesRepository.findByGrupo_id(grupoId);
     }
 
     // Elimina una transacción pendiente por su ID

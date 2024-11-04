@@ -269,5 +269,37 @@ public class GrupoController {
         return ResponseEntity.ok("Grupo y todas sus transacciones eliminadas exitosamente.");
     }
 
+    @GetMapping("/{grupoId}/usuarios")
+    public ResponseEntity<List<User>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId) {
+        Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+        List<User> usuarios = grupo.getUsuarios();
+        return ResponseEntity.ok(usuarios);
+    }
+
+    // Endpoint para agregar un usuario a un grupo
+    @PostMapping("/{grupoId}/agregar-usuario")
+    public ResponseEntity<String> agregarUsuarioAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        User usuario = userService.findByEmail(email);
+        Grupo grupo = grupoService.findById(grupoId);
+
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+        if (grupo.getUsuarios().contains(usuario)) {
+            return ResponseEntity.badRequest().body("El usuario ya es miembro del grupo.");
+        }
+
+        grupo.getUsuarios().add(usuario);
+        grupoService.save(grupo);
+
+        return ResponseEntity.ok("Usuario agregado al grupo exitosamente.");
+    }
 
 }

@@ -282,25 +282,38 @@ public class GrupoController {
 
     // Endpoint para agregar un usuario a un grupo
     @PostMapping("/{grupoId}/agregar-usuario")
-    public ResponseEntity<String> agregarUsuarioAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        User usuario = userService.findByEmail(email);
+    public ResponseEntity<String> agregarUsuariosAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, Object> payload) {
+        // Obtener la lista de correos electrónicos
+        List<String> usuariosEmails = (List<String>) payload.get("usuarios");
         Grupo grupo = grupoService.findById(grupoId);
 
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
         }
-        if (usuario == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
-        }
-        if (grupo.getUsuarios().contains(usuario)) {
-            return ResponseEntity.badRequest().body("El usuario ya es miembro del grupo.");
-        }
 
-        grupo.getUsuarios().add(usuario);
+        List<String> errores = new ArrayList<>();
+        for (String email : usuariosEmails) {
+            User usuario = userService.findByEmail(email);
+            if (usuario == null) {
+                errores.add("Usuario con email " + email + " no encontrado.");
+                continue;
+            }
+            if (grupo.getUsuarios().contains(usuario)) {
+                errores.add("El usuario con email " + email + " ya es miembro del grupo.");
+                continue;
+            }
+            grupo.getUsuarios().add(usuario);
+        }
+        
         grupoService.save(grupo);
 
-        return ResponseEntity.ok("Usuario agregado al grupo exitosamente.");
+        // Comprobar si hubo errores para enviar una respuesta adecuada
+        if (errores.isEmpty()) {
+            return ResponseEntity.ok("Usuarios agregados al grupo exitosamente.");
+        } else {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                                .body("Algunos usuarios no fueron agregados: " + String.join(", ", errores));
+        }
     }
 
 }

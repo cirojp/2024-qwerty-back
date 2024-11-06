@@ -31,9 +31,9 @@ public class AuthController {
     private final UserService userService;
     private final PasswordResetTokenService passwordResetTokenService;
     private final PersonalTipoGastoService personalTipoGastoService;
-    private PersonalCategoriaService personalCategoriaService;
+    private final PersonalCategoriaService personalCategoriaService;
     private final BudgetService budgetService;
-    private TransaccionesController transaccionesController;
+    private final TransaccionesController transaccionesController;
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtil jwtUtil,

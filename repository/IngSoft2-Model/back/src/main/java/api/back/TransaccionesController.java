@@ -135,21 +135,41 @@ public class TransaccionesController {
      * }
      * }
      */
-    @GetMapping("/user/filter")
+    
+    /*/ @GetMapping("/user/filter")
     public List<Transacciones> getTransaccionesByFilters(
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) Integer anio,
             @RequestParam(required = false) Integer mes,
             Authentication authentication) {
-        System.out.println(categoria + "///" + anio + "/////" + mes + "??????????");
         String email = authentication.getName();
         User user = userService.findByEmail(email);
 
         // Realiza el filtrado en el nivel del servicio
         List<Transacciones> transacciones = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria,
                 anio, mes);
-        System.out.println(user.getId() + "       este es el id");
+
         return transacciones;
+    }*/
+
+    @GetMapping("/user/filter")
+    public TransaccionesResponse getTransaccionesByFilters(
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Integer anio,
+            @RequestParam(required = false) Integer mes,
+            Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.findByEmail(email);
+
+        // Obtén transacciones filtradas
+        List<Transacciones> transaccionesFiltradas = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
+
+        // Obtén todas las transacciones sin filtrar
+        List<Transacciones> transaccionesSinFiltrarCat = transaccionesService.getTransaccionesFiltradas(user.getId(), "Todas", anio, mes);
+
+        // Retornar ambas listas en el objeto de respuesta personalizado
+        return new TransaccionesResponse(transaccionesFiltradas, transaccionesSinFiltrarCat);
     }
+
 
 }

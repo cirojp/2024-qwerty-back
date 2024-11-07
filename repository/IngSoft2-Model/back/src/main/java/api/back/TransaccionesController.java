@@ -49,6 +49,8 @@ public class TransaccionesController {
     @PostMapping
     public Transacciones createTransaccion(@RequestBody Transacciones transaccion, Authentication authentication) {
         String email = authentication.getName();
+        User user = userService.findByEmail(email);
+        user.setTransaccionesCreadas(user.getTransaccionesCreadas() + 1);
         return transaccionesService.createTransaccion(transaccion, email);
     }
 

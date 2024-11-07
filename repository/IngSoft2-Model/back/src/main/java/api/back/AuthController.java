@@ -31,30 +31,53 @@ public class AuthController {
     private final UserService userService;
     private final PasswordResetTokenService passwordResetTokenService;
     private final PersonalTipoGastoService personalTipoGastoService;
+    private final PersonalCategoriaService personalCategoriaService;
+    private final BudgetService budgetService;
+    private final TransaccionesController transaccionesController;
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtil jwtUtil,
             UserService userService, TransaccionesService transaccionesService,
-            PasswordResetTokenService passwordResetTokenService, PersonalTipoGastoService personalTipoGastoService) {
+            PasswordResetTokenService passwordResetTokenService, PersonalTipoGastoService personalTipoGastoService,
+            BudgetService budgetService, PersonalCategoriaService personalCategoriaService,
+            TransaccionesController transaccionesController) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.personalCategoriaService = personalCategoriaService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.transaccionesController = transaccionesController;
         this.userService = userService;
         this.transaccionesService = transaccionesService;
         this.passwordResetTokenService = passwordResetTokenService;
         this.personalTipoGastoService = personalTipoGastoService;
+        this.budgetService = budgetService;
     }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
         try {
             User user = userService.findByEmail(authentication.getName());
+            List<Budget> presupuestos = budgetService.getPresupuestosByUserId(user);
+            for (Budget presupuesto : presupuestos) {
+                budgetService.deleteBudget(presupuesto.getId());
+            }
             List<Transacciones> transacciones = transaccionesService.getTransaccionesByUserId(user.getId());
             for (Transacciones transaction : transacciones) {
                 transaccionesService.deleteTransaccion(transaction.getId(), user.getEmail());
             }
-            // Eliminar los tipos de gasto personal
+            List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(user.getEmail());
+            for (PersonalCategoria categoria : categorias) {
+                List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+                for (Transacciones transaccion : transaccionesUser) {
+                    if (transaccion.getCategoria().equals(categoria.getNombre())) {
+                        transaccion.setCategoria("Otros");
+                        transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+                    }
+                }
+                personalCategoriaService.findAndDeleteCategoria(user.getEmail(), categoria.getNombre(),
+                        categoria.getIconPath());
+            }
             List<PersonalTipoGasto> personalTipoGastos = personalTipoGastoService
                     .getPersonalTipoGastos(user.getEmail());
             for (PersonalTipoGasto tipoGasto : personalTipoGastos) {
@@ -111,5 +134,4 @@ public class AuthController {
         }
     }
 
-    
 }

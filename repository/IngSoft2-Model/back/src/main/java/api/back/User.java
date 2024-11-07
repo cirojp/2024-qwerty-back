@@ -18,9 +18,20 @@ public class User {
     private String email;
     private String password;
     private String role; // Puedes usar "ROLE_USER" o "ROLE_ADMIN"
+    private Integer transaccionesCreadas;
 
     public User() {
+        this.transaccionesCreadas = 0;
     }
+
+    public Integer getTransaccionesCreadas() {
+        return transaccionesCreadas;
+    }
+
+    public void setTransaccionesCreadas(Integer transaccionesCreadas) {
+        this.transaccionesCreadas = transaccionesCreadas;
+    }
+
     // Getters y Setters
     public Long getId() {
         return id;

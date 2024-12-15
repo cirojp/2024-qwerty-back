@@ -33,6 +33,7 @@ public class TransaccionesService {
         if (transaccion.getFecha() == null) {
             transaccion.setFecha(LocalDate.now());
         }
+        transaccion.setValor(transaccion.getValor()*transaccion.getCurrencyValue());
 
         return transaccionesRepository.save(transaccion);
     }

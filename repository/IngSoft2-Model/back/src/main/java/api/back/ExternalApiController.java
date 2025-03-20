@@ -52,4 +52,9 @@ public class ExternalApiController {
         return ResponseEntity.ok(exists);
     }
 
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("OK");
+    }
+
 }

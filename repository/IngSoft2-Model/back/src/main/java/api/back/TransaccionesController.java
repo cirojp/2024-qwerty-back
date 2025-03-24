@@ -67,7 +67,7 @@ public class TransaccionesController {
         transaccion2.setValor(transaccion.getValor());
         transaccionesService.createTransaccion(transaccion2, mail);
         TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
-                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha());
+                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
         transaccionesPendientesService.save(cobroPendiente);
         // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
         return transaccionesService.createTransaccion(transaccion, email); // Transaccion de quien acepta el cobro
@@ -86,9 +86,11 @@ public class TransaccionesController {
         transaccion2.setTipoGasto("Tarjeta de Debito");
         transaccion2.setUser(userService.findByEmail(mail));
         transaccion2.setValor(transaccion.getValor());
+        transaccion2.setMonedaOriginal(transaccion.getMonedaOriginal());
+        transaccion2.setMontoOriginal(transaccion.getMontoOriginal());
         transaccionesService.createTransaccion(transaccion2, mail);
         TransaccionesPendientes pendienteCobro = new TransaccionesPendientes(transaccion.getValor(),
-                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha());
+                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
         pendienteCobro.setSentByEmail(email);
         transaccionesPendientesService.save(pendienteCobro);
         // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2

@@ -50,7 +50,7 @@ public class GrupoController {
         for (String email : miembrosEmails) {
             User usuario = userService.findByEmail(email);
             LocalDate fechaHoy = LocalDate.now();
-            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy);
+            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy,null,null);
             // Establecer el correo del creador como sentByEmail
             transaccionPendiente.setSentByEmail(creadorEmail);
             transaccionPendiente.setGrupoId(grupo.getId());
@@ -307,7 +307,7 @@ public class GrupoController {
         for (String email : miembrosEmails) {
             User usuario = userService.findByEmail(email);
             LocalDate fechaHoy = LocalDate.now();
-            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy);
+            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy,null,null);
             // Establecer el correo del creador como sentByEmail
             transaccionPendiente.setSentByEmail(creadorEmail);
             transaccionPendiente.setGrupoId(grupo.getId());

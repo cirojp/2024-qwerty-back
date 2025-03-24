@@ -32,7 +32,9 @@ public class ExternalApiController {
                         usuario,
                         request.getMotivo(),
                         request.getId_reserva(),
-                        request.getFecha() != null ? request.getFecha() : LocalDate.now());
+                        request.getFecha() != null ? request.getFecha() : LocalDate.now(),
+                        "ARG",
+                        request.getValor());
                 // Guardar la transacción
                 transaccionesPendientesService.save(transaccionPendiente);
                 userService.pendingTransactionNotification(usuario.getEmail());

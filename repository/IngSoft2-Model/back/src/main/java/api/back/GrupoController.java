@@ -115,9 +115,19 @@ public class GrupoController {
     
         // Extrae los demás datos del JSON
         String motivo = (String) payload.get("motivo");
-        LocalDate fecha = LocalDate.parse((String) payload.get("fecha")); // Asegúrate de que la fecha esté en formato ISO
+        LocalDate fecha = LocalDate.parse((String) payload.get("fecha"));
         String categoria = (String) payload.get("categoria");
         String tipoGasto = (String) payload.get("tipoGasto");
+        String monedaOriginal = (String) payload.get("monedaOriginal");
+        Double montoOriginal;
+        Object montoOriginalObj = payload.get("montoOriginal");
+        if (montoOriginalObj instanceof String) {
+            montoOriginal = Double.parseDouble((String) montoOriginalObj);
+        } else if (montoOriginalObj instanceof Number) {
+            montoOriginal = ((Number) montoOriginalObj).doubleValue();
+        } else {
+            return ResponseEntity.badRequest().body(null); // Valor no válido
+        }
     
         // Convierte el valor de grupo a Long, similar a como hiciste antes
         Long grupoId = ((Number) payload.get("grupo")).longValue(); // Obtén el ID del grupo desde el JSON
@@ -129,7 +139,7 @@ public class GrupoController {
         }
     
         // Crea una nueva transacción grupal
-        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto, usuarioEmail);
+        GrupoTransacciones grupoTransaccion = new GrupoTransacciones(valor, motivo, fecha, categoria, tipoGasto, usuarioEmail,monedaOriginal,montoOriginal);
         grupoTransaccion.setGrupo(grupo); // Establece la relación con el grupo
     
         // Agrega la transacción a la lista de transacciones del grupo
@@ -189,6 +199,8 @@ public class GrupoController {
             nuevaTransaccion.setMotivo(motivo);
             nuevaTransaccion.setTipoGasto(medioDePago);
             nuevaTransaccion.setUser(usuario);
+            nuevaTransaccion.setMonedaOriginal("ARG");
+            nuevaTransaccion.setMontoOriginal(montoPorUsuario);
             
             // Guardar la transacción
             transaccionesService.createTransaccion(nuevaTransaccion, usuario.getEmail());

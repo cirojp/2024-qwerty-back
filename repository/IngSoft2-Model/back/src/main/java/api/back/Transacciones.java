@@ -21,6 +21,8 @@ public class Transacciones {
     private String motivo;
     private String categoria;
     private String tipoGasto;
+    private String monedaOriginal; 
+    private Double montoOriginal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -35,12 +37,14 @@ public class Transacciones {
 
     // Constructor con parámetros (opcional)
     public Transacciones(Double valor, String motivo, LocalDate fecha,
-            String categoria, String tipoGasto) {
+            String categoria, String tipoGasto, String monedaOriginal ,Double montoOriginal) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
         this.categoria = categoria;
         this.tipoGasto = tipoGasto;
+        this. monedaOriginal = monedaOriginal;
+        this.montoOriginal = montoOriginal;
     }
 
     public String getCategoria() {
@@ -97,5 +101,21 @@ public class Transacciones {
 
     public void setTipoGasto(String tipoGasto) {
         this.tipoGasto = tipoGasto;
+    }
+
+    public String getMonedaOriginal() {
+        return monedaOriginal;
+    }
+
+    public void setMonedaOriginal(String monedaOriginal) {
+        this.monedaOriginal = monedaOriginal;
+    }
+
+    public Double getMontoOriginal() {
+        return montoOriginal;
+    }
+
+    public void setMontoOriginal(Double montoOriginal) {
+        this.montoOriginal = montoOriginal;
     }
 }

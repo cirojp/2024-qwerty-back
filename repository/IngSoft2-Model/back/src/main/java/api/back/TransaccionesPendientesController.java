@@ -114,7 +114,9 @@ public class TransaccionesPendientesController {
                     usuario,
                     transaccion.getMotivo(),
                     transaccion.getId_reserva(),
-                    transaccion.getFecha());
+                    transaccion.getFecha(),
+                    transaccion.getMonedaOriginal(),
+                    transaccion.getMontoOriginal());
             transaccionPendiente.setSentByEmail(email);
             transaccionesPendientesService.save(transaccionPendiente);
             return ResponseEntity.ok().build();

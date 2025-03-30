@@ -70,6 +70,8 @@ public class TransaccionesService {
         transaccion.setFecha(transaccionActualizada.getFecha());
         transaccion.setCategoria(transaccionActualizada.getCategoria());
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
+        transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
+        transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }

@@ -19,6 +19,8 @@ public class GrupoTransacciones {
     private LocalDate fecha;
 
     private String users;
+    private String monedaOriginal; 
+    private Double montoOriginal;
 
     public String getUsers() {
         return users;
@@ -37,13 +39,15 @@ public class GrupoTransacciones {
     public GrupoTransacciones() {}
 
     // Constructor con parámetros
-    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, String users) {
+    public GrupoTransacciones(Double valor, String motivo, LocalDate fecha, String categoria, String tipoGasto, String users, String monedaOriginal, Double montoOriginal) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
         this.categoria = categoria;
         this.tipoGasto = tipoGasto;
         this.users = users;
+        this.monedaOriginal = monedaOriginal;
+        this.montoOriginal = montoOriginal;
     }
 
     // Getters y Setters
@@ -101,5 +105,20 @@ public class GrupoTransacciones {
 
     public void setGrupo(Grupo grupo) {
         this.grupo = grupo;
+    }
+    public String getMonedaOriginal() {
+        return monedaOriginal;
+    }
+
+    public void setMonedaOriginal(String monedaOriginal) {
+        this.monedaOriginal = monedaOriginal;
+    }
+
+    public Double getMontoOriginal() {
+        return montoOriginal;
+    }
+
+    public void setMontoOriginal(Double montoOriginal) {
+        this.montoOriginal = montoOriginal;
     }
 }

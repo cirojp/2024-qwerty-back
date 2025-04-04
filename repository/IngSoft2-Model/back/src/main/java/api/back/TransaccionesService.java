@@ -34,6 +34,12 @@ public class TransaccionesService {
             transaccion.setFecha(LocalDate.now());
         }
 
+        // Calcular siguiente ejecución si es recurrente
+        if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccion.getFecha(), transaccion.getFrecuenciaRecurrente());
+            transaccion.setSiguienteEjecucion(siguienteEjecucion);
+        }
+
         return transaccionesRepository.save(transaccion);
     }
 
@@ -128,5 +134,21 @@ public class TransaccionesService {
         // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
         }
     
+
+        private LocalDate calcularSiguienteEjecucion(LocalDate fecha, String frecuencia) {
+            switch (frecuencia.toLowerCase()) {
+                case "diariamente":
+                    return fecha.plusDays(1);
+                case "semanalmente":
+                    return fecha.plusWeeks(1);
+                case "mensualmente":
+                    return fecha.plusMonths(1);
+                case "anualmente":
+                    return fecha.plusYears(1);
+                default:
+                    throw new IllegalArgumentException("Frecuencia no válida: " + frecuencia);
+            }
+        }
+        
 
 }

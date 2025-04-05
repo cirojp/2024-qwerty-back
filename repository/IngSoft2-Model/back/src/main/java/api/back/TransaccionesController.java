@@ -177,5 +177,13 @@ public class TransaccionesController {
         return new TransaccionesResponse(transaccionesFiltradas, transaccionesSinFiltrarCat);
     }
 
+    @GetMapping("/user/recurrent")
+    public List<Transacciones> getTransaccionesRecurrentes(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.findByEmail(email);
+        return transaccionesService.getTransaccionesRecurrentes(user.getId());
+    }
+
+
 
 }

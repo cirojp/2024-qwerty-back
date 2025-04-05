@@ -27,5 +27,7 @@ public interface TransaccionesRepository extends JpaRepository<Transacciones, Lo
     // Método para encontrar transacciones por ID de usuario, categoría y rango de fechas (solo año)
     List<Transacciones> findByUserIdAndCategoriaAndFechaBetween(Long userId, String categoria, LocalDate startDate, LocalDate endDate); 
 
+    List<Transacciones> findByUserIdAndFrecuenciaRecurrenteIsNotNull(Long userId);
+
 
 }

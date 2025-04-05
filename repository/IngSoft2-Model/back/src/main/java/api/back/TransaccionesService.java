@@ -150,5 +150,9 @@ public class TransaccionesService {
             }
         }
         
+        public List<Transacciones> getTransaccionesRecurrentes(Long userId) {
+            return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNotNull(userId);
+        }
+        
 
 }

@@ -78,6 +78,11 @@ public class TransaccionesService {
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+        if (transaccionActualizada.getFrecuenciaRecurrente()!= null) {
+            transaccion.setFrecuenciaRecurrente(transaccionActualizada.getFrecuenciaRecurrente());
+            transaccion.setSiguienteEjecucion(calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente()));
+        }
+
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }

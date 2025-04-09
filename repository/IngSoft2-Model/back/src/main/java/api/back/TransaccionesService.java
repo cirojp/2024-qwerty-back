@@ -142,12 +142,12 @@ public class TransaccionesService {
         //@Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
         @Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los días a medianoche
         public void procesarTransaccionesRecurrentes() {
-            System.out.println("🚀 🚀 🚀 🚀 🚀 🚀 🚀 ");
+            
             LocalDate hoy = LocalDate.now();
             List<Transacciones> transaccionesRecurrentes = transaccionesRepository.findBySiguienteEjecucion(hoy);
-            System.out.println(transaccionesRecurrentes);
-            System.out.println("🚀 🚀 🚀 🚀 🚀 🚀 🚀 ");
+            
             for (Transacciones transaccion : transaccionesRecurrentes) {
+                
                 // Crear nueva transacción con los mismos datos
                 Transacciones nuevaTransaccion = new Transacciones();
                 nuevaTransaccion.setCategoria(transaccion.getCategoria());
@@ -160,7 +160,10 @@ public class TransaccionesService {
                 nuevaTransaccion.setMontoOriginal(transaccion.getMontoOriginal());
                 
                 transaccionesRepository.save(nuevaTransaccion);
-
+                System.out.println("🚀 🚀 🚀 🚀 🚀 🚀 🚀 ");
+                System.out.println(transaccion);
+                System.out.println("🚀 🚀 🚀 🚀 🚀 🚀 🚀 ");
+                System.out.println(nuevaTransaccion);
                 // Calcular nueva fecha de ejecución
                 LocalDate nuevaFecha = calcularSiguienteEjecucion(hoy, transaccion.getFrecuenciaRecurrente());
                 transaccion.setSiguienteEjecucion(nuevaFecha);

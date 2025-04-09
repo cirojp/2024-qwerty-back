@@ -1,11 +1,13 @@
 package api.back;
 
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@EnableScheduling
 @Service
 public class TransaccionesService {
 

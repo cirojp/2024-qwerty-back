@@ -29,5 +29,6 @@ public interface TransaccionesRepository extends JpaRepository<Transacciones, Lo
 
     List<Transacciones> findByUserIdAndFrecuenciaRecurrenteIsNotNull(Long userId);
 
+    List<Transacciones> findBySiguienteEjecucion(LocalDate fecha);
 
 }

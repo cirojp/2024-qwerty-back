@@ -1,7 +1,7 @@
 package api.back;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -139,6 +139,32 @@ public class TransaccionesService {
         // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
         }
     
+        //@Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
+        @Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los días a medianoche
+        public void procesarTransaccionesRecurrentes() {
+            LocalDate hoy = LocalDate.now();
+            List<Transacciones> transaccionesRecurrentes = transaccionesRepository.findBySiguienteEjecucion(hoy);
+
+            for (Transacciones transaccion : transaccionesRecurrentes) {
+                // Crear nueva transacción con los mismos datos
+                Transacciones nuevaTransaccion = new Transacciones();
+                nuevaTransaccion.setCategoria(transaccion.getCategoria());
+                nuevaTransaccion.setFecha(hoy);
+                nuevaTransaccion.setMotivo(transaccion.getMotivo());
+                nuevaTransaccion.setTipoGasto(transaccion.getTipoGasto());
+                nuevaTransaccion.setUser(transaccion.getUser());
+                nuevaTransaccion.setValor(transaccion.getValor());
+                nuevaTransaccion.setMonedaOriginal(transaccion.getMonedaOriginal());
+                nuevaTransaccion.setMontoOriginal(transaccion.getMontoOriginal());
+                
+                transaccionesRepository.save(nuevaTransaccion);
+
+                // Calcular nueva fecha de ejecución
+                LocalDate nuevaFecha = calcularSiguienteEjecucion(hoy, transaccion.getFrecuenciaRecurrente());
+                transaccion.setSiguienteEjecucion(nuevaFecha);
+                transaccionesRepository.save(transaccion);
+            }
+        }
 
         private LocalDate calcularSiguienteEjecucion(LocalDate fecha, String frecuencia) {
             switch (frecuencia.toLowerCase()) {

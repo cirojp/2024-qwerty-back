@@ -185,12 +185,12 @@ public class TransaccionesController {
         return transaccionesService.getTransaccionesRecurrentes(user.getId());
     }
 
-    @PostMapping("/procesar-recurrentes")
+    /*@PostMapping("/procesar-recurrentes")
     public ResponseEntity<String> procesarTransaccionesRecurrentesManual() {
         System.out.println("🚀 Se está ejecutando el job de transacciones recurrentes");
         transaccionesService.procesarTransaccionesRecurrentes();
         return ResponseEntity.ok("Transacciones recurrentes procesadas");
-    }
+    }*/
 
 
 }

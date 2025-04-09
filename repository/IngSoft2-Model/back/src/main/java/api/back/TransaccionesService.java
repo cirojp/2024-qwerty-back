@@ -141,8 +141,8 @@ public class TransaccionesService {
         // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
         }
     
-        //@Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
-        @Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los días a medianoche
+        @Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
+        //@Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los minutos
         public void procesarTransaccionesRecurrentes() {
             
             LocalDate hoy = LocalDate.now();

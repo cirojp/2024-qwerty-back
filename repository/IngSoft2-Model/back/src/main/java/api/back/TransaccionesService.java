@@ -145,7 +145,8 @@ public class TransaccionesService {
             
             LocalDate hoy = LocalDate.now();
             List<Transacciones> transaccionesRecurrentes = transaccionesRepository.findBySiguienteEjecucion(hoy);
-            
+            System.out.println(hoy);
+            System.out.println(transaccionesRecurrentes.isEmpty());
             for (Transacciones transaccion : transaccionesRecurrentes) {
                 
                 // Crear nueva transacción con los mismos datos

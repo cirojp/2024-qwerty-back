@@ -23,6 +23,10 @@ public class Transacciones {
     private String tipoGasto;
     private String monedaOriginal; 
     private Double montoOriginal;
+    private String frecuenciaRecurrente;
+    private LocalDate siguienteEjecucion;
+    
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -37,7 +41,7 @@ public class Transacciones {
 
     // Constructor con parámetros (opcional)
     public Transacciones(Double valor, String motivo, LocalDate fecha,
-            String categoria, String tipoGasto, String monedaOriginal ,Double montoOriginal) {
+            String categoria, String tipoGasto, String monedaOriginal ,Double montoOriginal, String frecuenciaRecurrente) {
         this.valor = valor;
         this.motivo = motivo;
         this.fecha = fecha;
@@ -45,6 +49,7 @@ public class Transacciones {
         this.tipoGasto = tipoGasto;
         this. monedaOriginal = monedaOriginal;
         this.montoOriginal = montoOriginal;
+        this.frecuenciaRecurrente = frecuenciaRecurrente;
     }
 
     public String getCategoria() {
@@ -117,5 +122,21 @@ public class Transacciones {
 
     public void setMontoOriginal(Double montoOriginal) {
         this.montoOriginal = montoOriginal;
+    }
+
+    public String getFrecuenciaRecurrente() {
+        return frecuenciaRecurrente;
+    }
+
+    public void setFrecuenciaRecurrente(String frecuenciaRecurrente) {
+        this.frecuenciaRecurrente = frecuenciaRecurrente;
+    }
+
+    public LocalDate getSiguienteEjecucion() {
+        return siguienteEjecucion;
+    }
+
+    public void setSiguienteEjecucion(LocalDate siguienteEjecucion) {
+        this.siguienteEjecucion = siguienteEjecucion;
     }
 }

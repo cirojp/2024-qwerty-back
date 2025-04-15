@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @RestController
 @RequestMapping("/api/transacciones")
 @CrossOrigin(origins = { "http://localhost:5173/", "http://127.0.0.1:5173" })
@@ -176,6 +177,20 @@ public class TransaccionesController {
         // Retornar ambas listas en el objeto de respuesta personalizado
         return new TransaccionesResponse(transaccionesFiltradas, transaccionesSinFiltrarCat);
     }
+
+    @GetMapping("/user/recurrent")
+    public List<Transacciones> getTransaccionesRecurrentes(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.findByEmail(email);
+        return transaccionesService.getTransaccionesRecurrentes(user.getId());
+    }
+
+    /*@PostMapping("/procesar-recurrentes")
+    public ResponseEntity<String> procesarTransaccionesRecurrentesManual() {
+        System.out.println("🚀 Se está ejecutando el job de transacciones recurrentes");
+        transaccionesService.procesarTransaccionesRecurrentes();
+        return ResponseEntity.ok("Transacciones recurrentes procesadas");
+    }*/
 
 
 }

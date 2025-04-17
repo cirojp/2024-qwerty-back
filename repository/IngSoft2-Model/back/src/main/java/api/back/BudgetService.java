@@ -35,6 +35,7 @@ public class BudgetService {
         existingBudget.setBudgetMonth(budget.getBudgetMonth());
         existingBudget.setTotalBudget(budget.getTotalBudget());
         existingBudget.setCategoryBudgets(budget.getCategoryBudgets());
+        existingBudget.setPayOptionBudget(budget.getPayOptionBudget());
 
         // Guardar los cambios en la base de datos
         return budgetRepository.save(existingBudget);

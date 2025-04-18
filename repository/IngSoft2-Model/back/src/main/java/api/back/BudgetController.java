@@ -36,7 +36,6 @@ public class BudgetController {
     public ResponseEntity<List<Budget>> getUserPresupuestos(Authentication authentication) {
         User user = userService.findByEmail(authentication.getName());
         List<Budget> presupuestos = budgetService.getPresupuestosByUserId(user);
-        System.out.println("Presupuestos retornados: " + presupuestos);
         return ResponseEntity.ok().body(presupuestos);
     }
 

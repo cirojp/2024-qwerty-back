@@ -339,7 +339,9 @@ public class GrupoController {
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
         }
-
+        System.out.println(mail);
+        System.out.println("                                               ");
+        System.out.println(email);
         // Busca el usuario por su email
         if (mail.equals(email)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No es necesario agregarte a ti mismo");

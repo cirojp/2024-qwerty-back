@@ -332,11 +332,17 @@ public class GrupoController {
     @GetMapping("/{grupoId}/verificar-usuario")
     public ResponseEntity<String> verificarUsuarioEnGrupoOInvitado(
             @PathVariable Long grupoId,
-            @RequestParam String email) {
+            @RequestParam String email, Authentication authentication) {
         // Busca el grupo por su ID
         Grupo grupo = grupoService.findById(grupoId);
+        String mail = authentication.getName();
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
+
+        // Busca el usuario por su email
+        if (mail.equals(email)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No es necesario agregarte a ti mismo");
         }
 
         // Busca el usuario por su email

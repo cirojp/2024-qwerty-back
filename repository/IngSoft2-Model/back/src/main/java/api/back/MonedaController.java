@@ -16,9 +16,10 @@ public class MonedaController {
     private MonedaService monedaService;
 
     @GetMapping
-    public List<Moneda> getMonedas(Authentication authentication) {
+    public ResponseEntity<List<Moneda>> getMonedas(Authentication authentication) {
         String email = authentication.getName();
-        return monedaService.getMonedasByEmail(email);
+        List<Moneda> monedas = monedaService.getMonedasByEmail(email);
+        return ResponseEntity.ok(monedas);
     }
 
     @PostMapping

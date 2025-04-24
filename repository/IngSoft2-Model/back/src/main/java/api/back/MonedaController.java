@@ -28,6 +28,8 @@ public class MonedaController {
         String nombre = request.get("nombre").toString();
         Double valor = Double.parseDouble(request.get("valor").toString());
         Moneda nueva = monedaService.addMoneda(email, nombre, valor);
+        System.out.println("                            ///////////////////////                    ");
+        System.out.println("                            monedas                    ");
         return ResponseEntity.ok(nueva);
     }
 }

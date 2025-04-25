@@ -45,13 +45,16 @@ public class MonedaController {
         return ResponseEntity.ok(actualizada);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMoneda(
-            @PathVariable Long id,
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMonedaPorNombre(
+            @RequestBody Map<String, Object> request,
             Authentication authentication) {
 
         String email = authentication.getName();
-        monedaService.deleteMoneda(email, id);
-        return ResponseEntity.noContent().build();
+        String nombre = request.get("nombre").toString();
+
+        monedaService.deleteMonedaPorNombre(email, nombre);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
+
 }

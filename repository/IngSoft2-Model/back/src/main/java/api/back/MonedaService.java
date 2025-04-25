@@ -42,11 +42,11 @@ public class MonedaService {
         return monedaRepository.save(moneda);
     }
     
+    public void deleteMonedaPorNombre(String email, String nombre) {
+        Moneda moneda = monedaRepository
+                .findByUserEmailAndNombre(email, nombre)
+                .orElseThrow(() -> new RuntimeException("Moneda no encontrada"));
     
-    public void deleteMoneda(String email, Long id) {
-        Moneda moneda = monedaRepository.findByIdAndUserEmail(id, email)
-                .orElseThrow(() -> new RuntimeException("Moneda no encontrada o no pertenece al usuario."));
-        
         monedaRepository.delete(moneda);
     }
 }

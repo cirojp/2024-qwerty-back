@@ -18,9 +18,7 @@ public class MonedaController {
     @GetMapping
     public ResponseEntity<List<Moneda>> getMonedas(Authentication authentication) {
         String email = authentication.getName();
-        System.out.println("Email recibido: " + email); 
         List<Moneda> monedas = monedaService.getMonedasByEmail(email);
-        System.out.println("Monedas: " + monedas);   
         return ResponseEntity.ok(monedas);
     }
 
@@ -31,5 +29,29 @@ public class MonedaController {
         Double valor = Double.parseDouble(request.get("valor").toString());
         Moneda nueva = monedaService.addMoneda(email, nombre, valor);
         return ResponseEntity.ok(nueva);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Moneda> updateMoneda(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        String nombre = request.get("nombre").toString();
+        Double valor = Double.parseDouble(request.get("valor").toString());
+
+        Moneda actualizada = monedaService.updateMoneda(email, id, nombre, valor);
+        return ResponseEntity.ok(actualizada);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMoneda(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        monedaService.deleteMoneda(email, id);
+        return ResponseEntity.noContent().build();
     }
 }

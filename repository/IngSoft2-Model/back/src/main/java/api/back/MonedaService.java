@@ -27,4 +27,20 @@ public class MonedaService {
         System.out.println(moneda);
         return monedaRepository.save(moneda);
     }
+
+    public Moneda updateMoneda(String email, Long id, String nombre, Double valor) {
+        Moneda moneda = monedaRepository.findByIdAndUserEmail(id, email)
+                .orElseThrow(() -> new RuntimeException("Moneda no encontrada o no pertenece al usuario."));
+    
+        moneda.setNombre(nombre);
+        moneda.setValor(valor);
+        return monedaRepository.save(moneda);
+    }
+    
+    public void deleteMoneda(String email, Long id) {
+        Moneda moneda = monedaRepository.findByIdAndUserEmail(id, email)
+                .orElseThrow(() -> new RuntimeException("Moneda no encontrada o no pertenece al usuario."));
+        
+        monedaRepository.delete(moneda);
+    }
 }

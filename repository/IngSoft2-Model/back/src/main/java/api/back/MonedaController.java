@@ -14,6 +14,8 @@ public class MonedaController {
 
     @Autowired
     private MonedaService monedaService;
+    @Autowired
+    private TransaccionesController transaccionesController;
 
     @GetMapping
     public ResponseEntity<List<Moneda>> getMonedas(Authentication authentication) {
@@ -41,6 +43,15 @@ public class MonedaController {
         String nombreNuevo = request.get("nombreNuevo").toString();
         Double valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
 
+        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        for (Transacciones transaccion : transaccionesUser) {
+            String moneda = transaccion.getMonedaOriginal();
+            if (moneda != null && moneda.equals(nombreActual)) {
+                transaccion.setMonedaOriginal(nombreNuevo);
+                transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+            }
+        }
+
         Moneda actualizada = monedaService.updateMonedaPorNombre(email, nombreActual, nombreNuevo, valorNuevo);
         return ResponseEntity.ok(actualizada);
     }
@@ -53,6 +64,16 @@ public class MonedaController {
         String email = authentication.getName();
         String nombre = request.get("nombre").toString();
 
+        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        for (Transacciones transaccion : transaccionesUser) {
+            String moneda = transaccion.getMonedaOriginal();
+            if (moneda != null && moneda.equals(nombre)) {
+                transaccion.setMonedaOriginal("ARG");
+                transaccion.setMontoOriginal(transaccion.getValor());
+                transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+            }
+        }
+        
         monedaService.deleteMonedaPorNombre(email, nombre);
         return ResponseEntity.noContent().build(); // 204 No Content
     }

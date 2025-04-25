@@ -30,7 +30,7 @@ public class MonedaService {
     }
 
     public Moneda updateMonedaPorNombre(String email, String nombreActual, String nombreNuevo, Double valorNuevo) {
-        Optional<Moneda> monedaOpt = monedaRepository.findByUsuarioEmailAndNombre(email, nombreActual);
+        Optional<Moneda> monedaOpt = monedaRepository.findByUserEmailAndNombre(email, nombreActual);
         
         if (monedaOpt.isEmpty()) {
             throw new RuntimeException("Moneda no encontrada");

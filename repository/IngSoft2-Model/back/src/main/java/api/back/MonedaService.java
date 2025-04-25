@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MonedaService {
@@ -28,14 +29,19 @@ public class MonedaService {
         return monedaRepository.save(moneda);
     }
 
-    public Moneda updateMoneda(String email, Long id, String nombre, Double valor) {
-        Moneda moneda = monedaRepository.findByIdAndUserEmail(id, email)
-                .orElseThrow(() -> new RuntimeException("Moneda no encontrada o no pertenece al usuario."));
+    public Moneda updateMonedaPorNombre(String email, String nombreActual, String nombreNuevo, Double valorNuevo) {
+        Optional<Moneda> monedaOpt = monedaRepository.findByUsuarioEmailAndNombre(email, nombreActual);
+        
+        if (monedaOpt.isEmpty()) {
+            throw new RuntimeException("Moneda no encontrada");
+        }
     
-        moneda.setNombre(nombre);
-        moneda.setValor(valor);
+        Moneda moneda = monedaOpt.get();
+        moneda.setNombre(nombreNuevo);
+        moneda.setValor(valorNuevo);
         return monedaRepository.save(moneda);
     }
+    
     
     public void deleteMoneda(String email, Long id) {
         Moneda moneda = monedaRepository.findByIdAndUserEmail(id, email)

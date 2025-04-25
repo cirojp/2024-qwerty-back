@@ -31,17 +31,17 @@ public class MonedaController {
         return ResponseEntity.ok(nueva);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Moneda> updateMoneda(
-            @PathVariable Long id,
+    @PutMapping
+    public ResponseEntity<Moneda> updateMonedaPorNombre(
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
 
         String email = authentication.getName();
-        String nombre = request.get("nombre").toString();
-        Double valor = Double.parseDouble(request.get("valor").toString());
+        String nombreActual = request.get("nombreActual").toString();
+        String nombreNuevo = request.get("nombreNuevo").toString();
+        Double valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
 
-        Moneda actualizada = monedaService.updateMoneda(email, id, nombre, valor);
+        Moneda actualizada = monedaService.updateMonedaPorNombre(email, nombreActual, nombreNuevo, valorNuevo);
         return ResponseEntity.ok(actualizada);
     }
 

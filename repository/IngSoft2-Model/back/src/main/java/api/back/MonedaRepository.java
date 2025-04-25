@@ -9,5 +9,6 @@ public interface MonedaRepository extends JpaRepository<Moneda, Long> {
 
     Optional<Moneda> findByIdAndUserEmail(Long id, String email);
 
+    Optional<Moneda> findByUsuarioEmailAndNombre(String email, String nombre);
     
 }

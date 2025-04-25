@@ -18,7 +18,9 @@ public class MonedaController {
     @GetMapping
     public ResponseEntity<List<Moneda>> getMonedas(Authentication authentication) {
         String email = authentication.getName();
+        System.out.println("Email recibido: " + email); 
         List<Moneda> monedas = monedaService.getMonedasByEmail(email);
+        System.out.println("Monedas: " + monedas);   
         return ResponseEntity.ok(monedas);
     }
 
@@ -28,8 +30,6 @@ public class MonedaController {
         String nombre = request.get("nombre").toString();
         Double valor = Double.parseDouble(request.get("valor").toString());
         Moneda nueva = monedaService.addMoneda(email, nombre, valor);
-        System.out.println("                            ///////////////////////                    ");
-        System.out.println("                            monedas                    ");
         return ResponseEntity.ok(nueva);
     }
 }

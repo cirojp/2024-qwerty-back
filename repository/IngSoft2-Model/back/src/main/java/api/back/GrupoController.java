@@ -169,28 +169,30 @@ public class GrupoController {
     }
 
     @PostMapping("/{grupoId}/cerrar")
-    public ResponseEntity<String> cerrarGrupo(@PathVariable Long grupoId) {
-        // Buscar el grupo por su ID
+    public ResponseEntity<String> cerrarGrupo(@PathVariable Long grupoId, Authentication authentication) {
+        String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
         }
+        boolean perteneceAlGrupo = grupo.getUsuarios().stream()
+            .anyMatch(usuario -> usuario.getEmail().equals(emailUsuario));
 
+        if (!perteneceAlGrupo) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para cerrar este grupo.");
+        }
         List<TransaccionesPendientes> transaccionesPendientes = transaccionesPendientesService.findByGrupoId(grupoId);
         for (TransaccionesPendientes transaccionPendiente : transaccionesPendientes) {
             transaccionesPendientesService.delete(transaccionPendiente.getId());
         }
 
-        // Sumar todas las transacciones del grupo
         double totalTransacciones = grupo.getTransacciones().stream()
         .mapToDouble(GrupoTransacciones::getValor)
         .sum();
 
-        // Calcular el monto a pagar por cada usuario
         int cantidadUsuarios = grupo.getUsuarios().size();
         double montoPorUsuario = totalTransacciones / cantidadUsuarios;
 
-        // Crear una transacción para cada usuario del grupo
         LocalDate fechaHoy = LocalDate.now();
         String categoria = "Gasto Grupal";
         String motivo = grupo.getNombre();
@@ -207,10 +209,9 @@ public class GrupoController {
             nuevaTransaccion.setMonedaOriginal("ARG");
             nuevaTransaccion.setMontoOriginal(montoPorUsuario);
             
-            // Guardar la transacción
             transaccionesService.createTransaccion(nuevaTransaccion, usuario.getEmail());
         }
-        // Cambiar el estado del grupo a cerrado (false)
+
         grupo.setEstado(false);
         grupoService.save(grupo); 
         
@@ -218,14 +219,17 @@ public class GrupoController {
     }
 
     @DeleteMapping("/transaccion/{transaccionId}")
-    public ResponseEntity<String> eliminarGrupoTransaccion(@PathVariable Long transaccionId) {
-        // Busca la transacción por su ID
+    public ResponseEntity<String> eliminarGrupoTransaccion(@PathVariable Long transaccionId, Authentication authentication) {
+        String emailUsuario = authentication.getName();
         GrupoTransacciones transaccion = grupoTransaccionesService.findById(transaccionId);
+
         if (transaccion == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transacción no encontrada.");
         }
+        if (!emailUsuario.equals(transaccion.getUsers())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para eliminar esta transacción.");
+        }
 
-        // Elimina la transacción
         grupoTransaccionesService.delete(transaccionId);
         return ResponseEntity.ok("Transacción eliminada exitosamente.");
     }
@@ -234,15 +238,17 @@ public class GrupoController {
     @PutMapping("/transaccion/{transaccionId}")
     public ResponseEntity<GrupoTransacciones> editarGrupoTransaccion(
         @PathVariable Long transaccionId,
-        @RequestBody Map<String, Object> payload
+        @RequestBody Map<String, Object> payload,
+        Authentication authentication
     ) {
-        // Busca la transacción por su ID
+        String emailUsuario = authentication.getName();
         GrupoTransacciones transaccionExistente = grupoTransaccionesService.findById(transaccionId);
         if (transaccionExistente == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Retorna 404 si la transacción no existe
         }
-
-        // Actualiza los valores de la transacción
+        if (!emailUsuario.equals(transaccionExistente.getUsers())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
         if (payload.containsKey("valor")) {
             Object valorObj = payload.get("valor");
             Double valor;
@@ -268,44 +274,45 @@ public class GrupoController {
         if (payload.containsKey("tipoGasto")) {
             transaccionExistente.setTipoGasto((String) payload.get("tipoGasto"));
         }
-
-        // Guarda los cambios
         GrupoTransacciones transaccionActualizada = grupoTransaccionesService.save(transaccionExistente);
         return ResponseEntity.ok(transaccionActualizada);
     }
 
     @DeleteMapping("/{grupoId}")
-    public ResponseEntity<String> eliminarGrupo(@PathVariable Long grupoId) {
-        // Busca el grupo por su ID
+    public ResponseEntity<String> eliminarGrupo(@PathVariable Long grupoId, Authentication authentication) {
+        String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
         }
-
-        // Elimina las transacciones del grupo
+        boolean perteneceAlGrupo = grupo.getUsuarios().stream()
+            .anyMatch(usuario -> usuario.getEmail().equals(emailUsuario));
+        if (!perteneceAlGrupo) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para cerrar este grupo.");
+        }
         List<GrupoTransacciones> transacciones = grupo.getTransacciones();
         for (GrupoTransacciones transaccion : transacciones) {
             grupoTransaccionesService.delete(transaccion.getId());
         }
-
-        // Elimina las transacciones pendientes del grupo
         List<TransaccionesPendientes> transaccionesPendientes = transaccionesPendientesService.findByGrupoId(grupoId);
         for (TransaccionesPendientes transaccionPendiente : transaccionesPendientes) {
             transaccionesPendientesService.delete(transaccionPendiente.getId());
         }
-
-        // Finalmente, elimina el grupo
         grupoService.delete(grupoId);
-
         return ResponseEntity.ok("Grupo y todas sus transacciones eliminadas exitosamente.");
     }
 
     @GetMapping("/{grupoId}/usuarios")
-    public ResponseEntity<List<User>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId) {
+    public ResponseEntity<List<User>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId, Authentication authentication) {
+        String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
-        System.out.println("\n\n " + grupo + "\n\n " + grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+        boolean perteneceAlGrupo = grupo.getUsuarios().stream()
+        .anyMatch(usuario -> usuario.getEmail().equals(emailUsuario));
+        if (!perteneceAlGrupo) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.emptyList());
         }
         List<User> usuarios = grupo.getUsuarios();
         return ResponseEntity.ok(usuarios);
@@ -337,8 +344,9 @@ public class GrupoController {
     @GetMapping("/{grupoId}/verificar-usuario")
     public ResponseEntity<String> verificarUsuarioEnGrupoOInvitado(
             @PathVariable Long grupoId,
-            @RequestParam String email) {
-        // Busca el grupo por su ID
+            @RequestParam String email,
+            Authentication authentication) {
+        String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
@@ -362,7 +370,6 @@ public class GrupoController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya tiene una invitación pendiente para el grupo.");
             }
         }
-
         return ResponseEntity.ok("El usuario no está en el grupo ni tiene una invitación pendiente.");
     }
 

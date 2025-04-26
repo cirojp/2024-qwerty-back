@@ -3,6 +3,7 @@ package api.back;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,14 +41,30 @@ public class BudgetController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBudget(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBudget(@PathVariable Long id, Authentication authentication) {
+        User user = userService.findByEmail(authentication.getName());
+        List<Budget> presupuestos = budgetService.getPresupuestosByUserId(user);
+
+        boolean presupuestoPerteneceAlUsuario = presupuestos.stream()
+        .anyMatch(presupuesto -> presupuesto.getId().equals(id));
+        if (!presupuestoPerteneceAlUsuario) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         budgetService.deleteBudget(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/editPresupuesto")
     public ResponseEntity<Void> editBudget(@RequestBody Budget budget, Authentication authentication) {
+        User user = userService.findByEmail(authentication.getName());
+        List<Budget> presupuestos = budgetService.getPresupuestosByUserId(user);
         Long budgetId = budget.getId();
+        boolean presupuestoPerteneceAlUsuario = presupuestos.stream()
+        .anyMatch(presupuesto -> presupuesto.getId().equals(budgetId));
+        if (!presupuestoPerteneceAlUsuario) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         budgetService.updateBudget(budgetId, budget);
 
         // Devolver un 200 OK con el presupuesto actualizado

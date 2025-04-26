@@ -23,7 +23,7 @@ public class BudgetService {
 
     public Budget updateBudget(Long id, Budget budget) {
         Budget existingBudget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transacción no encontrada o no pertenece al usuario"));
+                .orElseThrow(() -> new RuntimeException("Presupuesto no encontrada o no pertenece al usuario"));
 
         // Validar el presupuesto total
         if (budget.getTotalBudget() < 0) {

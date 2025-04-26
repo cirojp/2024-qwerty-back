@@ -256,7 +256,7 @@ public class GrupoController {
                 valor = ((Number) valorObj).doubleValue();
             } else if (valorObj instanceof String) {
                 valor = Double.parseDouble((String) valorObj);
-            } else {
+            } else { 
                 throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
             }
             transaccionExistente.setValor(valor);
@@ -273,6 +273,21 @@ public class GrupoController {
         }
         if (payload.containsKey("tipoGasto")) {
             transaccionExistente.setTipoGasto((String) payload.get("tipoGasto"));
+        }
+        if (payload.containsKey("monedaOriginal")) {
+            transaccionExistente.setMonedaOriginal((String) payload.get("monedaOriginal"));
+        }
+        if (payload.containsKey("montoOriginal")) {
+            Object valorObj2 = payload.get("montoOriginal");
+            Double valorOriginal;
+            if (valorObj2 instanceof Number) {
+                valorOriginal = ((Number) valorObj2).doubleValue();
+            } else if (valorObj2 instanceof String) {
+                valorOriginal = Double.parseDouble((String) valorObj2);
+            } else { 
+                throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
+            }
+            transaccionExistente.setMontoOriginal(valorOriginal);
         }
         GrupoTransacciones transaccionActualizada = grupoTransaccionesService.save(transaccionExistente);
         return ResponseEntity.ok(transaccionActualizada);

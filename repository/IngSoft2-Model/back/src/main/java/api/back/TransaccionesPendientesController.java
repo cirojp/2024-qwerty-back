@@ -27,28 +27,16 @@ public class TransaccionesPendientesController {
         this.userService = userService;
         this.restTemplate = restTemplate;
     }
-    /*
-     * public TransaccionesPendientesController(TransaccionesPendientesService
-     * transaccionesPendientesService, UserService userService) {
-     * this.transaccionesPendientesService = transaccionesPendientesService;
-     * this.userService = userService;
-     * }
-     */
-
-    // Endpoint para obtener todas las transacciones pendientes del usuario
-    // autenticado
     @GetMapping("/user")
     public ResponseEntity<List<TransaccionesPendientes>> getPendingTransaccionesByUser(Authentication authentication) {
         String email = authentication.getName();
-        User user = userService.findByEmail(email); // Obtener el usuario por email
+        User user = userService.findByEmail(email);
         List<TransaccionesPendientes> pendingTransactions = transaccionesPendientesService
                 .getPendingTransaccionesByUserId(user.getId());
 
-        // Retornar una lista vacía si no hay transacciones pendientes
         return ResponseEntity.ok(pendingTransactions);
     }
 
-    // Endpoint para eliminar una transacción pendiente por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePendingTransaccion(@PathVariable Long id, Authentication authentication) {
         String email = authentication.getName();
@@ -62,23 +50,19 @@ public class TransaccionesPendientesController {
         }
     }
 
-    // Endpoint para transacción aceptada
-    // Endpoint para transacción aceptada
     @PostMapping("/aceptada")
     public ResponseEntity<String> transaccionAceptada(@RequestParam String id_reserva, Authentication authentication) {
         return enviarNotificacionReserva(id_reserva, authentication, "aceptada");
     }
 
-    // Endpoint para transacción rechazada
     @PostMapping("/rechazada")
     public ResponseEntity<String> transaccionRechazada(@RequestParam String id_reserva, Authentication authentication) {
         return enviarNotificacionReserva(id_reserva, authentication, "rechazada");
     }
 
-    // Método para enviar la notificación de reserva a la URL externa
     private ResponseEntity<String> enviarNotificacionReserva(String id_reserva, Authentication authentication,
             String status) {
-        String email = authentication.getName(); // Obtener el email del usuario autenticado
+        String email = authentication.getName();
 
         // Crear el cuerpo del JSON
         Map<String, Object> body = new HashMap<>();
@@ -86,20 +70,15 @@ public class TransaccionesPendientesController {
         body.put("id_reserva", id_reserva);
         body.put("reservationStatus", status);
 
-        // Establecer headers
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
-        // Crear la request con el cuerpo y los headers
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        // URL de la aplicación del otro grupo
         String url = "https://backendapi.fpenonori.com/reservation/confirm";
 
-        // Hacer la petición PUT
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-        // Devolver la respuesta del servidor
         return ResponseEntity.ok(response.getBody());
     }
 

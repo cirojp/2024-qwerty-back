@@ -33,10 +33,9 @@ public class TransaccionesController {
 
     @GetMapping("/user")
     public List<Transacciones> getTransaccionesByUser(Authentication authentication) {
-        String email = authentication.getName(); // Obtenemos el email del usuario autenticado
-        User user = userService.findByEmail(email); // Obtenemos el usuario por email
-        return transaccionesService.getTransaccionesByUserId(user.getId()); // Llamamos al servicio con el ID del
-                                                                            // usuario
+        String email = authentication.getName(); 
+        User user = userService.findByEmail(email); 
+        return transaccionesService.getTransaccionesByUserId(user.getId());                                        
     }
 
     @GetMapping("/userTest")
@@ -59,7 +58,7 @@ public class TransaccionesController {
     public Transacciones createPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
         String email = authentication.getName();
-        Transacciones transaccion2 = new Transacciones(); // Ingreso para quien envia el cobro
+        Transacciones transaccion2 = new Transacciones();
         transaccion2.setCategoria("Ingreso de Dinero");
         transaccion2.setFecha(transaccion.getFecha());
         transaccion2.setMotivo(transaccion.getMotivo());
@@ -72,15 +71,13 @@ public class TransaccionesController {
         TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
                 userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
         transaccionesPendientesService.save(cobroPendiente);
-        // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
-        return transaccionesService.createTransaccion(transaccion, email); // Transaccion de quien acepta el cobro
+        return transaccionesService.createTransaccion(transaccion, email);
     }
 
     @PostMapping("/enviarPago/{mail}")
     public Transacciones sendPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
-        // mail es el email de quien recibe el cobro
-        String email = authentication.getName(); // Email de quien recibe el gasto
+        String email = authentication.getName();
         transaccion.setUser(userService.findByEmail(email));
         Transacciones transaccion2 = new Transacciones();
         transaccion2.setCategoria("Ingreso de Dinero");

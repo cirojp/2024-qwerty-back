@@ -28,6 +28,10 @@ public class TransaccionesPendientes {
     private LocalDate fecha;
     private String sentByEmail;
     private Long grupoId;
+    private String monedaOriginal; 
+    private Double montoOriginal;
+
+    
 
     public Long getGrupoId() {
         return grupoId;
@@ -40,12 +44,14 @@ public class TransaccionesPendientes {
     public TransaccionesPendientes() {
     }
 
-    public TransaccionesPendientes(Double valor, User user, String motivo, String id_reserva, LocalDate fecha) {
+    public TransaccionesPendientes(Double valor, User user, String motivo, String id_reserva, LocalDate fecha, String monedaOriginal, Double montoOriginal) {
         this.valor = valor;
         this.user = user;
         this.motivo = motivo;
         this.id_reserva = id_reserva;
         this.fecha = fecha;
+        this.monedaOriginal = monedaOriginal;
+        this.montoOriginal = montoOriginal;
     }
 
     public TransaccionesPendientes(Double valor, User user, String motivo, LocalDate fecha) {
@@ -110,6 +116,21 @@ public class TransaccionesPendientes {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public String getMonedaOriginal() {
+        return monedaOriginal;
+    }
+
+    public void setMonedaOriginal(String monedaOriginal) {
+        this.monedaOriginal = monedaOriginal;
+    }
+    public Double getMontoOriginal() {
+        return montoOriginal;
+    }
+
+    public void setMontoOriginal(Double montoOriginal) {
+        this.montoOriginal = montoOriginal;
     }
 
 }

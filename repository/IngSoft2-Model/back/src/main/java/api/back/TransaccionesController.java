@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @RestController
 @RequestMapping("/api/transacciones")
 @CrossOrigin(origins = { "http://localhost:5173/", "http://127.0.0.1:5173" })
@@ -32,10 +33,9 @@ public class TransaccionesController {
 
     @GetMapping("/user")
     public List<Transacciones> getTransaccionesByUser(Authentication authentication) {
-        String email = authentication.getName(); // Obtenemos el email del usuario autenticado
-        User user = userService.findByEmail(email); // Obtenemos el usuario por email
-        return transaccionesService.getTransaccionesByUserId(user.getId()); // Llamamos al servicio con el ID del
-                                                                            // usuario
+        String email = authentication.getName(); 
+        User user = userService.findByEmail(email); 
+        return transaccionesService.getTransaccionesByUserId(user.getId());                                        
     }
 
     @GetMapping("/userTest")
@@ -58,26 +58,26 @@ public class TransaccionesController {
     public Transacciones createPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
         String email = authentication.getName();
-        Transacciones transaccion2 = new Transacciones(); // Ingreso para quien envia el cobro
+        Transacciones transaccion2 = new Transacciones();
         transaccion2.setCategoria("Ingreso de Dinero");
         transaccion2.setFecha(transaccion.getFecha());
         transaccion2.setMotivo(transaccion.getMotivo());
         transaccion2.setTipoGasto("Tarjeta de Debito");
         transaccion2.setUser(userService.findByEmail(mail));
         transaccion2.setValor(transaccion.getValor());
+        transaccion2.setMonedaOriginal(transaccion.getMonedaOriginal());
+        transaccion2.setMontoOriginal(transaccion.getMontoOriginal());
         transaccionesService.createTransaccion(transaccion2, mail);
         TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
-                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha());
+                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
         transaccionesPendientesService.save(cobroPendiente);
-        // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
-        return transaccionesService.createTransaccion(transaccion, email); // Transaccion de quien acepta el cobro
+        return transaccionesService.createTransaccion(transaccion, email);
     }
 
     @PostMapping("/enviarPago/{mail}")
     public Transacciones sendPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
-        // mail es el email de quien recibe el cobro
-        String email = authentication.getName(); // Email de quien recibe el gasto
+        String email = authentication.getName();
         transaccion.setUser(userService.findByEmail(email));
         Transacciones transaccion2 = new Transacciones();
         transaccion2.setCategoria("Ingreso de Dinero");
@@ -86,9 +86,11 @@ public class TransaccionesController {
         transaccion2.setTipoGasto("Tarjeta de Debito");
         transaccion2.setUser(userService.findByEmail(mail));
         transaccion2.setValor(transaccion.getValor());
+        transaccion2.setMonedaOriginal(transaccion.getMonedaOriginal());
+        transaccion2.setMontoOriginal(transaccion.getMontoOriginal());
         transaccionesService.createTransaccion(transaccion2, mail);
         TransaccionesPendientes pendienteCobro = new TransaccionesPendientes(transaccion.getValor(),
-                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha());
+                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
         pendienteCobro.setSentByEmail(email);
         transaccionesPendientesService.save(pendienteCobro);
         // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
@@ -172,6 +174,20 @@ public class TransaccionesController {
         // Retornar ambas listas en el objeto de respuesta personalizado
         return new TransaccionesResponse(transaccionesFiltradas, transaccionesSinFiltrarCat);
     }
+
+    @GetMapping("/user/recurrent")
+    public List<Transacciones> getTransaccionesRecurrentes(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.findByEmail(email);
+        return transaccionesService.getTransaccionesRecurrentes(user.getId());
+    }
+
+    /*@PostMapping("/procesar-recurrentes")
+    public ResponseEntity<String> procesarTransaccionesRecurrentesManual() {
+        System.out.println("🚀 Se está ejecutando el job de transacciones recurrentes");
+        transaccionesService.procesarTransaccionesRecurrentes();
+        return ResponseEntity.ok("Transacciones recurrentes procesadas");
+    }*/
 
 
 }

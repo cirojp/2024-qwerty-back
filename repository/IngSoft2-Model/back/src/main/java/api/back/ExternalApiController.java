@@ -32,7 +32,9 @@ public class ExternalApiController {
                         usuario,
                         request.getMotivo(),
                         request.getId_reserva(),
-                        request.getFecha() != null ? request.getFecha() : LocalDate.now());
+                        request.getFecha() != null ? request.getFecha() : LocalDate.now(),
+                        "ARG",
+                        request.getValor());
                 // Guardar la transacción
                 transaccionesPendientesService.save(transaccionPendiente);
                 userService.pendingTransactionNotification(usuario.getEmail());
@@ -50,6 +52,11 @@ public class ExternalApiController {
     public ResponseEntity<Boolean> checkUserExists(@PathVariable String email) {
         boolean exists = (userService.findByEmail(email) != null);
         return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("OK");
     }
 
 }

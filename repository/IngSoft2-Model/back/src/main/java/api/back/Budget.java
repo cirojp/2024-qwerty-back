@@ -26,21 +26,26 @@ public class Budget {
     private User user;
 
     private String budgetMonth;
+    private String payOptionBudget;
+
+    
 
     public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, User user, String nameBudget,
-            String budgetMonth) {
+            String budgetMonth, String payOptionBudget) {
         this.totalBudget = totalBudget;
         this.categoryBudgets = categoryBudgets;
         this.user = user;
         this.nameBudget = nameBudget;
         this.budgetMonth = budgetMonth;
+        this.payOptionBudget = payOptionBudget;
     }
 
-    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, String nameBudget, String budgetMonth) {
+    public Budget(Integer totalBudget, Map<String, Integer> categoryBudgets, String nameBudget, String budgetMonth, String payOptionBudget) {
         this.totalBudget = totalBudget;
         this.categoryBudgets = categoryBudgets;
         this.nameBudget = nameBudget;
         this.budgetMonth = budgetMonth;
+        this.payOptionBudget = payOptionBudget;
     }
 
     public Budget() {
@@ -93,7 +98,8 @@ public class Budget {
                 ", nameBudget='" + nameBudget + '\'' +
                 ", totalBudget=" + totalBudget +
                 ", budgetMonth='" + budgetMonth + '\'' +
-                ", categoryBudgets=" + categoryBudgets +
+                ", categoryBudgets=" + categoryBudgets + '\'' +
+                ", payOptionBudget=" + payOptionBudget +
                 '}';
     }
 
@@ -103,5 +109,13 @@ public class Budget {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getPayOptionBudget() {
+        return payOptionBudget;
+    }
+
+    public void setPayOptionBudget(String payOptionBudget) {
+        this.payOptionBudget = payOptionBudget;
     }
 }

@@ -8,6 +8,10 @@ public class TransaccionRequest {
     private String motivo;
     private String id_reserva; // Nuevo campo id_reserva
     private LocalDate fecha; // Fecha por defecto al crear
+    private String monedaOriginal;
+    private Double montoOriginal;
+
+    
 
     // Constructor
     public TransaccionRequest() {
@@ -61,5 +65,21 @@ public class TransaccionRequest {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public String getMonedaOriginal() {
+        return monedaOriginal;
+    }
+
+    public void setMonedaOriginal(String monedaOriginal) {
+        this.monedaOriginal = monedaOriginal;
+    }
+
+    public Double getMontoOriginal() {
+        return montoOriginal;
+    }
+
+    public void setMontoOriginal(Double montoOriginal) {
+        this.montoOriginal = montoOriginal;
     }
 }

@@ -1,11 +1,13 @@
 package api.back;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@EnableScheduling
 @Service
 public class TransaccionesService {
 
@@ -32,6 +34,12 @@ public class TransaccionesService {
         // Si no se proporciona una fecha, usamos la fecha actual
         if (transaccion.getFecha() == null) {
             transaccion.setFecha(LocalDate.now());
+        }
+
+        // Calcular siguiente ejecución si es recurrente
+        if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccion.getFecha(), transaccion.getFrecuenciaRecurrente());
+            transaccion.setSiguienteEjecucion(siguienteEjecucion);
         }
 
         return transaccionesRepository.save(transaccion);
@@ -70,6 +78,13 @@ public class TransaccionesService {
         transaccion.setFecha(transaccionActualizada.getFecha());
         transaccion.setCategoria(transaccionActualizada.getCategoria());
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
+        transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
+        transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+        if (transaccionActualizada.getFrecuenciaRecurrente()!= null) {
+            transaccion.setFrecuenciaRecurrente(transaccionActualizada.getFrecuenciaRecurrente());
+            transaccion.setSiguienteEjecucion(calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente()));
+        }
+
         // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }
@@ -126,5 +141,57 @@ public class TransaccionesService {
         // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
         }
     
+        @Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
+        //@Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los minutos
+        public void procesarTransaccionesRecurrentes() {
+            
+            LocalDate hoy = LocalDate.now();
+            List<Transacciones> transaccionesRecurrentes = transaccionesRepository.findBySiguienteEjecucion(hoy);
+            System.out.println(hoy);
+            System.out.println(transaccionesRecurrentes.isEmpty());
+            for (Transacciones transaccion : transaccionesRecurrentes) {
+                
+                // Crear nueva transacción con los mismos datos
+                Transacciones nuevaTransaccion = new Transacciones();
+                nuevaTransaccion.setCategoria(transaccion.getCategoria());
+                nuevaTransaccion.setFecha(hoy);
+                nuevaTransaccion.setMotivo(transaccion.getMotivo());
+                nuevaTransaccion.setTipoGasto(transaccion.getTipoGasto());
+                nuevaTransaccion.setUser(transaccion.getUser());
+                nuevaTransaccion.setValor(transaccion.getValor());
+                nuevaTransaccion.setMonedaOriginal(transaccion.getMonedaOriginal());
+                nuevaTransaccion.setMontoOriginal(transaccion.getMontoOriginal());
+                
+                transaccionesRepository.save(nuevaTransaccion);
+                System.out.println("🚀 🚀 🚀 🚀 🚀 🚀 🚀 ");
+                System.out.println(transaccion);
+                System.out.println("🚀 🚀 🚀 🚀 🚀 🚀 🚀 ");
+                System.out.println(nuevaTransaccion);
+                // Calcular nueva fecha de ejecución
+                LocalDate nuevaFecha = calcularSiguienteEjecucion(hoy, transaccion.getFrecuenciaRecurrente());
+                transaccion.setSiguienteEjecucion(nuevaFecha);
+                transaccionesRepository.save(transaccion);
+            }
+        }
+
+        private LocalDate calcularSiguienteEjecucion(LocalDate fecha, String frecuencia) {
+            switch (frecuencia.toLowerCase()) {
+                case "diariamente":
+                    return fecha.plusDays(1);
+                case "semanalmente":
+                    return fecha.plusWeeks(1);
+                case "mensualmente":
+                    return fecha.plusMonths(1);
+                case "anualmente":
+                    return fecha.plusYears(1);
+                default:
+                    throw new IllegalArgumentException("Frecuencia no válida: " + frecuencia);
+            }
+        }
+        
+        public List<Transacciones> getTransaccionesRecurrentes(Long userId) {
+            return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNotNull(userId);
+        }
+        
 
 }

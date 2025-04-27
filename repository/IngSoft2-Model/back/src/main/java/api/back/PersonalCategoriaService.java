@@ -62,5 +62,4 @@ public class PersonalCategoriaService {
         personalCategoriaRepository.save(personalCategoria);
     }
 
-    // dsps necesitamos agregar editar
 }

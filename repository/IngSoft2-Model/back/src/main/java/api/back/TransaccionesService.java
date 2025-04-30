@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @EnableScheduling
 @Service
@@ -24,7 +25,11 @@ public class TransaccionesService {
 
     public List<Transacciones> getTransaccionesByUserId(Long userId) {
         //return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
-        return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNullOrderByFechaDesc(userId);
+        //return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNullOrderByFechaDesc(userId);
+        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId)
+            .stream()
+            .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().isEmpty())
+            .collect(Collectors.toList());
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {

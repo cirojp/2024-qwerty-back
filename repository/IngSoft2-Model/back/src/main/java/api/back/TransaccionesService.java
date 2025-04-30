@@ -23,7 +23,8 @@ public class TransaccionesService {
     }
 
     public List<Transacciones> getTransaccionesByUserId(Long userId) {
-        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
+        //return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
+        return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNullOrderByFechaDesc(userId);
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {
@@ -38,6 +39,19 @@ public class TransaccionesService {
 
         // Calcular siguiente ejecución si es recurrente
         if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            Transacciones copia = new Transacciones();
+            copia.setUser(transaccion.getUser());
+            copia.setValor(transaccion.getValor());
+            copia.setCategoria(transaccion.getCategoria());
+            copia.setMotivo(transaccion.getMotivo());
+            copia.setFecha(transaccion.getFecha());
+            copia.setTipoGasto(transaccion.getTipoGasto());
+            copia.setFrecuenciaRecurrente(null);
+            copia.setMonedaOriginal(transaccion.getMonedaOriginal());
+            copia.setMontoOriginal(transaccion.getMontoOriginal());
+    
+            transaccionesRepository.save(copia);
+
             LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccion.getFecha(), transaccion.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(siguienteEjecucion);
         }

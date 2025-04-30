@@ -143,7 +143,7 @@ public class TransaccionesService {
     
         //@Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
         //@Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los minutos
-        @Scheduled(cron = "0 */5 * * * ?") //se ejecuta cada 5 minutos
+        //@Scheduled(cron = "0 */5 * * * ?") //se ejecuta cada 5 minutos
         public void procesarTransaccionesRecurrentes() {
             
             LocalDate hoy = LocalDate.now();

@@ -28,7 +28,7 @@ public class TransaccionesService {
         //return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNullOrderByFechaDesc(userId);
         return transaccionesRepository.findByUserIdOrderByFechaDesc(userId)
             .stream()
-            .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().isEmpty())
+            .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().isEmpty() || "".equals(t.getFrecuenciaRecurrente()))
             .collect(Collectors.toList());
     }
 

@@ -118,12 +118,13 @@ public class TransaccionesService {
     public List<Transacciones> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
         LocalDate startDate = null;
         LocalDate endDate = null;
+        List<Transacciones> transacciones;
         if (anio == null && mes != null) {
-            anio = 2024;
+            anio = 2025;
         }
         // Si la categoría no es null o "Todas" y anio y mes son null
         if (categoria != null && !categoria.equals("Todas") && anio == null && mes == null) {
-            return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
+            transacciones =  transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
         }
         // Si la categoría no es null ni "Todas" y además mes o anio no son null
         else if (categoria != null && !categoria.equals("Todas") && (anio != null || mes != null)) {
@@ -131,15 +132,14 @@ public class TransaccionesService {
                 // Si ambos son proporcionados, calcula el rango de fechas
                 startDate = LocalDate.of(anio, mes, 1);
                 endDate = startDate.plusMonths(1).minusDays(1);
-                return transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
+                transacciones =  transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
             } else if (anio != null) {
                 // Si solo el año es proporcionado, establece el rango de fechas para todo el año
                 startDate = LocalDate.of(anio, 1, 1);
                 endDate = LocalDate.of(anio, 12, 31);
-                return transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
-            } else if (mes != null) {
-                // Si solo el mes es proporcionado, debes decidir cómo manejarlo
-                // Aquí puedes decidir no realizar ninguna consulta o lanzar una excepción
+                transacciones =  transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
+            } else {
+                transacciones = List.of();
             }
         }
         // Si la categoría es null o "Todas" pero anio o mes no son null
@@ -148,19 +148,21 @@ public class TransaccionesService {
                 // Si ambos son proporcionados, calcula el rango de fechas
                 startDate = LocalDate.of(anio, mes, 1);
                 endDate = startDate.plusMonths(1).minusDays(1);
-                return transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
+                transacciones =  transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
             } else if (anio != null) {
                 // Si solo el año es proporcionado, establece el rango de fechas para todo el año
                 startDate = LocalDate.of(anio, 1, 1);
                 endDate = LocalDate.of(anio, 12, 31);
-                return transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
-            } else if (mes != null) {
-                // Si solo el mes es proporcionado, puedes decidir no realizar ninguna consulta o lanzar una excepción
+                transacciones =  transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
+            } else {
+                transacciones = List.of();
             }
+        } else {
+            transacciones = transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
         }
-        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
-    
-        // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
+        return transacciones.stream()
+            .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().trim().isEmpty())
+            .collect(Collectors.toList());
         }
     
         //@Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche

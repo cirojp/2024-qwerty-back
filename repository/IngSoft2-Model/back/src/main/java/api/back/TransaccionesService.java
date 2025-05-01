@@ -24,8 +24,6 @@ public class TransaccionesService {
     }
 
     public List<Transacciones> getTransaccionesByUserId(Long userId) {
-        //return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
-        //return transaccionesRepository.findByUserIdAndFrecuenciaRecurrenteIsNullOrderByFechaDesc(userId);
         for (Transacciones t : transaccionesRepository.findByUserIdOrderByFechaDesc(userId)) {
             System.out.println("ID: " + t.getId() + " Frecuencia: '" + t.getFrecuenciaRecurrente() + "'");
         }
@@ -87,14 +85,9 @@ public class TransaccionesService {
     }
 
     public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada, String email) {
-        // Obtener el usuario autenticado por email
         User user = userService.findByEmail(email);
-
-        // Buscar la transacción por id y asegurarse de que pertenezca al usuario
         Transacciones transaccion = transaccionesRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new RuntimeException("Transacción no encontrada o no pertenece al usuario"));
-
-        // Actualizar los campos de la transacción
         transaccion.setMotivo(transaccionActualizada.getMotivo());
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
@@ -103,7 +96,6 @@ public class TransaccionesService {
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
         if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
-            System.out.println("Condición del if cumplida, creando copia...");
             Transacciones copia = new Transacciones();
             copia.setUser(transaccion.getUser());
             copia.setValor(transaccionActualizada.getValor());
@@ -115,8 +107,6 @@ public class TransaccionesService {
             copia.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
             copia.setMontoOriginal(transaccionActualizada.getMontoOriginal());
             transaccionesRepository.save(copia);
-            System.out.println("copia.getFrecuenciaRecurrente()  " + copia.getFrecuenciaRecurrente());
-            System.out.println("copia.getUser()  " + copia.getUser());
             LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(siguienteEjecucion);
         }
@@ -124,8 +114,6 @@ public class TransaccionesService {
             transaccion.setFrecuenciaRecurrente(transaccionActualizada.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente()));
         }
-
-        // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }
 

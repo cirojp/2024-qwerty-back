@@ -102,6 +102,21 @@ public class TransaccionesService {
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+        if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
+            Transacciones copia = new Transacciones();
+            copia.setUser(transaccionActualizada.getUser());
+            copia.setValor(transaccionActualizada.getValor());
+            copia.setCategoria(transaccionActualizada.getCategoria());
+            copia.setMotivo(transaccionActualizada.getMotivo());
+            copia.setFecha(transaccionActualizada.getFecha());
+            copia.setTipoGasto(transaccionActualizada.getTipoGasto());
+            copia.setFrecuenciaRecurrente(null);
+            copia.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
+            copia.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+            transaccionesRepository.save(copia);
+            LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente());
+            transaccion.setSiguienteEjecucion(siguienteEjecucion);
+        }
         if (transaccionActualizada.getFrecuenciaRecurrente()!= null) {
             transaccion.setFrecuenciaRecurrente(transaccionActualizada.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente()));

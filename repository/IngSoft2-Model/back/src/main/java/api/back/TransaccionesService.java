@@ -102,7 +102,21 @@ public class TransaccionesService {
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+        ///////////////////////////////////////////////////////////////////////////////////////
+        System.out.println("transaccionActualizada.getFrecuenciaRecurrente(): " + transaccionActualizada.getFrecuenciaRecurrente());
+        System.out.println("transaccion.getFrecuenciaRecurrente(): " + transaccion.getFrecuenciaRecurrente());
+
+        boolean actualizadaTieneFrecuencia = transaccionActualizada.getFrecuenciaRecurrente() != null &&
+                                            !transaccionActualizada.getFrecuenciaRecurrente().isEmpty();
+        System.out.println("actualizadaTieneFrecuencia: " + actualizadaTieneFrecuencia);
+
+        boolean transaccionOriginalSinFrecuencia = transaccion.getFrecuenciaRecurrente() == null ||
+                                                transaccion.getFrecuenciaRecurrente().isEmpty() ||
+                                                "".equals(transaccion.getFrecuenciaRecurrente());
+        System.out.println("transaccionOriginalSinFrecuencia: " + transaccionOriginalSinFrecuencia);
+        /////////////////////////////////////////////////////////////////////////////
         if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
+            System.out.println("Condición del if cumplida, creando copia...");
             Transacciones copia = new Transacciones();
             copia.setUser(transaccionActualizada.getUser());
             copia.setValor(transaccionActualizada.getValor());

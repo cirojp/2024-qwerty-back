@@ -49,7 +49,7 @@ public class TransaccionesController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crearTransaccion(@Valid @RequestBody Transacciones transaccion, Authentication authentication) {
+    public ResponseEntity<?> crearTransaccion(@RequestBody Transacciones transaccion, Authentication authentication) {
         try {
             String email = authentication.getName();
             User user = userService.findByEmail(email);

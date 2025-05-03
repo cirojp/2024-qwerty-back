@@ -92,7 +92,7 @@ public class TransaccionesController {
     }
 
     @PostMapping("/enviarPago/{mail}")
-    public Transacciones sendPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
+    public ResponseEntity<?> sendPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
         String email = authentication.getName();
         transaccion.setUser(userService.findByEmail(email));
@@ -105,13 +105,18 @@ public class TransaccionesController {
         transaccion2.setValor(transaccion.getValor());
         transaccion2.setMonedaOriginal(transaccion.getMonedaOriginal());
         transaccion2.setMontoOriginal(transaccion.getMontoOriginal());
-        transaccionesService.createTransaccion(transaccion2, mail);
-        TransaccionesPendientes pendienteCobro = new TransaccionesPendientes(transaccion.getValor(),
-                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
-        pendienteCobro.setSentByEmail(email);
-        transaccionesPendientesService.save(pendienteCobro);
-        // CREAR TRANSACCION PENDIENTE PARA TRANSACCION2
-        return transaccionesService.createTransaccion(transaccion, email); // Transaccion de quien realiza el pago
+        try {
+            transaccionesService.createTransaccion(transaccion2, mail);
+            TransaccionesPendientes pendienteCobro = new TransaccionesPendientes(transaccion.getValor(),
+                    userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
+            pendienteCobro.setSentByEmail(email);
+            transaccionesPendientesService.save(pendienteCobro);
+            Transacciones nueva = transaccionesService.createTransaccion(transaccion, email);
+            TransaccionDTO transaccionDTO = new TransaccionDTO(nueva);
+            return ResponseEntity.ok(transaccionDTO);
+        } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
     }
 
     @GetMapping("/{id}")

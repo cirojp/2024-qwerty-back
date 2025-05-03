@@ -57,7 +57,7 @@ public class TransaccionesService {
         if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
             throw new IllegalArgumentException("La moneda original no puede estar vacía.");
         }
-        // Acá deberías también verificar que tipoGasto, categoría y moneda existan:
+        // Acá deberías también verificar que  categoría y moneda existan:
         // ejemplo: tipoGastoService.existsByNombre(transaccion.getTipoGasto())
         //         if (!existe) throw new IllegalArgumentException("El tipo de gasto no existe.");
         if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {

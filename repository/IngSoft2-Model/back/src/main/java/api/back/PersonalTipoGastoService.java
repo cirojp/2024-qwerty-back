@@ -48,7 +48,7 @@ public class PersonalTipoGastoService {
     }
 
     public boolean isTipoGastoValido(String email, String tipoGasto) {
-        List<String> defaultTipos = List.of("Tarjeta de credito", "Tarjeta de Debito", "Efectivo");
+        List<String> defaultTipos = List.of("Tarjeta de credito", "Tarjeta de Credito", "Tarjeta de Debito", "Tarjeta de debito", "Efectivo");
         if (defaultTipos.contains(tipoGasto)) {
             return true;
         }

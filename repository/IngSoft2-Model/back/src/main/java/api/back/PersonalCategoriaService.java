@@ -62,4 +62,21 @@ public class PersonalCategoriaService {
         personalCategoriaRepository.save(personalCategoria);
     }
 
+    public boolean isCategoriaValida(String email, String nombreCategoria) {
+        List<String> defaultCategorias = List.of("Impuestos y Servicios", "Entretenimiento y Ocio", "Hogar y Mercado", "Antojos", "Electrodomesticos", "Clase", "Ingreso de Dinero");
+        if (defaultCategorias.contains(nombreCategoria)) {
+            return true;
+        }
+        List<PersonalCategoria> categorias = getPersonalCategoria(email);
+        String nombreNormalizado = nombreCategoria.trim().replaceAll("\"", "");
+    
+        for (PersonalCategoria categoria : categorias) {
+            if (categoria.getNombre() != null && 
+                nombreNormalizado.equalsIgnoreCase(categoria.getNombre().trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

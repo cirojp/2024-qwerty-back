@@ -21,6 +21,8 @@ public class TransaccionesService {
     private PersonalTipoGastoService personalTipoGastoService;
     @Autowired
     private PersonalCategoriaService personalCategoriaService;
+    @Autowired
+    private MonedaService monedaService;
 
     public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository,
             UserService userService) {
@@ -59,9 +61,9 @@ public class TransaccionesService {
         if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
             throw new IllegalArgumentException("La moneda original no puede estar vacía.");
         }
-        // Acá deberías también verificar que  categoría y moneda existan:
-        // ejemplo: tipoGastoService.existsByNombre(transaccion.getTipoGasto())
-        //         if (!existe) throw new IllegalArgumentException("El tipo de gasto no existe.");
+        if (!monedaService.isMonedaValida(email, transaccion.getMonedaOriginal())) {
+            throw new IllegalArgumentException("La moneda no existe.");
+        }
         if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {
             throw new IllegalArgumentException("El tipo de gasto no existe.");
         }

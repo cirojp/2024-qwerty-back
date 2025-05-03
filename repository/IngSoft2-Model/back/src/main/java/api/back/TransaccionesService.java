@@ -34,6 +34,29 @@ public class TransaccionesService {
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {
+        // Validaciones
+        if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El motivo no puede estar vacío.");
+        }
+        if (transaccion.getValor() == null || transaccion.getValor() < 0) {
+            throw new IllegalArgumentException("El valor no puede ser nulo ni menor a cero.");
+        }
+        if (transaccion.getMontoOriginal() == null || transaccion.getMontoOriginal() < 0) {
+            throw new IllegalArgumentException("El monto original no puede ser nulo ni menor a cero.");
+        }
+        if (transaccion.getTipoGasto() == null || transaccion.getTipoGasto().trim().isEmpty()) {
+            throw new IllegalArgumentException("El tipo de gasto no puede estar vacío.");
+        }
+        if (transaccion.getCategoria() == null || transaccion.getCategoria().trim().isEmpty()) {
+            throw new IllegalArgumentException("La categoría no puede estar vacía.");
+        }
+        if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
+            throw new IllegalArgumentException("La moneda original no puede estar vacía.");
+        }
+        // Acá deberías también verificar que tipoGasto, categoría y moneda existan:
+        // ejemplo: tipoGastoService.existsByNombre(transaccion.getTipoGasto())
+        //         if (!existe) throw new IllegalArgumentException("El tipo de gasto no existe.");
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         transaccion.setUser(user);

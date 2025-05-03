@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +49,16 @@ public class TransaccionesController {
     }
 
     @PostMapping
-    public Transacciones createTransaccion(@RequestBody Transacciones transaccion, Authentication authentication) {
-        String email = authentication.getName();
-        User user = userService.findByEmail(email);
-        user.setTransaccionesCreadas(user.getTransaccionesCreadas() + 1);
-        return transaccionesService.createTransaccion(transaccion, email);
+    public ResponseEntity<?> crearTransaccion(@Valid @RequestBody Transacciones transaccion, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User user = userService.findByEmail(email);
+            user.setTransaccionesCreadas(user.getTransaccionesCreadas() + 1);
+            Transacciones nueva =  transaccionesService.createTransaccion(transaccion, email);
+            return ResponseEntity.ok(nueva);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/crearPago/{mail}")
@@ -120,41 +127,6 @@ public class TransaccionesController {
         return transaccionesService.updateTransaccion(id, transaccionActualizada, email);
     }
 
-    /*
-     * @GetMapping("/user/filter")
-     * public List<Transacciones> getTransaccionesByCategory(
-     * 
-     * @RequestParam(required = false) String categoria,
-     * Authentication authentication) {
-     * String email = authentication.getName();
-     * User user = userService.findByEmail(email);
-     * 
-     * if (categoria == null || categoria.equals("Todas")) {
-     * // Return all transactions for the user
-     * return transaccionesService.getTransaccionesByUserId(user.getId());
-     * } else {
-     * // Filter transactions by category
-     * return transaccionesService.getTransaccionesByUserIdAndCategory(user.getId(),
-     * categoria);
-     * }
-     * }
-     */
-    
-    /*/ @GetMapping("/user/filter")
-    public List<Transacciones> getTransaccionesByFilters(
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) Integer anio,
-            @RequestParam(required = false) Integer mes,
-            Authentication authentication) {
-        String email = authentication.getName();
-        User user = userService.findByEmail(email);
-
-        // Realiza el filtrado en el nivel del servicio
-        List<Transacciones> transacciones = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria,
-                anio, mes);
-
-        return transacciones;
-    }*/
 
     @GetMapping("/user/filter")
     public TransaccionesResponse getTransaccionesByFilters(

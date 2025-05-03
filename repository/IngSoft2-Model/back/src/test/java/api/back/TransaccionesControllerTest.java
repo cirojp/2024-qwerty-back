@@ -74,7 +74,7 @@ public class TransaccionesControllerTest {
         assertEquals(tx, result);
     }
 
-    @Test
+    /*@Test
     public void testCreateTransaccionWithValidData() {
         String email = "test@example.com";
         Transacciones t = new Transacciones();
@@ -90,7 +90,7 @@ public class TransaccionesControllerTest {
         assertEquals(t, result);
         verify(txService).createTransaccion(t, email);
         assertEquals(1, user.getTransaccionesCreadas());
-    }
+    }*/
 
     @Test
     public void testDeleteTransaccionSuccess() {

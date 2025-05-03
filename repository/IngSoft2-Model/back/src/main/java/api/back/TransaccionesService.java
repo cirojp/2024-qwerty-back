@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,6 +84,13 @@ public class TransaccionesService {
 
         // Calcular siguiente ejecución si es recurrente
         if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            if (transaccion.getFecha().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
+            }
+            List<String> frecuenciasValidas = Arrays.asList("diariamente", "semanalmente", "mensualmente", "anualmente");
+            if (!frecuenciasValidas.contains(transaccion.getFrecuenciaRecurrente())) {
+                throw new IllegalArgumentException("La frecuencia recurrente debe ser: diariamente, semanalmente, mensualmente o anualmente.");
+            }
             Transacciones copia = new Transacciones();
             copia.setUser(transaccion.getUser());
             copia.setValor(transaccion.getValor());
@@ -98,6 +106,9 @@ public class TransaccionesService {
 
             LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccion.getFecha(), transaccion.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(siguienteEjecucion);
+        } else {
+            // Si no es recurrente, aseguramos que siguienteEjecucion sea null
+            transaccion.setSiguienteEjecucion(null);
         }
 
         return transaccionesRepository.save(transaccion);

@@ -61,6 +61,7 @@ public class TransaccionesService {
         // ejemplo: tipoGastoService.existsByNombre(transaccion.getTipoGasto())
         //         if (!existe) throw new IllegalArgumentException("El tipo de gasto no existe.");
         if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {
+            System.out.println("el tipo de gasto es:    " + transaccion.getTipoGasto());
             throw new IllegalArgumentException("El tipo de gasto no existe.");
         }
 

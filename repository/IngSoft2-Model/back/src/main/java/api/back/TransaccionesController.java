@@ -55,7 +55,8 @@ public class TransaccionesController {
             User user = userService.findByEmail(email);
             user.setTransaccionesCreadas(user.getTransaccionesCreadas() + 1);
             Transacciones nueva =  transaccionesService.createTransaccion(transaccion, email);
-            return ResponseEntity.ok(nueva);
+            TransaccionDTO transaccionDTO = new TransaccionDTO(nueva);
+            return ResponseEntity.ok(transaccionDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

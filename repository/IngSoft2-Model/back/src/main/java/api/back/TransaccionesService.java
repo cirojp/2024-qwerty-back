@@ -1,6 +1,7 @@
 package api.back;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
@@ -15,6 +16,9 @@ public class TransaccionesService {
     private final TransaccionesRepository transaccionesRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+
+    @Autowired
+    private PersonalTipoGastoService personalTipoGastoService;
 
     public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository,
             UserService userService) {
@@ -56,6 +60,9 @@ public class TransaccionesService {
         // Acá deberías también verificar que tipoGasto, categoría y moneda existan:
         // ejemplo: tipoGastoService.existsByNombre(transaccion.getTipoGasto())
         //         if (!existe) throw new IllegalArgumentException("El tipo de gasto no existe.");
+        if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {
+            throw new IllegalArgumentException("El tipo de gasto no existe.");
+        }
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -64,7 +71,7 @@ public class TransaccionesService {
         // Si no se proporciona una fecha, usamos la fecha actual
         if (transaccion.getFecha() == null) {
             transaccion.setFecha(LocalDate.now());
-        }
+        } 
 
         // Calcular siguiente ejecución si es recurrente
         if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {

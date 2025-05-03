@@ -46,4 +46,17 @@ public class PersonalTipoGastoService {
                 .orElseThrow(() -> new RuntimeException("Tipo de gasto no encontrado"));
         personalTipoGastoRepository.delete(tipoGasto);
     }
+
+    public boolean isTipoGastoValido(String email, String tipoGasto) {
+        List<String> defaultTipos = List.of("Tarjeta de credito", "Tarjeta de debito", "Efectivo");
+    
+        if (defaultTipos.contains(tipoGasto)) {
+            return true;
+        }
+    
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    
+        return personalTipoGastoRepository.findByUserAndNombre(user, tipoGasto).isPresent();
+    }
 }

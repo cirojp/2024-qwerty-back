@@ -63,8 +63,11 @@ public class TransaccionesController {
     }
 
     @PostMapping("/crearPago/{mail}")
-    public Transacciones createPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
+    public ResponseEntity<?> createPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
+        if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            throw new IllegalArgumentException("El pago no puede ser recurrente.");
+        }
         String email = authentication.getName();
         Transacciones transaccion2 = new Transacciones();
         transaccion2.setCategoria("Ingreso de Dinero");
@@ -75,11 +78,17 @@ public class TransaccionesController {
         transaccion2.setValor(transaccion.getValor());
         transaccion2.setMonedaOriginal(transaccion.getMonedaOriginal());
         transaccion2.setMontoOriginal(transaccion.getMontoOriginal());
-        transaccionesService.createTransaccion(transaccion2, mail);
-        TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
-                userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
-        transaccionesPendientesService.save(cobroPendiente);
-        return transaccionesService.createTransaccion(transaccion, email);
+        try {
+            transaccionesService.createTransaccion(transaccion2, mail);
+            TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
+                    userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
+            transaccionesPendientesService.save(cobroPendiente);
+            Transacciones nueva = transaccionesService.createTransaccion(transaccion, email);
+            TransaccionDTO transaccionDTO = new TransaccionDTO(nueva);
+            return ResponseEntity.ok(transaccionDTO);
+        } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
     }
 
     @PostMapping("/enviarPago/{mail}")

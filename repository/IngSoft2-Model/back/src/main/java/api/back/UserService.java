@@ -46,6 +46,9 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean changePassword(String email, String currentPassword, String newPassword) {
+        if (!isPasswordValid(newPassword)) {
+            throw new IllegalArgumentException("La nueva contraseña no cumple con los requisitos.");
+        }
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if (optionalUser.isPresent()) {
@@ -57,6 +60,10 @@ public class UserService implements UserDetailsService {
             }
         }
         return false;
+    }
+    private boolean isPasswordValid(String password) {
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$";
+        return password != null && password.matches(regex);
     }
 
     public void initiatePasswordReset(String email) {

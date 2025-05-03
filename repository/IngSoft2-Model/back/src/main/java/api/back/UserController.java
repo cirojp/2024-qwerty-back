@@ -20,13 +20,17 @@ public class UserController {
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest,
             Principal principal) {
         String email = principal.getName();
-        boolean success = userService.changePassword(email, changePasswordRequest.getCurrentPassword(),
-                changePasswordRequest.getNewPassword());
+        try {
+            boolean success = userService.changePassword(email, changePasswordRequest.getCurrentPassword(),
+                    changePasswordRequest.getNewPassword());
 
-        if (success) {
-            return ResponseEntity.ok("Password changed successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
+            if (success) {
+                return ResponseEntity.ok("Password changed successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

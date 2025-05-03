@@ -94,6 +94,9 @@ public class TransaccionesController {
     @PostMapping("/enviarPago/{mail}")
     public ResponseEntity<?> sendPago(@PathVariable String mail, @RequestBody Transacciones transaccion,
             Authentication authentication) {
+        if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            throw new IllegalArgumentException("El pago no puede ser recurrente.");
+        }
         String email = authentication.getName();
         transaccion.setUser(userService.findByEmail(email));
         Transacciones transaccion2 = new Transacciones();

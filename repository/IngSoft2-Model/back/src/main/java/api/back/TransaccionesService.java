@@ -140,31 +140,31 @@ public class TransaccionesService {
             throw new IllegalArgumentException("La transacción no fue encontrada o no pertenece al usuario.");
         }
         Transacciones transaccion = optionalTransaccion.get();
-        if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
+        if (transaccionActualizada.getMotivo() == null || transaccionActualizada.getMotivo().trim().isEmpty()) {
             throw new IllegalArgumentException("El motivo no puede estar vacío.");
         }
-        if (transaccion.getValor() == null || transaccion.getValor() < 0) {
+        if (transaccionActualizada.getValor() == null || transaccionActualizada.getValor() < 0) {
             throw new IllegalArgumentException("El valor no puede ser nulo ni menor a cero.");
         }
-        if (transaccion.getMontoOriginal() == null || transaccion.getMontoOriginal() < 0) {
+        if (transaccionActualizada.getMontoOriginal() == null || transaccionActualizada.getMontoOriginal() < 0) {
             throw new IllegalArgumentException("El monto original no puede ser nulo ni menor a cero.");
         }
-        if (transaccion.getTipoGasto() == null || transaccion.getTipoGasto().trim().isEmpty()) {
+        if (transaccionActualizada.getTipoGasto() == null || transaccionActualizada.getTipoGasto().trim().isEmpty()) {
             throw new IllegalArgumentException("El tipo de gasto no puede estar vacío.");
         }
-        if (transaccion.getCategoria() == null || transaccion.getCategoria().trim().isEmpty()) {
+        if (transaccionActualizada.getCategoria() == null || transaccionActualizada.getCategoria().trim().isEmpty()) {
             throw new IllegalArgumentException("La categoría no puede estar vacía.");
         }
-        if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
+        if (transaccionActualizada.getMonedaOriginal() == null || transaccionActualizada.getMonedaOriginal().trim().isEmpty()) {
             throw new IllegalArgumentException("La moneda original no puede estar vacía.");
         }
-        if (!monedaService.isMonedaValida(email, transaccion.getMonedaOriginal())) {
+        if (!monedaService.isMonedaValida(email, transaccionActualizada.getMonedaOriginal())) {
             throw new IllegalArgumentException("La moneda no existe.");
         }
-        if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {
+        if (!personalTipoGastoService.isTipoGastoValido(email, transaccionActualizada.getTipoGasto())) {
             throw new IllegalArgumentException("El tipo de gasto no existe.");
         }
-        if (!personalCategoriaService.isCategoriaValida(email, transaccion.getCategoria())) {
+        if (!personalCategoriaService.isCategoriaValida(email, transaccionActualizada.getCategoria())) {
             throw new IllegalArgumentException("La categoría no existe.");
         }
         transaccion.setMotivo(transaccionActualizada.getMotivo());

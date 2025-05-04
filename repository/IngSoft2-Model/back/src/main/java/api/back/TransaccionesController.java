@@ -139,10 +139,17 @@ public class TransaccionesController {
     }
 
     @PutMapping("/{id}")
-    public Transacciones updateTransaccion(@PathVariable Long id, @RequestBody Transacciones transaccionActualizada,
+    public ResponseEntity<?> updateTransaccion(@PathVariable Long id, @RequestBody Transacciones transaccionActualizada,
             Authentication authentication) {
-        String email = authentication.getName(); // Obtenemos el email del usuario autenticado
-        return transaccionesService.updateTransaccion(id, transaccionActualizada, email);
+       
+        try {
+            String email = authentication.getName(); // Obtenemos el email del usuario autenticado
+            Transacciones nueva = transaccionesService.updateTransaccion(id, transaccionActualizada, email);
+            TransaccionDTO transaccionDTO = new TransaccionDTO(nueva);
+            return ResponseEntity.ok(transaccionDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

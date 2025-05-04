@@ -69,7 +69,6 @@ public class TransaccionesService {
             throw new IllegalArgumentException("El tipo de gasto no existe.");
         }
         if (!personalCategoriaService.isCategoriaValida(email, transaccion.getCategoria())) {
-            System.out.println("la categoría es:    " + transaccion.getCategoria());
             throw new IllegalArgumentException("La categoría no existe.");
         }
 
@@ -135,8 +134,39 @@ public class TransaccionesService {
 
     public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada, String email) {
         User user = userService.findByEmail(email);
-        Transacciones transaccion = transaccionesRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new RuntimeException("Transacción no encontrada o no pertenece al usuario"));
+        Optional<Transacciones> optionalTransaccion = transaccionesRepository.findByIdAndUserId(id, user.getId());
+
+        if (optionalTransaccion.isEmpty()) {
+            throw new IllegalArgumentException("La transacción no fue encontrada o no pertenece al usuario.");
+        }
+        Transacciones transaccion = optionalTransaccion.get();
+        if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El motivo no puede estar vacío.");
+        }
+        if (transaccion.getValor() == null || transaccion.getValor() < 0) {
+            throw new IllegalArgumentException("El valor no puede ser nulo ni menor a cero.");
+        }
+        if (transaccion.getMontoOriginal() == null || transaccion.getMontoOriginal() < 0) {
+            throw new IllegalArgumentException("El monto original no puede ser nulo ni menor a cero.");
+        }
+        if (transaccion.getTipoGasto() == null || transaccion.getTipoGasto().trim().isEmpty()) {
+            throw new IllegalArgumentException("El tipo de gasto no puede estar vacío.");
+        }
+        if (transaccion.getCategoria() == null || transaccion.getCategoria().trim().isEmpty()) {
+            throw new IllegalArgumentException("La categoría no puede estar vacía.");
+        }
+        if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
+            throw new IllegalArgumentException("La moneda original no puede estar vacía.");
+        }
+        if (!monedaService.isMonedaValida(email, transaccion.getMonedaOriginal())) {
+            throw new IllegalArgumentException("La moneda no existe.");
+        }
+        if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {
+            throw new IllegalArgumentException("El tipo de gasto no existe.");
+        }
+        if (!personalCategoriaService.isCategoriaValida(email, transaccion.getCategoria())) {
+            throw new IllegalArgumentException("La categoría no existe.");
+        }
         transaccion.setMotivo(transaccionActualizada.getMotivo());
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
@@ -145,6 +175,13 @@ public class TransaccionesService {
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
         if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
+            if (transaccion.getFecha().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
+            }
+            List<String> frecuenciasValidas = Arrays.asList("diariamente", "semanalmente", "mensualmente", "anualmente");
+            if (!frecuenciasValidas.contains(transaccion.getFrecuenciaRecurrente())) {
+                throw new IllegalArgumentException("La frecuencia recurrente debe ser: diariamente, semanalmente, mensualmente o anualmente.");
+            }
             Transacciones copia = new Transacciones();
             copia.setUser(transaccion.getUser());
             copia.setValor(transaccionActualizada.getValor());

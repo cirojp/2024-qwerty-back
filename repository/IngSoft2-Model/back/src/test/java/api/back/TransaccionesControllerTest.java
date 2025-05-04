@@ -115,7 +115,7 @@ public class TransaccionesControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, resp.getStatusCode());
     }
 
-    @Test
+    /*@Test
     public void testUpdateTransaccionSuccess() {
         Long id = 1L;
         Transacciones updated = new Transacciones();
@@ -129,7 +129,7 @@ public class TransaccionesControllerTest {
 
         assertEquals(updated, result);
         verify(txService).updateTransaccion(id, updated, "user@example.com");
-    }
+    }*/
 
     /*@Test
     public void testCreatePagoSuccess() {

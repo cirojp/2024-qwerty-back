@@ -175,11 +175,11 @@ public class TransaccionesService {
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
         if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
-            if (transaccion.getFecha().isBefore(LocalDate.now())) {
+            if (transaccionActualizada.getFecha().isBefore(LocalDate.now())) {
                 throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
             }
             List<String> frecuenciasValidas = Arrays.asList("diariamente", "semanalmente", "mensualmente", "anualmente");
-            if (!frecuenciasValidas.contains(transaccion.getFrecuenciaRecurrente())) {
+            if (!frecuenciasValidas.contains(transaccionActualizada.getFrecuenciaRecurrente())) {
                 throw new IllegalArgumentException("La frecuencia recurrente debe ser: diariamente, semanalmente, mensualmente o anualmente.");
             }
             Transacciones copia = new Transacciones();

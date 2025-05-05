@@ -127,8 +127,10 @@ public class TransaccionesController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Transacciones> getTransaccionById(@PathVariable Long id) {
-        return transaccionesService.getTransaccionById(id);
+    public ResponseEntity<?> getTransaccionById(@PathVariable Long id) {
+        Optional<Transacciones> transaccion = transaccionesService.getTransaccionById(id);
+        return transaccion.map(t -> ResponseEntity.ok(new TransaccionDTO(t)))
+                        .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

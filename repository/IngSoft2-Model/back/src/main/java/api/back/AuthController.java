@@ -54,7 +54,7 @@ public class AuthController {
         this.budgetService = budgetService;
     }
 
-    @DeleteMapping
+    /*@DeleteMapping
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
         try {
             User user = userService.findByEmail(authentication.getName());
@@ -93,7 +93,7 @@ public class AuthController {
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {

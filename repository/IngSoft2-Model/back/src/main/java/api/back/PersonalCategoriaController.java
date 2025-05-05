@@ -48,7 +48,7 @@ public class PersonalCategoriaController {
         }
     }
 
-    @DeleteMapping
+    /*@DeleteMapping
     public ResponseEntity<Void> deletePersonalCategoria(@RequestBody CategoriaRequest categoria,
             Authentication authentication) {
         try {
@@ -65,9 +65,9 @@ public class PersonalCategoriaController {
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 
-    @PutMapping("/{nombre}")
+    /*@PutMapping("/{nombre}")
     public ResponseEntity<Void> editPersonalCategoria(@PathVariable String nombre,
             @RequestBody CategoriaRequest newCategoria, Authentication authentication) {
         try {
@@ -104,6 +104,6 @@ public class PersonalCategoriaController {
             e.printStackTrace(); // Para saber exactamente qué ocurre
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
 }

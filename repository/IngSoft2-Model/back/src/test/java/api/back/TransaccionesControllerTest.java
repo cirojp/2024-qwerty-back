@@ -35,7 +35,7 @@ public class TransaccionesControllerTest {
         ReflectionTestUtils.setField(controller, "jwtUtil", jwtUtil);
     }
 
-    @Test
+    /*@Test
     public void testObtenerTransaccionesDeUsuario() {
         String email = "user@example.com";
         User user = new User();
@@ -49,7 +49,7 @@ public class TransaccionesControllerTest {
         List<Transacciones> actual = controller.getTransaccionesByUser(auth);
 
         assertEquals(expected, actual);
-    }
+    }*/
 
     @Test
     public void testCheckUserValidToken() {

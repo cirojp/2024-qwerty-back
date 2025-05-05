@@ -33,7 +33,7 @@ public class MonedaController {
         return ResponseEntity.ok(nueva);
     }
 
-    @PutMapping
+    /*@PutMapping
     public ResponseEntity<Moneda> updateMonedaPorNombre(
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
@@ -54,9 +54,9 @@ public class MonedaController {
 
         Moneda actualizada = monedaService.updateMonedaPorNombre(email, nombreActual, nombreNuevo, valorNuevo);
         return ResponseEntity.ok(actualizada);
-    }
+    }*/
 
-    @DeleteMapping
+    /*@DeleteMapping
     public ResponseEntity<Void> deleteMonedaPorNombre(
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
@@ -76,6 +76,6 @@ public class MonedaController {
         
         monedaService.deleteMonedaPorNombre(email, nombre);
         return ResponseEntity.noContent().build(); // 204 No Content
-    }
+    }*/
 
 }

@@ -34,7 +34,7 @@ public class PersonalTipoGastoController {
         return personalTipoGastoService.addPersonalTipoGasto(email, nombre);
     }
 
-    @PostMapping("/editar")
+    /*@PostMapping("/editar")
     public PersonalTipoGasto updatePersonalTipoGasto(@RequestBody Map<String, String> requestBody,
             Authentication authentication) {
         String email = authentication.getName();
@@ -66,7 +66,7 @@ public class PersonalTipoGastoController {
         }
         personalTipoGastoService.deletePersonalTipoGastoByName(email, nombre);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
     // Clase interna para manejar los datos de edición (nombre actual y nuevo)
     public static class EditRequestBody {

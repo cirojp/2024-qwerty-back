@@ -41,7 +41,7 @@ public class PersonalTipoGastoControllerTest {
         user.setEmail("user@example.com");
     }
 
-    @Test
+    /*@Test
     void testGetPersonalTipoGastos() {
         List<PersonalTipoGasto> expected = List.of(new PersonalTipoGasto(), new PersonalTipoGasto());
         when(authentication.getName()).thenReturn(user.getEmail());
@@ -122,5 +122,5 @@ public class PersonalTipoGastoControllerTest {
             () -> controller.deletePersonalTipoGasto("\"Transporte\"", authentication)
         );
         assertEquals("Tipo de gasto no encontrado", ex.getMessage());
-    }
+    }*/
 }

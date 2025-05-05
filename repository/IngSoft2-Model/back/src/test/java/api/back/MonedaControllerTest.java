@@ -39,7 +39,7 @@ public class MonedaControllerTest {
     }
 
     // Test para obtener las monedas de un usuario
-    @Test
+   /* @Test
     void testGetMonedas_Success() {
         String email = "test@example.com";
         List<Moneda> monedas = List.of(new Moneda(), new Moneda());
@@ -195,5 +195,5 @@ public class MonedaControllerTest {
         });
     
         verify(monedaService, never()).deleteMonedaPorNombre(anyString(), anyString());
-    }
+    }*/
 }

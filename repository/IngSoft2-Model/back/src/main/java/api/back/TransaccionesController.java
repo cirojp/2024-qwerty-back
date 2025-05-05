@@ -34,10 +34,14 @@ public class TransaccionesController {
     }
 
     @GetMapping("/user")
-    public List<Transacciones> getTransaccionesByUser(Authentication authentication) {
+    public List<TransaccionDTO> getTransaccionesByUser(Authentication authentication) {
         String email = authentication.getName(); 
         User user = userService.findByEmail(email); 
-        return transaccionesService.getTransaccionesByUserId(user.getId());                                        
+        //return transaccionesService.getTransaccionesByUserId(user.getId());           
+        return transaccionesService.getTransaccionesByUserId(user.getId())
+        .stream()
+        .map(TransaccionDTO::new)
+        .collect(Collectors.toList());                             
     }
 
     @GetMapping("/userTest")

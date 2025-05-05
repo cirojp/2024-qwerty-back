@@ -179,10 +179,14 @@ public class TransaccionesController {
     }
 
     @GetMapping("/user/recurrent")
-    public List<Transacciones> getTransaccionesRecurrentes(Authentication authentication) {
+    public List<TransaccionDTO> getTransaccionesRecurrentes(Authentication authentication) {
         String email = authentication.getName();
         User user = userService.findByEmail(email);
-        return transaccionesService.getTransaccionesRecurrentes(user.getId());
+        //return transaccionesService.getTransaccionesRecurrentes(user.getId());
+        return transaccionesService.getTransaccionesRecurrentes(user.getId())
+        .stream()
+        .map(TransaccionDTO::new)
+        .collect(Collectors.toList());
     }
 
     /*@PostMapping("/procesar-recurrentes")

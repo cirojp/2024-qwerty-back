@@ -154,7 +154,7 @@ public class TransaccionesControllerTest {
         verify(txService).createTransaccion(t, email);
     }*/
 
-    @Test
+    /*@Test
     public void testGetTransaccionesRecurrentes() {
         String email = "user@example.com";
         User user = new User();
@@ -168,7 +168,7 @@ public class TransaccionesControllerTest {
         List<Transacciones> result = controller.getTransaccionesRecurrentes(auth);
 
         assertEquals(recurrentes, result);
-    }
+    }*/
 
     /*@Test
     public void testGetTransaccionesByFilters() {

@@ -28,13 +28,20 @@ public class TransaccionesPendientesController {
         this.restTemplate = restTemplate;
     }
     @GetMapping("/user")
-    public ResponseEntity<List<TransaccionesPendientes>> getPendingTransaccionesByUser(Authentication authentication) {
+    public ResponseEntity<List<TransaccionesPendientesDTO>> getPendingTransaccionesByUser(Authentication authentication) {
         String email = authentication.getName();
         User user = userService.findByEmail(email);
-        List<TransaccionesPendientes> pendingTransactions = transaccionesPendientesService
+        /*List<TransaccionesPendientes> pendingTransactions = transaccionesPendientesService
                 .getPendingTransaccionesByUserId(user.getId());
 
-        return ResponseEntity.ok(pendingTransactions);
+        return ResponseEntity.ok(pendingTransactions);*/
+        List<TransaccionesPendientesDTO> pendingTransactionsDTO = transaccionesPendientesService
+        .getPendingTransaccionesByUserId(user.getId())
+        .stream()
+        .map(TransaccionesPendientesDTO::new)
+        .toList();
+
+        return ResponseEntity.ok(pendingTransactionsDTO);
     }
 
     @DeleteMapping("/{id}")

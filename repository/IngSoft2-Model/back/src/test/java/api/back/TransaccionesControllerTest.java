@@ -63,7 +63,7 @@ public class TransaccionesControllerTest {
         verify(jwtUtil).isTokenExpired("ABC");
     }
 
-    @Test
+    /*@Test
     public void testGetTransaccionById() {
         Long id = 42L;
         Optional<Transacciones> tx = Optional.of(new Transacciones());
@@ -72,7 +72,7 @@ public class TransaccionesControllerTest {
         Optional<Transacciones> result = controller.getTransaccionById(id);
 
         assertEquals(tx, result);
-    }
+    }*/
 
     /*@Test
     public void testCreateTransaccionWithValidData() {

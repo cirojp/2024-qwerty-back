@@ -174,7 +174,7 @@ public class TransaccionesService {
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
-        if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
+        if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccionActualizada.getFrecuenciaRecurrente() == null || transaccionActualizada.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccionActualizada.getFrecuenciaRecurrente()))) {
             if (transaccionActualizada.getFecha().isBefore(LocalDate.now())) {
                 throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
             }

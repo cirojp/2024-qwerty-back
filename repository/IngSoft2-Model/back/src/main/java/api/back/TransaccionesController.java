@@ -169,10 +169,10 @@ public class TransaccionesController {
         User user = userService.findByEmail(email);
 
         // Obtén transacciones filtradas
-        List<Transacciones> transaccionesFiltradas = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
+        List<TransaccionDTO> transaccionesFiltradas = transaccionesService.getTransaccionesFiltradas(user.getId(), categoria, anio, mes);
 
         // Obtén todas las transacciones sin filtrar
-        List<Transacciones> transaccionesSinFiltrarCat = transaccionesService.getTransaccionesFiltradas(user.getId(), "Todas", anio, mes);
+        List<TransaccionDTO> transaccionesSinFiltrarCat = transaccionesService.getTransaccionesFiltradas(user.getId(), "Todas", anio, mes);
 
         // Retornar ambas listas en el objeto de respuesta personalizado
         return new TransaccionesResponse(transaccionesFiltradas, transaccionesSinFiltrarCat);

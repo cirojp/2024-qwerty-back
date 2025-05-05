@@ -209,7 +209,7 @@ public class TransaccionesService {
         return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
 
-    public List<Transacciones> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
+    public List<TransaccionDTO> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
         LocalDate startDate = null;
         LocalDate endDate = null;
         List<Transacciones> transacciones;
@@ -256,6 +256,7 @@ public class TransaccionesService {
         }
         return transacciones.stream()
             .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().trim().isEmpty())
+            .map(TransaccionDTO::new) // conversión a DTO
             .collect(Collectors.toList());
         }
     

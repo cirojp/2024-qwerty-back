@@ -167,14 +167,7 @@ public class TransaccionesService {
         if (!personalCategoriaService.isCategoriaValida(email, transaccionActualizada.getCategoria())) {
             throw new IllegalArgumentException("La categoría no existe.");
         }
-        transaccion.setMotivo(transaccionActualizada.getMotivo());
-        transaccion.setValor(transaccionActualizada.getValor());
-        transaccion.setFecha(transaccionActualizada.getFecha());
-        transaccion.setCategoria(transaccionActualizada.getCategoria());
-        transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
-        transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
-        transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
-        if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccionActualizada.getFrecuenciaRecurrente() == null || transaccionActualizada.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccionActualizada.getFrecuenciaRecurrente()))) {
+        if (transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) {
             if (transaccionActualizada.getFecha().isBefore(LocalDate.now())) {
                 throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
             }
@@ -182,6 +175,15 @@ public class TransaccionesService {
             if (!frecuenciasValidas.contains(transaccionActualizada.getFrecuenciaRecurrente())) {
                 throw new IllegalArgumentException("La frecuencia recurrente debe ser: diariamente, semanalmente, mensualmente o anualmente.");
             }
+        }
+        transaccion.setMotivo(transaccionActualizada.getMotivo());
+        transaccion.setValor(transaccionActualizada.getValor());
+        transaccion.setFecha(transaccionActualizada.getFecha());
+        transaccion.setCategoria(transaccionActualizada.getCategoria());
+        transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
+        transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
+        transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+        if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
             Transacciones copia = new Transacciones();
             copia.setUser(transaccion.getUser());
             copia.setValor(transaccionActualizada.getValor());

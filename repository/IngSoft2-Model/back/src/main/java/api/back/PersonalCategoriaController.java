@@ -34,12 +34,12 @@ public class PersonalCategoriaController {
                 .collect(Collectors.toList());
 
     }
-
+ 
     @PostMapping
     public ResponseEntity<CategoriaRequest> addPersonalCategoria(@RequestBody CategoriaRequest categoria,
             Authentication authentication) {
         String email = authentication.getName();
-        if (personalCategoriaService.checkIfNotExist(email, categoria)) {
+        if (!personalCategoriaService.isCategoriaValida(email, categoria.getNombre()) && categoria.getNombre()!= null && categoria.getNombre()!= "" ) {
             personalCategoriaService.addPersonalCategoria(email, categoria.getNombre(), categoria.getIconPath());
             CategoriaRequest categoriaResponse = new CategoriaRequest(categoria.getNombre(), categoria.getIconPath());
             return ResponseEntity.ok(categoriaResponse);

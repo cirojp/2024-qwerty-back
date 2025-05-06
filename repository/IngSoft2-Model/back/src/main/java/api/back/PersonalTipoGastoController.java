@@ -21,9 +21,12 @@ public class PersonalTipoGastoController {
     private TransaccionesController transaccionesController;
 
     @GetMapping
-    public List<PersonalTipoGasto> getPersonalTipoGastos(Authentication authentication) {
+    public List<PersonalTipoGastoDTO> getPersonalTipoGastos(Authentication authentication) {
         String email = authentication.getName();
-        return personalTipoGastoService.getPersonalTipoGastos(email);
+        List<PersonalTipoGasto> tipoGastos =  personalTipoGastoService.getPersonalTipoGastos(email);
+        return tipoGastos.stream()
+            .map(PersonalTipoGastoDTO::new)
+            .toList();
     }
 
     @PostMapping

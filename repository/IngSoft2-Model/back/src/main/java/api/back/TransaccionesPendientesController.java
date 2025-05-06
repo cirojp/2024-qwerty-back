@@ -115,7 +115,7 @@ public class TransaccionesPendientesController {
         if (transaccion.getFecha() == null) {
             return ResponseEntity.badRequest().body("La fecha no puede ser vacia.");
         }
-        if (transaccion.getMonedaOriginal() == null) {
+        if (transaccion.getMonedaOriginal() == null || "".equals(transaccion.getMonedaOriginal())) {
             return ResponseEntity.badRequest().body("La moneda no puede ser vacia.");
         }
         TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(

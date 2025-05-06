@@ -20,7 +20,14 @@ public class PersonalTipoGastoService {
     }
 
     public PersonalTipoGasto addPersonalTipoGasto(String email, String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacío");
+        }
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        boolean existe = personalTipoGastoRepository.findByUserAndNombre(user, nombre).isPresent();
+        if (existe) {
+            throw new IllegalArgumentException("El nombre ya existe para este usuario");
+        }
         PersonalTipoGasto tipoGasto = new PersonalTipoGasto();
         tipoGasto.setNombre(nombre);
         tipoGasto.setUser(user);

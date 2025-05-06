@@ -30,11 +30,16 @@ public class PersonalTipoGastoController {
     }
 
     @PostMapping
-    public PersonalTipoGasto addPersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
-        String email = authentication.getName();
-        // Quitar las comillas dobles y las llaves del texto si es necesario
-        nombre = nombre.trim().replaceAll("\"", "");
-        return personalTipoGastoService.addPersonalTipoGasto(email, nombre);
+    public ResponseEntity<?>  addPersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            // Quitar las comillas dobles y las llaves del texto si es necesario
+            nombre = nombre.trim().replaceAll("\"", "");
+            PersonalTipoGasto nuevo =  personalTipoGastoService.addPersonalTipoGasto(email, nombre);
+            return ResponseEntity.ok(new PersonalTipoGastoDTO(nuevo));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     /*@PostMapping("/editar")

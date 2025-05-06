@@ -21,12 +21,12 @@ public class PersonalTipoGastoService {
 
     public PersonalTipoGasto addPersonalTipoGasto(String email, String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío");
+            throw new IllegalArgumentException("El Tipo de Gasto no puede estar vacío");
         }
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         boolean existe = personalTipoGastoRepository.findByUserAndNombre(user, nombre).isPresent();
         if (existe) {
-            throw new IllegalArgumentException("El nombre ya existe para este usuario");
+            throw new IllegalArgumentException("El Tipo de gasto ya existe para este usuario");
         }
         PersonalTipoGasto tipoGasto = new PersonalTipoGasto();
         tipoGasto.setNombre(nombre);
@@ -39,7 +39,14 @@ public class PersonalTipoGastoService {
     }
     
     public PersonalTipoGasto updatePersonalTipoGasto(String email, String nombreActual, String nombreNuevo) {
+        if (nombreNuevo == null || nombreNuevo.trim().isEmpty()) {
+            throw new IllegalArgumentException("El Tipo de Gasto no puede estar vacío");
+        }
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        boolean existe = personalTipoGastoRepository.findByUserAndNombre(user, nombreNuevo).isPresent();
+        if (existe) {
+            throw new IllegalArgumentException("El Tipo de gasto ya existe para este usuario");
+        }
         PersonalTipoGasto tipoGasto = personalTipoGastoRepository.findByUserAndNombre(user, nombreActual)
                 .orElseThrow(() -> new RuntimeException("Tipo de gasto no encontrado"));
         tipoGasto.setNombre(nombreNuevo);

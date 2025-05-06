@@ -24,7 +24,13 @@ public class PersonalCategoriaController {
 
     @Autowired
     private TransaccionesController transaccionesController;
+    private final UserService userService;
+    private final TransaccionesService transaccionesService;
 
+    public PersonalCategoriaController(TransaccionesService transaccionesService, UserService userService) {
+        this.transaccionesService = transaccionesService;
+        this.userService = userService;
+    }
     @GetMapping
     public List<CategoriaRequest> getPersonalCategoria(Authentication authentication) {
         String email = authentication.getName();
@@ -48,12 +54,14 @@ public class PersonalCategoriaController {
         }
     }
 
-    /*@DeleteMapping
+    @DeleteMapping
     public ResponseEntity<Void> deletePersonalCategoria(@RequestBody CategoriaRequest categoria,
             Authentication authentication) {
         try {
             String email = authentication.getName();
-            List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+            User user = userService.findByEmail(email); 
+            List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+            //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
             for (Transacciones transaccion : transaccionesUser) {
                 if (transaccion.getCategoria().equals(categoria.getNombre())) {
                     transaccion.setCategoria("Otros");
@@ -65,9 +73,9 @@ public class PersonalCategoriaController {
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-    }*/
+    }
 
-    /*@PutMapping("/{nombre}")
+    @PutMapping("/{nombre}")
     public ResponseEntity<Void> editPersonalCategoria(@PathVariable String nombre,
             @RequestBody CategoriaRequest newCategoria, Authentication authentication) {
         try {
@@ -75,7 +83,7 @@ public class PersonalCategoriaController {
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
 
             boolean found = false;
-            if (personalCategoriaService.checkIfNotExist(email, newCategoria)) {
+            if (!personalCategoriaService.isCategoriaValida(email, newCategoria.getNombre())) {
                 for (PersonalCategoria item : categorias) {
                     if (item.getNombre().equals(nombre)) {
                         item.setNombre(newCategoria.getNombre());
@@ -86,7 +94,9 @@ public class PersonalCategoriaController {
                     }
                 }
                 if (found) {
-                    List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+                    User user = userService.findByEmail(email); 
+                    List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+                    //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
                     for (Transacciones transaccion : transaccionesUser) {
                         if (transaccion.getCategoria().equals(nombre)) {
                             transaccion.setCategoria(newCategoria.getNombre());
@@ -104,6 +114,6 @@ public class PersonalCategoriaController {
             e.printStackTrace(); // Para saber exactamente qué ocurre
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }*/
+    }
 
 }

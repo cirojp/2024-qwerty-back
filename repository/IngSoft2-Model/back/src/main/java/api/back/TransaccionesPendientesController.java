@@ -112,8 +112,11 @@ public class TransaccionesPendientesController {
         if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("El motivo no puede estar vacío.");
         }
-        if (transaccion.getFecha() != null && transaccion.getFecha().isBefore(LocalDate.now())) {
-            return ResponseEntity.badRequest().body("La fecha no puede ser anterior al día de hoy.");
+        if (transaccion.getFecha() == null) {
+            return ResponseEntity.badRequest().body("La fecha no puede ser vacia.");
+        }
+        if (transaccion.getMonedaOriginal() == null) {
+            return ResponseEntity.badRequest().body("La moneda no puede ser vacia.");
         }
         TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
                 transaccion.getValor(),

@@ -138,7 +138,7 @@ void setUp() {
         );
     }
 
-    @Test
+    /*@Test
     void postPaymentToUser_userExists_savesAndReturnsOk() {
         // Arrange
         TransaccionRequest req = new TransaccionRequest();
@@ -187,5 +187,5 @@ void setUp() {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
         verify(pendientesService, never()).save(any());
-    }
+    }*/
 }

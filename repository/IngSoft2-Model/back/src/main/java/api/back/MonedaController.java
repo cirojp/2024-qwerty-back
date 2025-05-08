@@ -44,8 +44,8 @@ public class MonedaController {
         if (valor < 0) {
             return ResponseEntity.badRequest().body("El valor no puede ser negativo.");
         }
-        if (nombre.equals(null) || nombre.equals("") ) {
-            return ResponseEntity.badRequest().body("El Nombre no puede ser null o vacio.");
+        if (nombre.equals(null) || nombre.equals("") || nombre.equals("ARG") ) {
+            return ResponseEntity.badRequest().body("El Nombre no puede ser null o vacio o ARG.");
         }
         // Validación: nombre no duplicado para ese usuario
         if (monedaService.monedaYaExiste(email, nombre)) {
@@ -65,6 +65,9 @@ public class MonedaController {
         String nombreNuevo = request.get("nombreNuevo").toString();
         //Double valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
         Double valorNuevo;
+        if (!monedaService.monedaYaExiste(email, nombreActual)) {
+            return ResponseEntity.badRequest().body("No existe una moneda con ese nombre para el usuario.");
+        }
         try {
             valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
         } catch (NumberFormatException e) {
@@ -73,13 +76,14 @@ public class MonedaController {
         if (valorNuevo < 0) {
             return ResponseEntity.badRequest().body("El valor no puede ser negativo.");
         }
-        if (nombreNuevo.equals(null) || nombreNuevo.equals("") ) {
-            return ResponseEntity.badRequest().body("El Nombre no puede ser null o vacio.");
+        if (nombreNuevo.equals(null) || nombreNuevo.equals("") || nombreNuevo.equals("ARG")  ) {
+            return ResponseEntity.badRequest().body("El Nombre no puede ser null o vacio o ARG.");
         }
         // Validación: nombre no duplicado para ese usuario
         if (monedaService.monedaYaExiste(email, nombreNuevo)) {
             return ResponseEntity.badRequest().body("Ya existe una moneda con ese nombre para el usuario.");
         }
+        
 
         //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
         User user = userService.findByEmail(email); 

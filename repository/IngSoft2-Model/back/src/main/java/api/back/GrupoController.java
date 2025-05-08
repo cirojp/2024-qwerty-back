@@ -33,11 +33,13 @@ public class GrupoController {
     private TransaccionesPendientesService transaccionesPendientesService; // Asegúrate de tener este servicio inyectado
 
     @PostMapping("/crear")
-    public Grupo crearGrupo(@RequestBody Map<String, Object> payload, Authentication authentication) {
+    public ResponseEntity<?> crearGrupo(@RequestBody Map<String, Object> payload, Authentication authentication) {
         String nombre = (String) payload.get("nombre");
         List<String> miembrosEmails = (List<String>) payload.get("usuarios");
         String creadorEmail = authentication.getName(); // Email del usuario autenticado
-
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("El nombre del grupo no puede ser nulo o vacío.");
+        }
         if (miembrosEmails == null) {
             miembrosEmails = new ArrayList<>(); // Asegúrate de que la lista no sea nula
         }
@@ -56,7 +58,7 @@ public class GrupoController {
             transaccionPendiente.setGrupoId(grupo.getId());
             transaccionesPendientesService.save(transaccionPendiente);
         }
-        return grupo;
+        return ResponseEntity.ok(grupo);
     }
 
     @GetMapping("/mis-grupos")

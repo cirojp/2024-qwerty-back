@@ -16,7 +16,13 @@ public class MonedaController {
     private MonedaService monedaService;
     @Autowired
     private TransaccionesController transaccionesController;
+    private final UserService userService;
+    private final TransaccionesService transaccionesService;
 
+    public MonedaController(TransaccionesService transaccionesService, UserService userService) {
+        this.transaccionesService = transaccionesService;
+        this.userService = userService;
+    }
     @GetMapping
     public ResponseEntity<List<Moneda>> getMonedas(Authentication authentication) {
         String email = authentication.getName();
@@ -49,17 +55,35 @@ public class MonedaController {
         return ResponseEntity.ok(nueva);
     }
 
-    /*@PutMapping
-    public ResponseEntity<Moneda> updateMonedaPorNombre(
+    @PutMapping
+    public ResponseEntity<?> updateMonedaPorNombre(
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
 
         String email = authentication.getName();
         String nombreActual = request.get("nombreActual").toString();
         String nombreNuevo = request.get("nombreNuevo").toString();
-        Double valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
+        //Double valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
+        Double valorNuevo;
+        try {
+            valorNuevo = Double.parseDouble(request.get("valorNuevo").toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("El valor ingresado no es válido.");
+        }
+        if (valorNuevo < 0) {
+            return ResponseEntity.badRequest().body("El valor no puede ser negativo.");
+        }
+        if (nombreNuevo.equals(null) || nombreNuevo.equals("") ) {
+            return ResponseEntity.badRequest().body("El Nombre no puede ser null o vacio.");
+        }
+        // Validación: nombre no duplicado para ese usuario
+        if (monedaService.monedaYaExiste(email, nombreNuevo)) {
+            return ResponseEntity.badRequest().body("Ya existe una moneda con ese nombre para el usuario.");
+        }
 
-        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        User user = userService.findByEmail(email); 
+        List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
         for (Transacciones transaccion : transaccionesUser) {
             String moneda = transaccion.getMonedaOriginal();
             if (moneda != null && moneda.equals(nombreActual)) {
@@ -70,7 +94,7 @@ public class MonedaController {
 
         Moneda actualizada = monedaService.updateMonedaPorNombre(email, nombreActual, nombreNuevo, valorNuevo);
         return ResponseEntity.ok(actualizada);
-    }*/
+    }
 
     /*@DeleteMapping
     public ResponseEntity<Void> deleteMonedaPorNombre(

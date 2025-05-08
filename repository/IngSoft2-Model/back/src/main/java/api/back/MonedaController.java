@@ -100,15 +100,19 @@ public class MonedaController {
         return ResponseEntity.ok(actualizada);
     }
 
-    /*@DeleteMapping
-    public ResponseEntity<Void> deleteMonedaPorNombre(
+    @DeleteMapping
+    public ResponseEntity<?> deleteMonedaPorNombre(
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
 
         String email = authentication.getName();
         String nombre = request.get("nombre").toString();
-
-        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        if (!monedaService.monedaYaExiste(email, nombre)) {
+            return ResponseEntity.badRequest().body("No existe una moneda con ese nombre para el usuario.");
+        }
+        //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        User user = userService.findByEmail(email); 
+        List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
         for (Transacciones transaccion : transaccionesUser) {
             String moneda = transaccion.getMonedaOriginal();
             if (moneda != null && moneda.equals(nombre)) {
@@ -120,6 +124,6 @@ public class MonedaController {
         
         monedaService.deleteMonedaPorNombre(email, nombre);
         return ResponseEntity.noContent().build(); // 204 No Content
-    }*/
+    }
 
 }

@@ -25,10 +25,23 @@ public class MonedaController {
     }
 
     @PostMapping
-    public ResponseEntity<Moneda> addMoneda(@RequestBody Map<String, Object> request, Authentication authentication) {
+    public ResponseEntity<?> addMoneda(@RequestBody Map<String, Object> request, Authentication authentication) {
         String email = authentication.getName();
         String nombre = request.get("nombre").toString();
-        Double valor = Double.parseDouble(request.get("valor").toString());
+        //Double valor = Double.parseDouble(request.get("valor").toString());
+        Double valor;
+        try {
+            valor = Double.parseDouble(request.get("valor").toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("El valor ingresado no es válido.");
+        }
+        if (valor < 0) {
+            return ResponseEntity.badRequest().body("El valor no puede ser negativo.");
+        }
+        // Validación: nombre no duplicado para ese usuario
+        if (monedaService.monedaYaExiste(email, nombre)) {
+            return ResponseEntity.badRequest().body("Ya existe una moneda con ese nombre para el usuario.");
+        }
         Moneda nueva = monedaService.addMoneda(email, nombre, valor);
         return ResponseEntity.ok(nueva);
     }

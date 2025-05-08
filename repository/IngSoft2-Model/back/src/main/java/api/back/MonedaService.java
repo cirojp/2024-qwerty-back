@@ -57,4 +57,9 @@ public class MonedaService {
         }
         return monedaRepository.findByUserEmailAndNombre(email, nombreMoneda).isPresent();
     }
+
+    public boolean monedaYaExiste(String email, String nombre) {
+        return monedaRepository.findByUserEmailAndNombre(email, nombre).isPresent();
+    }
+    
 }

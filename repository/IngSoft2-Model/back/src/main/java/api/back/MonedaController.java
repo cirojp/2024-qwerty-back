@@ -38,6 +38,9 @@ public class MonedaController {
         if (valor < 0) {
             return ResponseEntity.badRequest().body("El valor no puede ser negativo.");
         }
+        if (nombre.equals(null) || nombre.equals("") ) {
+            return ResponseEntity.badRequest().body("El Nombre no puede ser null o vacio.");
+        }
         // Validación: nombre no duplicado para ese usuario
         if (monedaService.monedaYaExiste(email, nombre)) {
             return ResponseEntity.badRequest().body("Ya existe una moneda con ese nombre para el usuario.");

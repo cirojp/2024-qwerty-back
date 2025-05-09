@@ -171,16 +171,16 @@ public class GrupoController {
     }
 
     @GetMapping("/{grupoId}/transacciones")
-    public ResponseEntity<List<GrupoTransacciones>> obtenerTransaccionesPorGrupo(@PathVariable Long grupoId, Authentication authentication) {
+    public ResponseEntity<?> obtenerTransaccionesPorGrupo(@PathVariable Long grupoId, Authentication authentication) {
         String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList()); // Retorna 404 si el grupo no existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error con id."); // Retorna 404 si el grupo no existe
         }
         boolean perteneceAlGrupo = grupo.getUsuarios().stream()
         .anyMatch(usuario -> usuario.getEmail().equals(emailUsuario));
         if (!perteneceAlGrupo) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("El usuario no es miembro del grupo.");
         }
         // Obtiene las transacciones asociadas al grupo
         List<GrupoTransacciones> transacciones = grupo.getTransacciones();

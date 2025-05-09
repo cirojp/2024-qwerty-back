@@ -466,4 +466,27 @@ public class GrupoController {
         return ResponseEntity.ok("El usuario no está en el grupo ni tiene una invitación pendiente.");
     }
 
+    void eliminarUsuarioDeTodosLosGrupos(User usuario) {
+        String emailUsuario = usuario.getEmail();
+    
+        List<Grupo> grupos = grupoService.obtenerGruposPorUsuario(emailUsuario);
+    
+        for (Grupo grupo : grupos) {
+            List<TransaccionesPendientes> pendientesUsuario = transaccionesPendientesService.findByGrupoId(grupo.getId())
+                .stream()
+                .filter(p -> p.getUser().getEmail().equals(emailUsuario))
+                .collect(Collectors.toList());
+            pendientesUsuario.forEach(p -> transaccionesPendientesService.delete(p.getId()));
+    
+            List<GrupoTransacciones> transaccionesUsuario = grupo.getTransacciones()
+                .stream()
+                .filter(t -> emailUsuario.equals(t.getUsers()))
+                .collect(Collectors.toList());
+            transaccionesUsuario.forEach(t -> grupoTransaccionesService.delete(t.getId()));
+    
+            grupo.getUsuarios().removeIf(u -> u.getEmail().equals(emailUsuario));
+            grupoService.save(grupo);
+        }
+    }    
+
 }

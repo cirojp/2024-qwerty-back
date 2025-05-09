@@ -474,7 +474,7 @@ public class GrupoController {
         for (Grupo grupo : grupos) {
             List<TransaccionesPendientes> pendientesUsuario = transaccionesPendientesService.findByGrupoId(grupo.getId())
                 .stream()
-                .filter(p -> p.getUser().getEmail().equals(emailUsuario))
+                .filter(p -> p.getUser() != null && emailUsuario.equals(p.getUser().getEmail()))
                 .collect(Collectors.toList());
             pendientesUsuario.forEach(p -> transaccionesPendientesService.delete(p.getId()));
     

@@ -388,6 +388,8 @@ public class GrupoController {
     public ResponseEntity<String> agregarUsuariosAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, Object> payload, Authentication authentication) {
         List<String> miembrosEmails = (List<String>) payload.get("usuarios");
         String creadorEmail = authentication.getName(); // Email del usuario autenticado
+        System.out.println("Emails recibidos: " + miembrosEmails);
+        System.out.println("Creador autenticado: " + creadorEmail);
         if (miembrosEmails == null) {
             miembrosEmails = new ArrayList<>(); // Asegúrate de que la lista no sea nula
         }
@@ -398,19 +400,24 @@ public class GrupoController {
         // Crea una transacción pendiente para cada miembro del grupo
         List<String> errores = new ArrayList<>();
         for (String email : miembrosEmails) {
+            System.out.println("Procesando email: " + email);
             if (email.equals(creadorEmail)) {
                 errores.add("No puedes agregarte a ti mismo al grupo.");
+                System.out.println("Error: intentó agregarse a sí mismo.");
                 continue;
             }
             User usuario = userService.findByEmail(email);
             if (usuario == null) {
                 errores.add("No se encontró el usuario con email: " + email);
+                System.out.println("Error: usuario no encontrado.");
                 continue;
             }
             if (grupo.getUsuarios().contains(usuario)) {
                 errores.add("El usuario " + email + " ya es miembro del grupo.");
+                System.out.println("Error: usuario ya en el grupo.");
                 continue;
             }
+            System.out.println("Agregando transacción pendiente para: " + email);
             LocalDate fechaHoy = LocalDate.now();
             TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy,null,null);
             // Establecer el correo del creador como sentByEmail
@@ -418,6 +425,7 @@ public class GrupoController {
             transaccionPendiente.setGrupoId(grupo.getId());
             transaccionesPendientesService.save(transaccionPendiente);
         }
+        System.out.println("Errores encontrados: " + errores);
         if (!errores.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.join("\n", errores));
         }

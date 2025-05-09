@@ -63,7 +63,7 @@ public class PersonalCategoriaService {
     }
 
     public boolean isCategoriaValida(String email, String nombreCategoria) {
-        List<String> defaultCategorias = List.of("Impuestos y Servicios", "Entretenimiento y Ocio", "Hogar y Mercado", "Antojos", "Electrodomesticos", "Clase", "Ingreso de Dinero");
+        List<String> defaultCategorias = List.of("Impuestos y Servicios", "Entretenimiento y Ocio", "Hogar y Mercado", "Antojos", "Electrodomesticos", "Clase", "Ingreso de Dinero", "Gasto Grupal");
         if (defaultCategorias.contains(nombreCategoria)) {
             return true;
         }

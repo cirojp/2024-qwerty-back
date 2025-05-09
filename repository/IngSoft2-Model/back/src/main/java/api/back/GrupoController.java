@@ -151,8 +151,9 @@ public class GrupoController {
         if (grupo == null) {
             return ResponseEntity.badRequest().body(null); // Grupo no encontrado
         }
-        User usuario = userService.findByEmail(usuarioEmail);
-        if (!grupo.getUsuarios().contains(usuario)) {
+        boolean perteneceAlGrupo = grupo.getUsuarios().stream()
+        .anyMatch(usuario -> usuario.getEmail().equals(usuarioEmail));
+        if (!perteneceAlGrupo) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("El usuario no es miembro del grupo.");
         }
     

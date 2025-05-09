@@ -392,9 +392,25 @@ public class GrupoController {
             miembrosEmails = new ArrayList<>(); // Asegúrate de que la lista no sea nula
         }
         Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
         // Crea una transacción pendiente para cada miembro del grupo
+        List<String> errores = new ArrayList<>();
         for (String email : miembrosEmails) {
+            if (email.equals(creadorEmail)) {
+                errores.add("No puedes agregarte a ti mismo al grupo.");
+                continue;
+            }
             User usuario = userService.findByEmail(email);
+            if (usuario == null) {
+                errores.add("No se encontró el usuario con email: " + email);
+                continue;
+            }
+            if (grupo.getUsuarios().contains(usuario)) {
+                errores.add("El usuario " + email + " ya es miembro del grupo.");
+                continue;
+            }
             LocalDate fechaHoy = LocalDate.now();
             TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy,null,null);
             // Establecer el correo del creador como sentByEmail
@@ -402,7 +418,11 @@ public class GrupoController {
             transaccionPendiente.setGrupoId(grupo.getId());
             transaccionesPendientesService.save(transaccionPendiente);
         }
-        return null;
+        if (!errores.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.join("\n", errores));
+        }
+    
+        return ResponseEntity.ok("Usuarios agregados correctamente.");
         
     }
 

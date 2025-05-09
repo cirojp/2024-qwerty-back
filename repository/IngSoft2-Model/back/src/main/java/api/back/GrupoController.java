@@ -102,7 +102,7 @@ public class GrupoController {
     }
 
     @PostMapping("/transaccion")
-    public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
+    public ResponseEntity<?> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
         // Intenta convertir el valor a Double (si es String, convierte)
         Double valor;
         Object valorObj = payload.get("valor");
@@ -111,7 +111,10 @@ public class GrupoController {
         } else if (valorObj instanceof Number) {
             valor = ((Number) valorObj).doubleValue();
         } else {
-            return ResponseEntity.badRequest().body(null); // Valor no válido
+            return ResponseEntity.badRequest().body("Valor inválido."); // Valor no válido
+        }
+        if (valor < 0) {
+            return ResponseEntity.badRequest().body("El valor no puede ser menor a cero.");
         }
         String usuarioEmail = authentication.getName(); // Obtener el email del usuario autenticado
     
@@ -128,7 +131,16 @@ public class GrupoController {
         } else if (montoOriginalObj instanceof Number) {
             montoOriginal = ((Number) montoOriginalObj).doubleValue();
         } else {
-            return ResponseEntity.badRequest().body(null); // Valor no válido
+            return ResponseEntity.badRequest().body("Monto original inválido."); // Valor no válido
+        }
+        if (montoOriginal < 0) {
+            return ResponseEntity.badRequest().body("El monto original no puede ser menor a cero.");
+        }
+        if (motivo == null || motivo.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("El motivo no puede ser vacío o null.");
+        }
+        if (!"Gasto Grupal".equalsIgnoreCase(categoria)) {
+            return ResponseEntity.badRequest().body("La categoría debe ser 'Gasto Grupal'.");
         }
     
         // Convierte el valor de grupo a Long, similar a como hiciste antes
@@ -138,6 +150,10 @@ public class GrupoController {
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.badRequest().body(null); // Grupo no encontrado
+        }
+        User usuario = userService.findByEmail(usuarioEmail);
+        if (!grupo.getUsuarios().contains(usuario)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("El usuario no es miembro del grupo.");
         }
     
         // Crea una nueva transacción grupal

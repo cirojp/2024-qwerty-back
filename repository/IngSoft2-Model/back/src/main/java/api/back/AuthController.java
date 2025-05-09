@@ -32,6 +32,7 @@ public class AuthController {
     private final PasswordResetTokenService passwordResetTokenService;
     private final PersonalTipoGastoService personalTipoGastoService;
     private final PersonalCategoriaService personalCategoriaService;
+    private final MonedaService monedaService;
     private final BudgetService budgetService;
     private final TransaccionesController transaccionesController;
 
@@ -40,7 +41,7 @@ public class AuthController {
             UserService userService, TransaccionesService transaccionesService,
             PasswordResetTokenService passwordResetTokenService, PersonalTipoGastoService personalTipoGastoService,
             BudgetService budgetService, PersonalCategoriaService personalCategoriaService,
-            TransaccionesController transaccionesController) {
+            TransaccionesController transaccionesController, MonedaService monedaService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.personalCategoriaService = personalCategoriaService;
@@ -52,9 +53,10 @@ public class AuthController {
         this.passwordResetTokenService = passwordResetTokenService;
         this.personalTipoGastoService = personalTipoGastoService;
         this.budgetService = budgetService;
+        this.monedaService = monedaService;
     }
 
-    /*@DeleteMapping
+    @DeleteMapping
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
         try {
             User user = userService.findByEmail(authentication.getName());
@@ -68,7 +70,8 @@ public class AuthController {
             }
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(user.getEmail());
             for (PersonalCategoria categoria : categorias) {
-                List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+                List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+                //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
                 for (Transacciones transaccion : transaccionesUser) {
                     if (transaccion.getCategoria().equals(categoria.getNombre())) {
                         transaccion.setCategoria("Otros");
@@ -83,6 +86,11 @@ public class AuthController {
             for (PersonalTipoGasto tipoGasto : personalTipoGastos) {
                 personalTipoGastoService.deletePersonalTipoGasto(tipoGasto.getId());
             }
+            List<Moneda> monedas = monedaService
+                    .getMonedasByEmail(user.getEmail());
+            for (Moneda moneda : monedas) {
+                monedaService.deleteMonedaPorNombre(user.getEmail(), moneda.getNombre());
+            }
             List<PasswordResetToken> tokens = passwordResetTokenService.getTokensByUser(user);
             for (PasswordResetToken token : tokens) {
                 passwordResetTokenService.deleteToken(token.getId());
@@ -93,7 +101,7 @@ public class AuthController {
         } catch (TransaccionNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-    }*/
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {

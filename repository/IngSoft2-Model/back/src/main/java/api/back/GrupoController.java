@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate; // Importa LocalDate
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/grupos")
@@ -358,7 +360,7 @@ public class GrupoController {
     }
 
     @GetMapping("/{grupoId}/usuarios")
-    public ResponseEntity<List<User>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId, Authentication authentication) {
+    public ResponseEntity<List<Map<String, String>>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId, Authentication authentication) {
         String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
@@ -369,8 +371,16 @@ public class GrupoController {
         if (!perteneceAlGrupo) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.emptyList());
         }
-        List<User> usuarios = grupo.getUsuarios();
-        return ResponseEntity.ok(usuarios);
+        //List<User> usuarios = grupo.getUsuarios();
+         List<Map<String, String>> emails = grupo.getUsuarios().stream()
+        .map(usuario -> {
+            Map<String, String> map = new HashMap<>();
+            map.put("email", usuario.getEmail());
+            return map;
+        })
+        .collect(Collectors.toList());
+        //return ResponseEntity.ok(usuarios);
+        return ResponseEntity.ok(emails);
     }
 
     // Endpoint para agregar un usuario a un grupo

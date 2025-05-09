@@ -68,6 +68,10 @@ public class AuthController {
             for (Transacciones transaction : transacciones) {
                 transaccionesService.deleteTransaccion(transaction.getId(), user.getEmail());
             }
+            List<Transacciones> transaccionesRecurrentes = transaccionesService.getTransaccionesRecurrentes(user.getId());
+            for (Transacciones transactionR : transaccionesRecurrentes) {
+                transaccionesService.deleteTransaccion(transactionR.getId(), user.getEmail());
+            }
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(user.getEmail());
             for (PersonalCategoria categoria : categorias) {
                 List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());

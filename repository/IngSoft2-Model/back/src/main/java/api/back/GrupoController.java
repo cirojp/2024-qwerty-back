@@ -255,7 +255,7 @@ public class GrupoController {
 
     // Endpoint para editar una transacción grupal
     @PutMapping("/transaccion/{transaccionId}")
-    public ResponseEntity<GrupoTransacciones> editarGrupoTransaccion(
+    public ResponseEntity<?> editarGrupoTransaccion(
         @PathVariable Long transaccionId,
         @RequestBody Map<String, Object> payload,
         Authentication authentication
@@ -263,10 +263,10 @@ public class GrupoController {
         String emailUsuario = authentication.getName();
         GrupoTransacciones transaccionExistente = grupoTransaccionesService.findById(transaccionId);
         if (transaccionExistente == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Retorna 404 si la transacción no existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transacción no encontrada."); // Retorna 404 si la transacción no existe
         }
         if (!emailUsuario.equals(transaccionExistente.getUsers())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para editar esta transacción.");
         }
         if (payload.containsKey("valor")) {
             Object valorObj = payload.get("valor");
@@ -278,14 +278,28 @@ public class GrupoController {
             } else { 
                 throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
             }
+            if (valor < 0) {
+                return ResponseEntity.badRequest().body("El valor no puede ser menor a cero.");
+            }
             transaccionExistente.setValor(valor);
         }
         if (payload.containsKey("motivo")) {
+            String motivo = (String) payload.get("motivo");
+            if (motivo.equals("") || motivo == null) {
+                return ResponseEntity.badRequest().body("El motivo no puede estar vacio.");
+            }
             transaccionExistente.setMotivo((String) payload.get("motivo"));
         }
         if (payload.containsKey("fecha")) {
             LocalDate fecha = LocalDate.parse((String) payload.get("fecha"));
             transaccionExistente.setFecha(fecha);
+        }
+        if (payload.containsKey("categoria")) {
+            String categoria = (String) payload.get("categoria");
+            if (!"Gasto Grupal".equalsIgnoreCase(categoria)) {
+                return ResponseEntity.badRequest().body("La categoría debe ser 'Gasto Grupal'.");
+            }
+            transaccionExistente.setCategoria(categoria);
         }
         if (payload.containsKey("categoria")) {
             transaccionExistente.setCategoria((String) payload.get("categoria"));
@@ -294,6 +308,10 @@ public class GrupoController {
             transaccionExistente.setTipoGasto((String) payload.get("tipoGasto"));
         }
         if (payload.containsKey("monedaOriginal")) {
+            String monedaOriginal = (String) payload.get("monedaOriginal");
+            if (monedaOriginal.equals("") || monedaOriginal == null) {
+                return ResponseEntity.badRequest().body("La moneda no puede estar vacia.");
+            }
             transaccionExistente.setMonedaOriginal((String) payload.get("monedaOriginal"));
         }
         if (payload.containsKey("montoOriginal")) {
@@ -305,6 +323,9 @@ public class GrupoController {
                 valorOriginal = Double.parseDouble((String) valorObj2);
             } else { 
                 throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
+            }
+            if (valorOriginal < 0) {
+                return ResponseEntity.badRequest().body("El monto original no puede ser menor a cero.");
             }
             transaccionExistente.setMontoOriginal(valorOriginal);
         }

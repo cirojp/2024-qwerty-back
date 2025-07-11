@@ -113,7 +113,7 @@ public class TransaccionesController {
         transaccion2.setMonedaOriginal(transaccion.getMonedaOriginal());
         transaccion2.setMontoOriginal(transaccion.getMontoOriginal());
         try {
-            transaccionesService.createTransaccion(transaccion2, mail);
+            transaccionesService.createTransaccion(transaccion2, mail, true);
             TransaccionesPendientes pendienteCobro = new TransaccionesPendientes(transaccion.getValor(),
                     userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
             pendienteCobro.setSentByEmail(email);

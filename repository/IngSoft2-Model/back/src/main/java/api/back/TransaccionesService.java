@@ -43,6 +43,10 @@ public class TransaccionesService {
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {
+        return createTransaccion(transaccion, email, false); // valor por defecto
+    }
+
+    public Transacciones createTransaccion(Transacciones transaccion, String email, boolean esUnPago) {
         // Validaciones
         if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
             throw new IllegalArgumentException("El motivo no puede estar vacío.");
@@ -62,7 +66,7 @@ public class TransaccionesService {
         if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
             throw new IllegalArgumentException("La moneda original no puede estar vacía.");
         }
-        if (!monedaService.isMonedaValida(email, transaccion.getMonedaOriginal())) {
+        if (!monedaService.isMonedaValida(email, transaccion.getMonedaOriginal()) && !esUnPago) {
             throw new IllegalArgumentException("La moneda no existe.");
         }
         if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {

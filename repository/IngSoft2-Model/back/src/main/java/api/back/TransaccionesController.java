@@ -87,7 +87,7 @@ public class TransaccionesController {
             TransaccionesPendientes cobroPendiente = new TransaccionesPendientes(transaccion.getValor(),
                     userService.findByEmail(mail), transaccion.getMotivo(), "Pago", transaccion.getFecha(), transaccion.getMonedaOriginal(), transaccion.getMontoOriginal());
             transaccionesPendientesService.save(cobroPendiente);
-            Transacciones nueva = transaccionesService.createTransaccion(transaccion, email);
+            Transacciones nueva = transaccionesService.createTransaccion(transaccion, email, true);
             TransaccionDTO transaccionDTO = new TransaccionDTO(nueva);
             return ResponseEntity.ok(transaccionDTO);
         } catch (IllegalArgumentException e) {

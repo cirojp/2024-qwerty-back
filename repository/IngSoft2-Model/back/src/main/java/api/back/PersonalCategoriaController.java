@@ -24,7 +24,13 @@ public class PersonalCategoriaController {
 
     @Autowired
     private TransaccionesController transaccionesController;
+    private final UserService userService;
+    private final TransaccionesService transaccionesService;
 
+    public PersonalCategoriaController(TransaccionesService transaccionesService, UserService userService) {
+        this.transaccionesService = transaccionesService;
+        this.userService = userService;
+    }
     @GetMapping
     public List<CategoriaRequest> getPersonalCategoria(Authentication authentication) {
         String email = authentication.getName();
@@ -34,12 +40,12 @@ public class PersonalCategoriaController {
                 .collect(Collectors.toList());
 
     }
-
+ 
     @PostMapping
     public ResponseEntity<CategoriaRequest> addPersonalCategoria(@RequestBody CategoriaRequest categoria,
             Authentication authentication) {
         String email = authentication.getName();
-        if (personalCategoriaService.checkIfNotExist(email, categoria)) {
+        if (!personalCategoriaService.isCategoriaValida(email, categoria.getNombre()) && categoria.getNombre()!= null && categoria.getNombre()!= "" ) {
             personalCategoriaService.addPersonalCategoria(email, categoria.getNombre(), categoria.getIconPath());
             CategoriaRequest categoriaResponse = new CategoriaRequest(categoria.getNombre(), categoria.getIconPath());
             return ResponseEntity.ok(categoriaResponse);
@@ -53,7 +59,9 @@ public class PersonalCategoriaController {
             Authentication authentication) {
         try {
             String email = authentication.getName();
-            List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+            User user = userService.findByEmail(email); 
+            List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+            //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
             for (Transacciones transaccion : transaccionesUser) {
                 if (transaccion.getCategoria().equals(categoria.getNombre())) {
                     transaccion.setCategoria("Otros");
@@ -75,7 +83,7 @@ public class PersonalCategoriaController {
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(email);
 
             boolean found = false;
-            if (personalCategoriaService.checkIfNotExist(email, newCategoria)) {
+            if (!personalCategoriaService.isCategoriaValida(email, newCategoria.getNombre())) {
                 for (PersonalCategoria item : categorias) {
                     if (item.getNombre().equals(nombre)) {
                         item.setNombre(newCategoria.getNombre());
@@ -86,7 +94,9 @@ public class PersonalCategoriaController {
                     }
                 }
                 if (found) {
-                    List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+                    User user = userService.findByEmail(email); 
+                    List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+                    //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
                     for (Transacciones transaccion : transaccionesUser) {
                         if (transaccion.getCategoria().equals(nombre)) {
                             transaccion.setCategoria(newCategoria.getNombre());

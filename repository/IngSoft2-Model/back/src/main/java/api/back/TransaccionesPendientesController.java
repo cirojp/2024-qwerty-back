@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +30,20 @@ public class TransaccionesPendientesController {
         this.restTemplate = restTemplate;
     }
     @GetMapping("/user")
-    public ResponseEntity<List<TransaccionesPendientes>> getPendingTransaccionesByUser(Authentication authentication) {
+    public ResponseEntity<List<TransaccionesPendientesDTO>> getPendingTransaccionesByUser(Authentication authentication) {
         String email = authentication.getName();
         User user = userService.findByEmail(email);
-        List<TransaccionesPendientes> pendingTransactions = transaccionesPendientesService
+        /*List<TransaccionesPendientes> pendingTransactions = transaccionesPendientesService
                 .getPendingTransaccionesByUserId(user.getId());
 
-        return ResponseEntity.ok(pendingTransactions);
+        return ResponseEntity.ok(pendingTransactions);*/
+        List<TransaccionesPendientesDTO> pendingTransactionsDTO = transaccionesPendientesService
+        .getPendingTransaccionesByUserId(user.getId())
+        .stream()
+        .map(TransaccionesPendientesDTO::new)
+        .toList();
+
+        return ResponseEntity.ok(pendingTransactionsDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -83,25 +92,43 @@ public class TransaccionesPendientesController {
     }
 
     @PostMapping("/askPayUser")
-    public ResponseEntity<Void> postPaymentToUser(@RequestBody TransaccionRequest transaccion,
+    public ResponseEntity<String> postPaymentToUser(@RequestBody TransaccionRequest transaccion,
             Authentication authentication) {
         String email = authentication.getName();
-        User usuario = userService.findByEmail(transaccion.getEmail());
-        if (usuario != null) {
-            TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
-                    transaccion.getValor(),
-                    usuario,
-                    transaccion.getMotivo(),
-                    transaccion.getId_reserva(),
-                    transaccion.getFecha(),
-                    transaccion.getMonedaOriginal(),
-                    transaccion.getMontoOriginal());
-            transaccionPendiente.setSentByEmail(email);
-            transaccionesPendientesService.save(transaccionPendiente);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
+
+        if (transaccion.getValor() == null || transaccion.getValor() <= 0) {
+            return ResponseEntity.badRequest().body("El valor debe ser mayor que cero.");
         }
+        if (transaccion.getMontoOriginal() == null || transaccion.getMontoOriginal() <= 0) {
+            return ResponseEntity.badRequest().body("El monto original debe ser mayor que cero.");
+        }
+        if (transaccion.getEmail() == null || transaccion.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body("El email no puede ser nulo o vacío.");
+        }
+        User usuario = userService.findByEmail(transaccion.getEmail());
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body("El email no corresponde a un usuario válido.");
+        }
+        if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("El motivo no puede estar vacío.");
+        }
+        if (transaccion.getFecha() == null) {
+            return ResponseEntity.badRequest().body("La fecha no puede ser vacia.");
+        }
+        if (transaccion.getMonedaOriginal() == null || "".equals(transaccion.getMonedaOriginal())) {
+            return ResponseEntity.badRequest().body("La moneda no puede ser vacia.");
+        }
+        TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(
+                transaccion.getValor(),
+                usuario,
+                transaccion.getMotivo(),
+                transaccion.getId_reserva(),
+                transaccion.getFecha(),
+                transaccion.getMonedaOriginal(),
+                transaccion.getMontoOriginal());
+        transaccionPendiente.setSentByEmail(email);
+        transaccionesPendientesService.save(transaccionPendiente);
+        return ResponseEntity.ok().body("Transacción registrada correctamente.");
     }
 
 }

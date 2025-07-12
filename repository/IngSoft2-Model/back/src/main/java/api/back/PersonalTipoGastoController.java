@@ -19,43 +19,66 @@ public class PersonalTipoGastoController {
     private PersonalTipoGastoService personalTipoGastoService;
     @Autowired
     private TransaccionesController transaccionesController;
+    private final UserService userService;
+    private final TransaccionesService transaccionesService;
 
+    public PersonalTipoGastoController(TransaccionesService transaccionesService, UserService userService) {
+        this.transaccionesService = transaccionesService;
+        this.userService = userService;
+    }
     @GetMapping
-    public List<PersonalTipoGasto> getPersonalTipoGastos(Authentication authentication) {
+    public List<PersonalTipoGastoDTO> getPersonalTipoGastos(Authentication authentication) {
         String email = authentication.getName();
-        return personalTipoGastoService.getPersonalTipoGastos(email);
+        List<PersonalTipoGasto> tipoGastos =  personalTipoGastoService.getPersonalTipoGastos(email);
+        return tipoGastos.stream()
+            .map(PersonalTipoGastoDTO::new)
+            .toList();
     }
 
     @PostMapping
-    public PersonalTipoGasto addPersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
-        String email = authentication.getName();
-        // Quitar las comillas dobles y las llaves del texto si es necesario
-        nombre = nombre.trim().replaceAll("\"", "");
-        return personalTipoGastoService.addPersonalTipoGasto(email, nombre);
+    public ResponseEntity<?>  addPersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            // Quitar las comillas dobles y las llaves del texto si es necesario
+            nombre = nombre.trim().replaceAll("\"", "");
+            PersonalTipoGasto nuevo =  personalTipoGastoService.addPersonalTipoGasto(email, nombre);
+            return ResponseEntity.ok(new PersonalTipoGastoDTO(nuevo));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/editar")
-    public PersonalTipoGasto updatePersonalTipoGasto(@RequestBody Map<String, String> requestBody,
+    public ResponseEntity<?> updatePersonalTipoGasto(@RequestBody Map<String, String> requestBody,
             Authentication authentication) {
-        String email = authentication.getName();
-        String nombreActual = requestBody.get("nombreActual").trim().replaceAll("\"", "");
-        String nombreNuevo = requestBody.get("nombreNuevo").trim().replaceAll("\"", "");
-        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
-        for (Transacciones transaccion : transaccionesUser) {
-            String tipoGasto = transaccion.getTipoGasto();
-            if (tipoGasto != null && tipoGasto.equals(nombreActual)) {
-                transaccion.setTipoGasto(nombreNuevo);
-                transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+        try {
+            String email = authentication.getName();
+            String nombreActual = requestBody.get("nombreActual").trim().replaceAll("\"", "");
+            String nombreNuevo = requestBody.get("nombreNuevo").trim().replaceAll("\"", "");
+            User user = userService.findByEmail(email); 
+            List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+            //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+            for (Transacciones transaccion : transaccionesUser) {
+                String tipoGasto = transaccion.getTipoGasto();
+                if (tipoGasto != null && tipoGasto.equals(nombreActual)) {
+                    transaccion.setTipoGasto(nombreNuevo);
+                    transaccionesController.updateTransaccion(transaccion.getId(), transaccion, authentication);
+                }
             }
+            PersonalTipoGasto actualizado =  personalTipoGastoService.updatePersonalTipoGasto(email, nombreActual, nombreNuevo);
+            return ResponseEntity.ok(new PersonalTipoGastoDTO(actualizado));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al actualizar el tipo de gasto: " + e.getMessage());
         }
-        return personalTipoGastoService.updatePersonalTipoGasto(email, nombreActual, nombreNuevo);
     }
 
     // Endpoint para eliminar un PersonalTipoGasto por nombre
     @PostMapping("/eliminar")
     public ResponseEntity<Void> deletePersonalTipoGasto(@RequestBody String nombre, Authentication authentication) {
         String email = authentication.getName();
-        List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+        User user = userService.findByEmail(email); 
+        List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+        //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
         nombre = nombre.trim().replaceAll("\"", "");
         for (Transacciones transaccion : transaccionesUser) {
             String tipoGasto = transaccion.getTipoGasto();

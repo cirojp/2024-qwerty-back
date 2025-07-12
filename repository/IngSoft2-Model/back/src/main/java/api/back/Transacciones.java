@@ -1,5 +1,6 @@
 package api.back;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDate;
 
@@ -17,11 +21,25 @@ public class Transacciones {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
+    @PositiveOrZero
+    @Column(nullable = false)
     private Double valor;
+    @NotBlank
+    @Column(nullable = false)
     private String motivo;
+    @NotBlank
+    @Column(nullable = false)
     private String categoria;
+    @NotBlank
+    @Column(nullable = false)
     private String tipoGasto;
+    @NotBlank
+    @Column(nullable = false)
     private String monedaOriginal; 
+    @NotNull
+    @PositiveOrZero
+    @Column(nullable = false)
     private Double montoOriginal;
     private String frecuenciaRecurrente;
     private LocalDate siguienteEjecucion;

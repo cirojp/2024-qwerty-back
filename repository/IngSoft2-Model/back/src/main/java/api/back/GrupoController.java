@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate; // Importa LocalDate
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/grupos")
@@ -33,11 +35,13 @@ public class GrupoController {
     private TransaccionesPendientesService transaccionesPendientesService; // Asegúrate de tener este servicio inyectado
 
     @PostMapping("/crear")
-    public Grupo crearGrupo(@RequestBody Map<String, Object> payload, Authentication authentication) {
+    public ResponseEntity<?> crearGrupo(@RequestBody Map<String, Object> payload, Authentication authentication) {
         String nombre = (String) payload.get("nombre");
         List<String> miembrosEmails = (List<String>) payload.get("usuarios");
         String creadorEmail = authentication.getName(); // Email del usuario autenticado
-
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("El nombre del grupo no puede ser nulo o vacío.");
+        }
         if (miembrosEmails == null) {
             miembrosEmails = new ArrayList<>(); // Asegúrate de que la lista no sea nula
         }
@@ -56,7 +60,7 @@ public class GrupoController {
             transaccionPendiente.setGrupoId(grupo.getId());
             transaccionesPendientesService.save(transaccionPendiente);
         }
-        return grupo;
+        return ResponseEntity.ok(grupo);
     }
 
     @GetMapping("/mis-grupos")
@@ -100,7 +104,7 @@ public class GrupoController {
     }
 
     @PostMapping("/transaccion")
-    public ResponseEntity<GrupoTransacciones> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
+    public ResponseEntity<?> crearGrupoTransaccion(@RequestBody Map<String, Object> payload, Authentication authentication) {
         // Intenta convertir el valor a Double (si es String, convierte)
         Double valor;
         Object valorObj = payload.get("valor");
@@ -109,7 +113,10 @@ public class GrupoController {
         } else if (valorObj instanceof Number) {
             valor = ((Number) valorObj).doubleValue();
         } else {
-            return ResponseEntity.badRequest().body(null); // Valor no válido
+            return ResponseEntity.badRequest().body("Valor inválido."); // Valor no válido
+        }
+        if (valor < 0) {
+            return ResponseEntity.badRequest().body("El valor no puede ser menor a cero.");
         }
         String usuarioEmail = authentication.getName(); // Obtener el email del usuario autenticado
     
@@ -126,7 +133,16 @@ public class GrupoController {
         } else if (montoOriginalObj instanceof Number) {
             montoOriginal = ((Number) montoOriginalObj).doubleValue();
         } else {
-            return ResponseEntity.badRequest().body(null); // Valor no válido
+            return ResponseEntity.badRequest().body("Monto original inválido."); // Valor no válido
+        }
+        if (montoOriginal < 0) {
+            return ResponseEntity.badRequest().body("El monto original no puede ser menor a cero.");
+        }
+        if (motivo == null || motivo.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("El motivo no puede ser vacío o null.");
+        }
+        if (!"Gasto Grupal".equalsIgnoreCase(categoria)) {
+            return ResponseEntity.badRequest().body("La categoría debe ser 'Gasto Grupal'.");
         }
     
         // Convierte el valor de grupo a Long, similar a como hiciste antes
@@ -136,6 +152,11 @@ public class GrupoController {
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
             return ResponseEntity.badRequest().body(null); // Grupo no encontrado
+        }
+        boolean perteneceAlGrupo = grupo.getUsuarios().stream()
+        .anyMatch(usuario -> usuario.getEmail().equals(usuarioEmail));
+        if (!perteneceAlGrupo) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("El usuario no es miembro del grupo.");
         }
     
         // Crea una nueva transacción grupal
@@ -152,16 +173,16 @@ public class GrupoController {
     }
 
     @GetMapping("/{grupoId}/transacciones")
-    public ResponseEntity<List<GrupoTransacciones>> obtenerTransaccionesPorGrupo(@PathVariable Long grupoId, Authentication authentication) {
+    public ResponseEntity<?> obtenerTransaccionesPorGrupo(@PathVariable Long grupoId, Authentication authentication) {
         String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList()); // Retorna 404 si el grupo no existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error con id."); // Retorna 404 si el grupo no existe
         }
         boolean perteneceAlGrupo = grupo.getUsuarios().stream()
         .anyMatch(usuario -> usuario.getEmail().equals(emailUsuario));
         if (!perteneceAlGrupo) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("El usuario no es miembro del grupo.");
         }
         // Obtiene las transacciones asociadas al grupo
         List<GrupoTransacciones> transacciones = grupo.getTransacciones();
@@ -236,7 +257,7 @@ public class GrupoController {
 
     // Endpoint para editar una transacción grupal
     @PutMapping("/transaccion/{transaccionId}")
-    public ResponseEntity<GrupoTransacciones> editarGrupoTransaccion(
+    public ResponseEntity<?> editarGrupoTransaccion(
         @PathVariable Long transaccionId,
         @RequestBody Map<String, Object> payload,
         Authentication authentication
@@ -244,10 +265,10 @@ public class GrupoController {
         String emailUsuario = authentication.getName();
         GrupoTransacciones transaccionExistente = grupoTransaccionesService.findById(transaccionId);
         if (transaccionExistente == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Retorna 404 si la transacción no existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transacción no encontrada."); // Retorna 404 si la transacción no existe
         }
         if (!emailUsuario.equals(transaccionExistente.getUsers())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para editar esta transacción.");
         }
         if (payload.containsKey("valor")) {
             Object valorObj = payload.get("valor");
@@ -259,14 +280,28 @@ public class GrupoController {
             } else { 
                 throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
             }
+            if (valor < 0) {
+                return ResponseEntity.badRequest().body("El valor no puede ser menor a cero.");
+            }
             transaccionExistente.setValor(valor);
         }
         if (payload.containsKey("motivo")) {
+            String motivo = (String) payload.get("motivo");
+            if (motivo.equals("") || motivo == null) {
+                return ResponseEntity.badRequest().body("El motivo no puede estar vacio.");
+            }
             transaccionExistente.setMotivo((String) payload.get("motivo"));
         }
         if (payload.containsKey("fecha")) {
             LocalDate fecha = LocalDate.parse((String) payload.get("fecha"));
             transaccionExistente.setFecha(fecha);
+        }
+        if (payload.containsKey("categoria")) {
+            String categoria = (String) payload.get("categoria");
+            if (!"Gasto Grupal".equalsIgnoreCase(categoria)) {
+                return ResponseEntity.badRequest().body("La categoría debe ser 'Gasto Grupal'.");
+            }
+            transaccionExistente.setCategoria(categoria);
         }
         if (payload.containsKey("categoria")) {
             transaccionExistente.setCategoria((String) payload.get("categoria"));
@@ -275,6 +310,10 @@ public class GrupoController {
             transaccionExistente.setTipoGasto((String) payload.get("tipoGasto"));
         }
         if (payload.containsKey("monedaOriginal")) {
+            String monedaOriginal = (String) payload.get("monedaOriginal");
+            if (monedaOriginal.equals("") || monedaOriginal == null) {
+                return ResponseEntity.badRequest().body("La moneda no puede estar vacia.");
+            }
             transaccionExistente.setMonedaOriginal((String) payload.get("monedaOriginal"));
         }
         if (payload.containsKey("montoOriginal")) {
@@ -286,6 +325,9 @@ public class GrupoController {
                 valorOriginal = Double.parseDouble((String) valorObj2);
             } else { 
                 throw new IllegalArgumentException("Tipo de dato no válido para el campo 'valor'");
+            }
+            if (valorOriginal < 0) {
+                return ResponseEntity.badRequest().body("El monto original no puede ser menor a cero.");
             }
             transaccionExistente.setMontoOriginal(valorOriginal);
         }
@@ -318,7 +360,7 @@ public class GrupoController {
     }
 
     @GetMapping("/{grupoId}/usuarios")
-    public ResponseEntity<List<User>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId, Authentication authentication) {
+    public ResponseEntity<List<Map<String, String>>> obtenerUsuariosDelGrupo(@PathVariable Long grupoId, Authentication authentication) {
         String emailUsuario = authentication.getName();
         Grupo grupo = grupoService.findById(grupoId);
         if (grupo == null) {
@@ -329,8 +371,16 @@ public class GrupoController {
         if (!perteneceAlGrupo) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.emptyList());
         }
-        List<User> usuarios = grupo.getUsuarios();
-        return ResponseEntity.ok(usuarios);
+        //List<User> usuarios = grupo.getUsuarios();
+         List<Map<String, String>> emails = grupo.getUsuarios().stream()
+        .map(usuario -> {
+            Map<String, String> map = new HashMap<>();
+            map.put("email", usuario.getEmail());
+            return map;
+        })
+        .collect(Collectors.toList());
+        //return ResponseEntity.ok(usuarios);
+        return ResponseEntity.ok(emails);
     }
 
     // Endpoint para agregar un usuario a un grupo
@@ -338,13 +388,36 @@ public class GrupoController {
     public ResponseEntity<String> agregarUsuariosAGrupo(@PathVariable Long grupoId, @RequestBody Map<String, Object> payload, Authentication authentication) {
         List<String> miembrosEmails = (List<String>) payload.get("usuarios");
         String creadorEmail = authentication.getName(); // Email del usuario autenticado
+        System.out.println("Emails recibidos: " + miembrosEmails);
+        System.out.println("Creador autenticado: " + creadorEmail);
         if (miembrosEmails == null) {
             miembrosEmails = new ArrayList<>(); // Asegúrate de que la lista no sea nula
         }
         Grupo grupo = grupoService.findById(grupoId);
+        if (grupo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupo no encontrado.");
+        }
         // Crea una transacción pendiente para cada miembro del grupo
+        List<String> errores = new ArrayList<>();
         for (String email : miembrosEmails) {
+            System.out.println("Procesando email: " + email);
+            if (email.equals(creadorEmail)) {
+                errores.add("No puedes agregarte a ti mismo al grupo.");
+                System.out.println("Error: intentó agregarse a sí mismo.");
+                continue;
+            }
             User usuario = userService.findByEmail(email);
+            if (usuario == null) {
+                errores.add("No se encontró el usuario con email: " + email);
+                System.out.println("Error: usuario no encontrado.");
+                continue;
+            }
+            if (grupo.getUsuarios().contains(usuario)) {
+                errores.add("El usuario " + email + " ya es miembro del grupo.");
+                System.out.println("Error: usuario ya en el grupo.");
+                continue;
+            }
+            System.out.println("Agregando transacción pendiente para: " + email);
             LocalDate fechaHoy = LocalDate.now();
             TransaccionesPendientes transaccionPendiente = new TransaccionesPendientes(0.0, usuario, grupo.getNombre(), "Grupo", fechaHoy,null,null);
             // Establecer el correo del creador como sentByEmail
@@ -352,7 +425,12 @@ public class GrupoController {
             transaccionPendiente.setGrupoId(grupo.getId());
             transaccionesPendientesService.save(transaccionPendiente);
         }
-        return null;
+        System.out.println("Errores encontrados: " + errores);
+        if (!errores.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.join("\n", errores));
+        }
+    
+        return ResponseEntity.ok("Usuarios agregados correctamente.");
         
     }
 
@@ -387,5 +465,28 @@ public class GrupoController {
         }
         return ResponseEntity.ok("El usuario no está en el grupo ni tiene una invitación pendiente.");
     }
+
+    void eliminarUsuarioDeTodosLosGrupos(User usuario) {
+        String emailUsuario = usuario.getEmail();
+    
+        List<Grupo> grupos = grupoService.obtenerGruposPorUsuario(emailUsuario);
+    
+        for (Grupo grupo : grupos) {
+            List<TransaccionesPendientes> pendientesUsuario = transaccionesPendientesService.findByGrupoId(grupo.getId())
+                .stream()
+                .filter(p -> p.getUser() != null && emailUsuario.equals(p.getUser().getEmail()))
+                .collect(Collectors.toList());
+            pendientesUsuario.forEach(p -> transaccionesPendientesService.delete(p.getId()));
+    
+            List<GrupoTransacciones> transaccionesUsuario = grupo.getTransacciones()
+                .stream()
+                .filter(t -> emailUsuario.equals(t.getUsers()))
+                .collect(Collectors.toList());
+            transaccionesUsuario.forEach(t -> grupoTransaccionesService.delete(t.getId()));
+    
+            grupo.getUsuarios().removeIf(u -> u.getEmail().equals(emailUsuario));
+            grupoService.save(grupo);
+        }
+    }    
 
 }

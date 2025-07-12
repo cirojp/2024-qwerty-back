@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/presupuesto")
@@ -34,10 +35,13 @@ public class BudgetController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Budget>> getUserPresupuestos(Authentication authentication) {
+    public ResponseEntity<List<BudgetDTO>> getUserPresupuestos(Authentication authentication) {
         User user = userService.findByEmail(authentication.getName());
         List<Budget> presupuestos = budgetService.getPresupuestosByUserId(user);
-        return ResponseEntity.ok().body(presupuestos);
+        List<BudgetDTO> presupuestosDTO = presupuestos.stream()
+        .map(BudgetDTO::new)
+        .collect(Collectors.toList());
+        return ResponseEntity.ok(presupuestosDTO);
     }
 
     @DeleteMapping("/{id}")

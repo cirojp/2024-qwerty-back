@@ -3,27 +3,27 @@ package api.back;
 import java.util.List;
 
 public class TransaccionesResponse {
-    private List<Transacciones> transaccionesFiltradas;
-    private List<Transacciones> transaccionesSinFiltrarCat;
+    private List<TransaccionDTO> transaccionesFiltradas;
+    private List<TransaccionDTO> transaccionesSinFiltrarCat;
 
-    public TransaccionesResponse(List<Transacciones> transaccionesFiltradas, List<Transacciones> transaccionesSinFiltrarCat) {
+    public TransaccionesResponse(List<TransaccionDTO> transaccionesFiltradas, List<TransaccionDTO> transaccionesSinFiltrarCat) {
         this.transaccionesFiltradas = transaccionesFiltradas;
         this.transaccionesSinFiltrarCat = transaccionesSinFiltrarCat;
     }
 
-    public List<Transacciones> getTransaccionesFiltradas() {
+    public List<TransaccionDTO> getTransaccionesFiltradas() {
         return transaccionesFiltradas;
     }
 
-    public void setTransaccionesFiltradas(List<Transacciones> transaccionesFiltradas) {
+    public void setTransaccionesFiltradas(List<TransaccionDTO> transaccionesFiltradas) {
         this.transaccionesFiltradas = transaccionesFiltradas;
     }
 
-    public List<Transacciones> getTransaccionesSinFiltrarCat() {
+    public List<TransaccionDTO> getTransaccionesSinFiltrarCat() {
         return transaccionesSinFiltrarCat;
     }
 
-    public void setTransaccionesSinFiltrarCat(List<Transacciones> transaccionesSinFiltrarCat) {
+    public void setTransaccionesSinFiltrarCat(List<TransaccionDTO> transaccionesSinFiltrarCat) {
         this.transaccionesSinFiltrarCat = transaccionesSinFiltrarCat;
     }
 }

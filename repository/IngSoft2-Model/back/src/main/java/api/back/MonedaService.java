@@ -49,4 +49,17 @@ public class MonedaService {
     
         monedaRepository.delete(moneda);
     }
+
+    public boolean isMonedaValida(String email, String nombreMoneda) {
+        List<String> defaultMonedas = List.of("ARG");
+        if (defaultMonedas.contains(nombreMoneda)) {
+            return true;
+        }
+        return monedaRepository.findByUserEmailAndNombre(email, nombreMoneda).isPresent();
+    }
+
+    public boolean monedaYaExiste(String email, String nombre) {
+        return monedaRepository.findByUserEmailAndNombre(email, nombre).isPresent();
+    }
+    
 }

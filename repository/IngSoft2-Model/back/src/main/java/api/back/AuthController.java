@@ -32,15 +32,17 @@ public class AuthController {
     private final PasswordResetTokenService passwordResetTokenService;
     private final PersonalTipoGastoService personalTipoGastoService;
     private final PersonalCategoriaService personalCategoriaService;
+    private final MonedaService monedaService;
     private final BudgetService budgetService;
     private final TransaccionesController transaccionesController;
+    private final GrupoController grupoController;
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtil jwtUtil,
             UserService userService, TransaccionesService transaccionesService,
             PasswordResetTokenService passwordResetTokenService, PersonalTipoGastoService personalTipoGastoService,
             BudgetService budgetService, PersonalCategoriaService personalCategoriaService,
-            TransaccionesController transaccionesController) {
+            TransaccionesController transaccionesController, MonedaService monedaService, GrupoController grupoController) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.personalCategoriaService = personalCategoriaService;
@@ -52,12 +54,15 @@ public class AuthController {
         this.passwordResetTokenService = passwordResetTokenService;
         this.personalTipoGastoService = personalTipoGastoService;
         this.budgetService = budgetService;
+        this.monedaService = monedaService;
+        this.grupoController = grupoController;
     }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
         try {
             User user = userService.findByEmail(authentication.getName());
+            grupoController.eliminarUsuarioDeTodosLosGrupos(user);
             List<Budget> presupuestos = budgetService.getPresupuestosByUserId(user);
             for (Budget presupuesto : presupuestos) {
                 budgetService.deleteBudget(presupuesto.getId());
@@ -66,9 +71,14 @@ public class AuthController {
             for (Transacciones transaction : transacciones) {
                 transaccionesService.deleteTransaccion(transaction.getId(), user.getEmail());
             }
+            List<Transacciones> transaccionesRecurrentes = transaccionesService.getTransaccionesRecurrentes(user.getId());
+            for (Transacciones transactionR : transaccionesRecurrentes) {
+                transaccionesService.deleteTransaccion(transactionR.getId(), user.getEmail());
+            }
             List<PersonalCategoria> categorias = personalCategoriaService.getPersonalCategoria(user.getEmail());
             for (PersonalCategoria categoria : categorias) {
-                List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
+                List<Transacciones> transaccionesUser = transaccionesService.getTransaccionesByUserId(user.getId());
+                //List<Transacciones> transaccionesUser = transaccionesController.getTransaccionesByUser(authentication);
                 for (Transacciones transaccion : transaccionesUser) {
                     if (transaccion.getCategoria().equals(categoria.getNombre())) {
                         transaccion.setCategoria("Otros");
@@ -82,6 +92,11 @@ public class AuthController {
                     .getPersonalTipoGastos(user.getEmail());
             for (PersonalTipoGasto tipoGasto : personalTipoGastos) {
                 personalTipoGastoService.deletePersonalTipoGasto(tipoGasto.getId());
+            }
+            List<Moneda> monedas = monedaService
+                    .getMonedasByEmail(user.getEmail());
+            for (Moneda moneda : monedas) {
+                monedaService.deleteMonedaPorNombre(user.getEmail(), moneda.getNombre());
             }
             List<PasswordResetToken> tokens = passwordResetTokenService.getTokensByUser(user);
             for (PasswordResetToken token : tokens) {

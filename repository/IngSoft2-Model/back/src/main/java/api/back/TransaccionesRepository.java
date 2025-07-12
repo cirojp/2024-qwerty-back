@@ -12,6 +12,8 @@ import java.time.LocalDate;
 public interface TransaccionesRepository extends JpaRepository<Transacciones, Long> {
     List<Transacciones> findByUserId(Long userId); // Encuentra transacciones por el ID del usuario
 
+    List<Transacciones> findByUserIdAndFrecuenciaRecurrenteIsNullOrderByFechaDesc(Long userId);
+
     Optional<Transacciones> findByIdAndUserId(Long id, Long userId);
 
     List<Transacciones> findByUserIdOrderByFechaDesc(Long userId);

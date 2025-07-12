@@ -1,11 +1,14 @@
 package api.back;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @EnableScheduling
 @Service
@@ -15,6 +18,13 @@ public class TransaccionesService {
     private final UserRepository userRepository;
     private final UserService userService;
 
+    @Autowired
+    private PersonalTipoGastoService personalTipoGastoService;
+    @Autowired
+    private PersonalCategoriaService personalCategoriaService;
+    @Autowired
+    private MonedaService monedaService;
+
     public TransaccionesService(TransaccionesRepository transaccionesRepository, UserRepository userRepository,
             UserService userService) {
         this.transaccionesRepository = transaccionesRepository;
@@ -23,10 +33,49 @@ public class TransaccionesService {
     }
 
     public List<Transacciones> getTransaccionesByUserId(Long userId) {
-        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
+        for (Transacciones t : transaccionesRepository.findByUserIdOrderByFechaDesc(userId)) {
+            System.out.println("ID: " + t.getId() + " Frecuencia: '" + t.getFrecuenciaRecurrente() + "'");
+        }
+        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId)
+            .stream()
+            .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().isEmpty() || "".equals(t.getFrecuenciaRecurrente()))
+            .collect(Collectors.toList());
     }
 
     public Transacciones createTransaccion(Transacciones transaccion, String email) {
+        return createTransaccion(transaccion, email, false); // valor por defecto
+    }
+
+    public Transacciones createTransaccion(Transacciones transaccion, String email, boolean esUnPago) {
+        // Validaciones
+        if (transaccion.getMotivo() == null || transaccion.getMotivo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El motivo no puede estar vacío.");
+        }
+        if (transaccion.getValor() == null || transaccion.getValor() < 0) {
+            throw new IllegalArgumentException("El valor no puede ser nulo ni menor a cero.");
+        }
+        if (transaccion.getMontoOriginal() == null || transaccion.getMontoOriginal() < 0) {
+            throw new IllegalArgumentException("El monto original no puede ser nulo ni menor a cero.");
+        }
+        if (transaccion.getTipoGasto() == null || transaccion.getTipoGasto().trim().isEmpty()) {
+            throw new IllegalArgumentException("El tipo de gasto no puede estar vacío.");
+        }
+        if (transaccion.getCategoria() == null || transaccion.getCategoria().trim().isEmpty()) {
+            throw new IllegalArgumentException("La categoría no puede estar vacía.");
+        }
+        if (transaccion.getMonedaOriginal() == null || transaccion.getMonedaOriginal().trim().isEmpty()) {
+            throw new IllegalArgumentException("La moneda original no puede estar vacía.");
+        }
+        if (!monedaService.isMonedaValida(email, transaccion.getMonedaOriginal()) && !esUnPago) {
+            throw new IllegalArgumentException("La moneda no existe.");
+        }
+        if (!personalTipoGastoService.isTipoGastoValido(email, transaccion.getTipoGasto())) {
+            throw new IllegalArgumentException("El tipo de gasto no existe.");
+        }
+        if (!personalCategoriaService.isCategoriaValida(email, transaccion.getCategoria())) {
+            throw new IllegalArgumentException("La categoría no existe.");
+        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         transaccion.setUser(user);
@@ -34,12 +83,35 @@ public class TransaccionesService {
         // Si no se proporciona una fecha, usamos la fecha actual
         if (transaccion.getFecha() == null) {
             transaccion.setFecha(LocalDate.now());
-        }
+        } 
 
         // Calcular siguiente ejecución si es recurrente
         if (transaccion.getFrecuenciaRecurrente() != null && !transaccion.getFrecuenciaRecurrente().isEmpty()) {
+            if (transaccion.getFecha().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
+            }
+            List<String> frecuenciasValidas = Arrays.asList("diariamente", "semanalmente", "mensualmente", "anualmente");
+            if (!frecuenciasValidas.contains(transaccion.getFrecuenciaRecurrente())) {
+                throw new IllegalArgumentException("La frecuencia recurrente debe ser: diariamente, semanalmente, mensualmente o anualmente.");
+            }
+            Transacciones copia = new Transacciones();
+            copia.setUser(transaccion.getUser());
+            copia.setValor(transaccion.getValor());
+            copia.setCategoria(transaccion.getCategoria());
+            copia.setMotivo(transaccion.getMotivo());
+            copia.setFecha(transaccion.getFecha());
+            copia.setTipoGasto(transaccion.getTipoGasto());
+            copia.setFrecuenciaRecurrente(null);
+            copia.setMonedaOriginal(transaccion.getMonedaOriginal());
+            copia.setMontoOriginal(transaccion.getMontoOriginal());
+    
+            transaccionesRepository.save(copia);
+
             LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccion.getFecha(), transaccion.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(siguienteEjecucion);
+        } else {
+            // Si no es recurrente, aseguramos que siguienteEjecucion sea null
+            transaccion.setSiguienteEjecucion(null);
         }
 
         return transaccionesRepository.save(transaccion);
@@ -65,14 +137,49 @@ public class TransaccionesService {
     }
 
     public Transacciones updateTransaccion(Long id, Transacciones transaccionActualizada, String email) {
-        // Obtener el usuario autenticado por email
         User user = userService.findByEmail(email);
+        Optional<Transacciones> optionalTransaccion = transaccionesRepository.findByIdAndUserId(id, user.getId());
 
-        // Buscar la transacción por id y asegurarse de que pertenezca al usuario
-        Transacciones transaccion = transaccionesRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new RuntimeException("Transacción no encontrada o no pertenece al usuario"));
-
-        // Actualizar los campos de la transacción
+        if (optionalTransaccion.isEmpty()) {
+            throw new IllegalArgumentException("La transacción no fue encontrada o no pertenece al usuario.");
+        }
+        Transacciones transaccion = optionalTransaccion.get();
+        if (transaccionActualizada.getMotivo() == null || transaccionActualizada.getMotivo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El motivo no puede estar vacío.");
+        }
+        if (transaccionActualizada.getValor() == null || transaccionActualizada.getValor() < 0) {
+            throw new IllegalArgumentException("El valor no puede ser nulo ni menor a cero.");
+        }
+        if (transaccionActualizada.getMontoOriginal() == null || transaccionActualizada.getMontoOriginal() < 0) {
+            throw new IllegalArgumentException("El monto original no puede ser nulo ni menor a cero.");
+        }
+        if (transaccionActualizada.getTipoGasto() == null || transaccionActualizada.getTipoGasto().trim().isEmpty()) {
+            throw new IllegalArgumentException("El tipo de gasto no puede estar vacío.");
+        }
+        if (transaccionActualizada.getCategoria() == null || transaccionActualizada.getCategoria().trim().isEmpty()) {
+            throw new IllegalArgumentException("La categoría no puede estar vacía.");
+        }
+        if (transaccionActualizada.getMonedaOriginal() == null || transaccionActualizada.getMonedaOriginal().trim().isEmpty()) {
+            throw new IllegalArgumentException("La moneda original no puede estar vacía.");
+        }
+        if (!monedaService.isMonedaValida(email, transaccionActualizada.getMonedaOriginal())) {
+            throw new IllegalArgumentException("La moneda no existe.");
+        }
+        if (!personalTipoGastoService.isTipoGastoValido(email, transaccionActualizada.getTipoGasto())) {
+            throw new IllegalArgumentException("El tipo de gasto no existe.");
+        }
+        if (!personalCategoriaService.isCategoriaValida(email, transaccionActualizada.getCategoria())) {
+            throw new IllegalArgumentException("La categoría no existe.");
+        }
+        if (transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) {
+            if (transaccionActualizada.getFecha().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("La fecha de una transacción recurrente no puede ser anterior a hoy.");
+            }
+            List<String> frecuenciasValidas = Arrays.asList("diariamente", "semanalmente", "mensualmente", "anualmente");
+            if (!frecuenciasValidas.contains(transaccionActualizada.getFrecuenciaRecurrente())) {
+                throw new IllegalArgumentException("La frecuencia recurrente debe ser: diariamente, semanalmente, mensualmente o anualmente.");
+            }
+        }
         transaccion.setMotivo(transaccionActualizada.getMotivo());
         transaccion.setValor(transaccionActualizada.getValor());
         transaccion.setFecha(transaccionActualizada.getFecha());
@@ -80,12 +187,25 @@ public class TransaccionesService {
         transaccion.setTipoGasto(transaccionActualizada.getTipoGasto());
         transaccion.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
         transaccion.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+        if ((transaccionActualizada.getFrecuenciaRecurrente() != null && !transaccionActualizada.getFrecuenciaRecurrente().isEmpty()) && (transaccion.getFrecuenciaRecurrente() == null || transaccion.getFrecuenciaRecurrente().isEmpty() || "".equals(transaccion.getFrecuenciaRecurrente()))) {
+            Transacciones copia = new Transacciones();
+            copia.setUser(transaccion.getUser());
+            copia.setValor(transaccionActualizada.getValor());
+            copia.setCategoria(transaccionActualizada.getCategoria());
+            copia.setMotivo(transaccionActualizada.getMotivo());
+            copia.setFecha(transaccionActualizada.getFecha());
+            copia.setTipoGasto(transaccionActualizada.getTipoGasto());
+            copia.setFrecuenciaRecurrente(null);
+            copia.setMonedaOriginal(transaccionActualizada.getMonedaOriginal());
+            copia.setMontoOriginal(transaccionActualizada.getMontoOriginal());
+            transaccionesRepository.save(copia);
+            LocalDate siguienteEjecucion = calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente());
+            transaccion.setSiguienteEjecucion(siguienteEjecucion);
+        }
         if (transaccionActualizada.getFrecuenciaRecurrente()!= null) {
             transaccion.setFrecuenciaRecurrente(transaccionActualizada.getFrecuenciaRecurrente());
             transaccion.setSiguienteEjecucion(calcularSiguienteEjecucion(transaccionActualizada.getFecha(), transaccionActualizada.getFrecuenciaRecurrente()));
         }
-
-        // Guardar los cambios en la base de datos
         return transaccionesRepository.save(transaccion);
     }
 
@@ -93,15 +213,16 @@ public class TransaccionesService {
         return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
     }
 
-    public List<Transacciones> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
+    public List<TransaccionDTO> getTransaccionesFiltradas(Long userId, String categoria, Integer anio, Integer mes) {
         LocalDate startDate = null;
         LocalDate endDate = null;
+        List<Transacciones> transacciones;
         if (anio == null && mes != null) {
-            anio = 2024;
+            anio = 2025;
         }
         // Si la categoría no es null o "Todas" y anio y mes son null
         if (categoria != null && !categoria.equals("Todas") && anio == null && mes == null) {
-            return transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
+            transacciones =  transaccionesRepository.findByUserIdAndCategoriaOrderByFechaDesc(userId, categoria);
         }
         // Si la categoría no es null ni "Todas" y además mes o anio no son null
         else if (categoria != null && !categoria.equals("Todas") && (anio != null || mes != null)) {
@@ -109,15 +230,14 @@ public class TransaccionesService {
                 // Si ambos son proporcionados, calcula el rango de fechas
                 startDate = LocalDate.of(anio, mes, 1);
                 endDate = startDate.plusMonths(1).minusDays(1);
-                return transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
+                transacciones =  transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
             } else if (anio != null) {
                 // Si solo el año es proporcionado, establece el rango de fechas para todo el año
                 startDate = LocalDate.of(anio, 1, 1);
                 endDate = LocalDate.of(anio, 12, 31);
-                return transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
-            } else if (mes != null) {
-                // Si solo el mes es proporcionado, debes decidir cómo manejarlo
-                // Aquí puedes decidir no realizar ninguna consulta o lanzar una excepción
+                transacciones =  transaccionesRepository.findByUserIdAndCategoriaAndFechaBetween(userId, categoria, startDate, endDate);
+            } else {
+                transacciones = List.of();
             }
         }
         // Si la categoría es null o "Todas" pero anio o mes no son null
@@ -126,24 +246,28 @@ public class TransaccionesService {
                 // Si ambos son proporcionados, calcula el rango de fechas
                 startDate = LocalDate.of(anio, mes, 1);
                 endDate = startDate.plusMonths(1).minusDays(1);
-                return transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
+                transacciones =  transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
             } else if (anio != null) {
                 // Si solo el año es proporcionado, establece el rango de fechas para todo el año
                 startDate = LocalDate.of(anio, 1, 1);
                 endDate = LocalDate.of(anio, 12, 31);
-                return transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
-            } else if (mes != null) {
-                // Si solo el mes es proporcionado, puedes decidir no realizar ninguna consulta o lanzar una excepción
+                transacciones =  transaccionesRepository.findByUserIdAndFechaBetween(userId, startDate, endDate);
+            } else {
+                transacciones = List.of();
             }
+        } else {
+            transacciones = transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
         }
-        return transaccionesRepository.findByUserIdOrderByFechaDesc(userId);
-    
-        // Si no se cumplen condiciones, puedes devolver una lista vacía o lanzar una excepción
+        return transacciones.stream()
+            .filter(t -> t.getFrecuenciaRecurrente() == null || t.getFrecuenciaRecurrente().trim().isEmpty())
+            .map(TransaccionDTO::new) // conversión a DTO
+            .collect(Collectors.toList());
         }
     
-        //@Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
+        
         //@Scheduled(cron = "0 * * * * ?") // Se ejecuta todos los minutos
-        @Scheduled(cron = "0 */5 * * * ?") //se ejecuta cada 5 minutos
+        //@Scheduled(cron = "0 */5 * * * ?") //se ejecuta cada 5 minutos
+        @Scheduled(cron = "0 0 0 * * ?") // Se ejecuta todos los días a medianoche
         public void procesarTransaccionesRecurrentes() {
             
             LocalDate hoy = LocalDate.now();
